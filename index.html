@@ -244,6 +244,7 @@
       box-shadow: var(--shadow-soft);
       margin: 0 4px 10px;
       cursor: grab;
+      position: relative;
     }
 
     .spot-card.dragging {
@@ -337,6 +338,7 @@
       padding: 12px 12px 10px;
       box-shadow: var(--shadow-soft);
       margin: 10px 4px 0;
+      position: relative;
     }
 
     .day-note-header {
@@ -420,6 +422,42 @@
       cursor: pointer;
     }
 
+    /* 長按選單 */
+    .longpress-menu {
+      position: absolute;
+      right: 10px;
+      top: 10px;
+      background: #fffaf2;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.18);
+      padding: 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      z-index: 30;
+    }
+    .longpress-menu button {
+      border: none;
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-size: 12px;
+      cursor: pointer;
+      text-align: left;
+      white-space: nowrap;
+    }
+    .longpress-menu .lp-drag {
+      background: #ffe7b8;
+      color: var(--brown-main);
+    }
+    .longpress-menu .lp-delete {
+      background: #ffb8b0;
+      color: #7a221b;
+    }
+    .longpress-menu .lp-cancel {
+      background: #eee2d5;
+      color: var(--brown-main);
+    }
+
     @media (max-width: 600px) {
       .app-title-row h1 {
         font-size: 24px;
@@ -479,7 +517,7 @@
   <!-- Day 1 section -->
   <section class="day-section" data-id="day-1">
     <div class="day-card">
-      <div class="day-header">
+      <div class="day-header day-item">
         <div class="day-header-main">
           <span contenteditable="true">Day 1</span>
         </div>
@@ -488,13 +526,13 @@
         </div>
       </div>
 
-      <div class="day-hint">
-        日期：<span class="day-date" contenteditable="true">5/8</span>
+      <div class="day-hint day-item">
+        日期：<span contenteditable="true">5/8</span>
         <span style="margin-left:4px;color:var(--brown-soft);" contenteditable="true">（修改 Day1 日期，其餘天數會自動接續）</span>
       </div>
 
       <!-- example spot card -->
-      <article class="spot-card" draggable="true">
+      <article class="spot-card day-item">
         <div class="spot-title" contenteditable="true">範例景點</div>
         <div class="spot-name-ja" contenteditable="true">日文名稱或地址</div>
         <div class="spot-meta" contenteditable="true">地區・簡短說明可寫在這裡，例如：上野・車站附近・排隊名店</div>
@@ -520,12 +558,12 @@
       </article>
 
       <!-- 新增卡片按鈕 -->
-      <div class="add-spot-card">
+      <div class="add-spot-card day-item">
         <button type="button" class="btn small add-spot-btn">＋ 新增行程卡片</button>
       </div>
 
       <!-- Day note / cost -->
-      <div class="day-note-card">
+      <div class="day-note-card day-item">
         <div class="day-note-header">
           <div class="day-note-title">當日備註／花費</div>
           <button class="day-note-photo-btn" type="button">
@@ -545,7 +583,7 @@
   <!-- Day 2 section -->
   <section class="day-section" data-id="day-2">
     <div class="day-card">
-      <div class="day-header">
+      <div class="day-header day-item">
         <div class="day-header-main">
           <span contenteditable="true">Day 2</span>
         </div>
@@ -553,11 +591,11 @@
           <span contenteditable="true">（範例）上野・淺草散步</span>
         </div>
       </div>
-      <div class="day-hint">
-        日期：<span class="day-date" contenteditable="true">5/9</span>
+      <div class="day-hint day-item">
+        日期：<span contenteditable="true">5/9</span>
       </div>
 
-      <article class="spot-card" draggable="true">
+      <article class="spot-card day-item">
         <div class="spot-title" contenteditable="true">範例景點 2</div>
         <div class="spot-name-ja" contenteditable="true">日文名稱或地址</div>
         <div class="spot-meta" contenteditable="true">可以自行編輯這裡的說明文字。</div>
@@ -579,11 +617,11 @@
         </div>
       </article>
 
-      <div class="add-spot-card">
+      <div class="add-spot-card day-item">
         <button type="button" class="btn small add-spot-btn">＋ 新增行程卡片</button>
       </div>
 
-      <div class="day-note-card">
+      <div class="day-note-card day-item">
         <div class="day-note-header">
           <div class="day-note-title">當日備註／花費</div>
           <button class="day-note-photo-btn" type="button">📷 新增圖片</button>
@@ -597,7 +635,7 @@
   <!-- Day 3 section -->
   <section class="day-section" data-id="day-3">
     <div class="day-card">
-      <div class="day-header">
+      <div class="day-header day-item">
         <div class="day-header-main">
           <span contenteditable="true">Day 3</span>
         </div>
@@ -605,15 +643,15 @@
           <span contenteditable="true">（範例）自由活動日</span>
         </div>
       </div>
-      <div class="day-hint">
-        日期：<span class="day-date" contenteditable="true">5/10</span>
+      <div class="day-hint day-item">
+        日期：<span contenteditable="true">5/10</span>
       </div>
 
-      <div class="add-spot-card">
+      <div class="add-spot-card day-item">
         <button type="button" class="btn small add-spot-btn">＋ 新增行程卡片</button>
       </div>
 
-      <div class="day-note-card">
+      <div class="day-note-card day-item">
         <div class="day-note-header">
           <div class="day-note-title">當日備註／花費</div>
           <button class="day-note-photo-btn" type="button">📷 新增圖片</button>
@@ -632,10 +670,11 @@
 </div>
 
 <input type="file" id="importFile" accept="application/json" style="display:none" />
+
 <script>
 (function () {
   const MAX_UNDO = 10;
-  const LOCAL_KEY = "niji-trip-2026-html-v3-2-2";
+  const LOCAL_KEY = "niji-trip-2026-html-v3";
   const HOTEL_NAME = "ベッセルイン上野入谷駅前";
 
   let undoStack = [];
@@ -645,6 +684,11 @@
   let buttonsBound = false;
   let photoInput = null;
   let currentPhotoTarget = null;
+
+  // 長按相關
+  let longPressTimer = null;
+  let longPressTarget = null;
+  const LONG_PRESS_MS = 500;
 
   // ========= 共用：儲存／復原 =========
   function saveSnapshot() {
@@ -684,6 +728,16 @@
     restoreSnapshot(last);
   }
 
+  // ========= 自動捲動 =========
+  function autoScroll(clientY) {
+    const edge = 80;
+    if (clientY < edge) {
+      window.scrollBy(0, -12);
+    } else if (clientY > window.innerHeight - edge) {
+      window.scrollBy(0, 12);
+    }
+  }
+
   // ========= 日期計算 =========
   function parseMonthDay(text) {
     const m = text.match(/(\d{1,2})\s*\/\s*(\d{1,2})/);
@@ -700,37 +754,20 @@
     return m + "/" + d;
   }
 
-  function getBaseDate() {
-    const chips = Array.from(document.querySelectorAll(".day-chip"));
-    if (!chips.length) return null;
-    const firstId = chips[0].dataset.id;
-
-    // 優先用 Day1 區塊裡的日期
-    const sec = document.querySelector('.day-section[data-id="' + firstId + '"]');
-    if (sec) {
-      const span = sec.querySelector(".day-hint .day-date[contenteditable]");
-      if (span) {
-        const md = parseMonthDay(span.textContent.trim());
-        if (md) return new Date(2026, md.month - 1, md.day);
-      }
-    }
-
-    // 退而求其次，用 chip 上的日期
-    const chipSub = chips[0].querySelector(".day-chip-sub");
-    if (chipSub) {
-      const md = parseMonthDay(chipSub.textContent.trim());
-      if (md) return new Date(2026, md.month - 1, md.day);
-    }
-    return null;
-  }
-
   function updateDayNumbersAndDates() {
     const chips = Array.from(document.querySelectorAll(".day-chip"));
     const sections = Array.from(document.querySelectorAll(".day-section"));
     const idToSection = {};
     sections.forEach(sec => { idToSection[sec.dataset.id] = sec; });
 
-    const baseDate = getBaseDate();
+    let baseDate = null;
+    if (chips.length > 0) {
+      const firstSub = chips[0].querySelector(".day-chip-sub");
+      if (firstSub) {
+        const md = parseMonthDay(firstSub.textContent);
+        if (md) baseDate = new Date(2026, md.month - 1, md.day);
+      }
+    }
 
     chips.forEach((chip, idx) => {
       const dayIndex = idx + 1;
@@ -764,50 +801,11 @@
         if (sub) sub.textContent = dateStr;
 
         if (sec) {
-          const hintDateSpan = sec.querySelector(".day-hint .day-date[contenteditable]");
+          const hintDateSpan = sec.querySelector(".day-hint span[contenteditable]");
           if (hintDateSpan) hintDateSpan.textContent = dateStr;
         }
       }
     });
-  }
-
-  // ========= 日期欄位的監聽（同步 chip & Day1） =========
-  function onDateChanged(e) {
-    const target = e.target;
-    const val = target.textContent.trim();
-    const chips = Array.from(document.querySelectorAll(".day-chip"));
-    if (!chips.length) return;
-    const firstChip = chips[0];
-    const firstId = firstChip.dataset.id;
-    const firstSection = document.querySelector('.day-section[data-id="' + firstId + '"]');
-    const firstChipDate = firstChip.querySelector(".day-chip-sub");
-    const firstSecDate = firstSection && firstSection.querySelector(".day-hint .day-date[contenteditable]");
-
-    // 如果是 Day1 區塊內的日期更改 → 同步到 chip
-    if (firstSection && firstSection.contains(target) && target.classList.contains("day-date")) {
-      if (firstChipDate && firstChipDate !== target) {
-        firstChipDate.textContent = val;
-      }
-    }
-
-    // 如果是 Day1 chip 的日期更改 → 同步到 Day1 區塊
-    if (target.closest(".day-chip") === firstChip && target.classList.contains("day-chip-sub")) {
-      if (firstSecDate && firstSecDate !== target) {
-        firstSecDate.textContent = val;
-      }
-    }
-
-    updateDayNumbersAndDates();
-    scheduleSave();
-  }
-
-  function attachDateListeners() {
-    // 所有日期欄位：Day 區塊內的 day-date + chip 上的 day-chip-sub
-    document.querySelectorAll(".day-hint .day-date[contenteditable], .day-chip-sub[contenteditable]")
-      .forEach(span => {
-        span.removeEventListener("input", onDateChanged);
-        span.addEventListener("input", onDateChanged);
-      });
   }
 
   // ========= 上方日期 chip：點擊＋拖拉 =========
@@ -847,6 +845,7 @@
     nav.addEventListener("dragover", e => {
       if (!draggingChip) return;
       e.preventDefault();
+      autoScroll(e.clientY);
       const after = getDayChipAfter(nav, e.clientX);
       if (after == null) {
         nav.appendChild(draggingChip);
@@ -908,6 +907,7 @@
       card.addEventListener("dragover", e => {
         if (!draggingItem) return;
         e.preventDefault();
+        autoScroll(e.clientY);
         const after = getDayItemAfter(card, e.clientY);
         if (after == null) {
           const addRow = card.querySelector(".add-spot-card");
@@ -948,9 +948,17 @@
     const newId = "day-" + Date.now();
     const newIndex = chips.length + 1;
 
-    let baseDate = getBaseDate() || new Date(2026, 4, 8);
-    const offset = chips.length; // 新增的是最後一天 → base 往後 offset 天
-    baseDate.setDate(baseDate.getDate() + offset);
+    let baseDate = new Date(2026, 4, 8);
+    if (chips.length > 0) {
+      const lastChipSub = chips[chips.length - 1].querySelector(".day-chip-sub");
+      if (lastChipSub) {
+        const md = parseMonthDay(lastChipSub.textContent);
+        if (md) {
+          baseDate = new Date(2026, md.month - 1, md.day);
+          baseDate.setDate(baseDate.getDate() + 1);
+        }
+      }
+    }
     const dateStr = formatMonthDay(baseDate);
 
     const chip = document.createElement("div");
@@ -968,7 +976,7 @@
     sec.dataset.id = newId;
     sec.innerHTML = `
       <div class="day-card">
-        <div class="day-header">
+        <div class="day-header day-item">
           <div class="day-header-main">
             <span contenteditable="true">Day ${newIndex}</span>
           </div>
@@ -976,10 +984,10 @@
             <span contenteditable="true">（新的一天行程）</span>
           </div>
         </div>
-        <div class="day-hint">
-          日期：<span class="day-date" contenteditable="true">${dateStr}</span>
+        <div class="day-hint day-item">
+          日期：<span contenteditable="true">${dateStr}</span>
         </div>
-        <article class="spot-card">
+        <article class="spot-card day-item">
           <div class="spot-title" contenteditable="true">新行程</div>
           <div class="spot-name-ja" contenteditable="true">日文名稱或地址</div>
           <div class="spot-meta" contenteditable="true">可以在這裡寫簡短說明。</div>
@@ -994,10 +1002,10 @@
             <div class="spot-note-body" contenteditable="true"></div>
           </div>
         </article>
-        <div class="add-spot-card">
+        <div class="add-spot-card day-item">
           <button type="button" class="btn small add-spot-btn">＋ 新增行程卡片</button>
         </div>
-        <div class="day-note-card">
+        <div class="day-note-card day-item">
           <div class="day-note-header">
             <div class="day-note-title">當日備註／花費</div>
             <button class="day-note-photo-btn" type="button">📷 新增圖片</button>
@@ -1014,12 +1022,15 @@
       pageRoot.appendChild(sec);
     }
 
+    makeDayItemDraggable(sec.querySelector(".day-header"));
+    makeDayItemDraggable(sec.querySelector(".day-hint"));
     makeDayItemDraggable(sec.querySelector(".spot-card"));
+    makeDayItemDraggable(sec.querySelector(".add-spot-card"));
     makeDayItemDraggable(sec.querySelector(".day-note-card"));
     attachAddSpotButtons(sec);
     enhanceSpotCardsForCopy(sec);
+    attachLongPressHandlers(sec);
     setupDayItemDropZones();
-    attachDateListeners();
     updateDayNumbersAndDates();
     scheduleSave();
   }
@@ -1036,7 +1047,6 @@
     if (chip) chip.remove();
     lastSection.remove();
 
-    attachDateListeners();
     updateDayNumbersAndDates();
     scheduleSave();
   }
@@ -1052,7 +1062,7 @@
         if (!dayCard) return;
 
         const newCard = document.createElement("article");
-        newCard.className = "spot-card";
+        newCard.className = "spot-card day-item";
         newCard.innerHTML = `
           <div class="spot-title" contenteditable="true">新行程</div>
           <div class="spot-name-ja" contenteditable="true">日文名稱或地址</div>
@@ -1073,6 +1083,7 @@
 
         makeDayItemDraggable(newCard);
         enhanceSpotCardsForCopy(dayCard);
+        attachLongPressHandlers(dayCard);
         setupDayItemDropZones();
         newCard.querySelectorAll("[contenteditable]").forEach(el => {
           el.addEventListener("input", scheduleSave);
@@ -1211,6 +1222,7 @@
 
           makeDayItemDraggable(clone);
           enhanceSpotCardsForCopy(card.closest(".day-card") || document);
+          attachLongPressHandlers(card.closest(".day-card") || document);
 
           clone.querySelectorAll("[contenteditable]").forEach(el => {
             el.addEventListener("input", scheduleSave);
@@ -1257,6 +1269,69 @@
     });
   }
 
+  // ========= 長按選單 =========
+  function clearLongPressTimer() {
+    if (longPressTimer) {
+      clearTimeout(longPressTimer);
+      longPressTimer = null;
+    }
+  }
+
+  function removeAnyLongpressMenu() {
+    document.querySelectorAll(".longpress-menu").forEach(m => m.remove());
+  }
+
+  function showLongPressMenu(target) {
+    removeAnyLongpressMenu();
+    const menu = document.createElement("div");
+    menu.className = "longpress-menu";
+    menu.innerHTML = `
+      <button type="button" class="lp-drag">拖拉調整順序</button>
+      <button type="button" class="lp-delete">刪除此欄位</button>
+      <button type="button" class="lp-cancel">取消</button>
+    `;
+    target.appendChild(menu);
+
+    menu.querySelector(".lp-drag").onclick = () => {
+      target.classList.add("dragging-hint");
+      setTimeout(() => target.classList.remove("dragging-hint"), 600);
+      menu.remove();
+    };
+
+    menu.querySelector(".lp-delete").onclick = () => {
+      saveSnapshot();
+      target.remove();
+      scheduleSave();
+      menu.remove();
+    };
+
+    menu.querySelector(".lp-cancel").onclick = () => {
+      menu.remove();
+    };
+  }
+
+  function attachLongPressHandlers(root) {
+    const container = root || document;
+    const targets = container.querySelectorAll(".spot-card, .day-note-card");
+    targets.forEach(el => {
+      el.addEventListener("touchstart", e => {
+        clearLongPressTimer();
+        longPressTarget = el;
+        longPressTimer = setTimeout(() => {
+          showLongPressMenu(el);
+        }, LONG_PRESS_MS);
+      }, { passive: true });
+
+      el.addEventListener("touchend", () => {
+        clearLongPressTimer();
+      }, { passive: true });
+
+      el.addEventListener("touchmove", () => {
+        clearLongPressTimer();
+      }, { passive: true });
+    });
+  }
+
   // ========= 綁定所有事件 =========
   function attachAllHandlers() {
     document.querySelectorAll("[contenteditable]").forEach(el => {
@@ -1267,14 +1342,17 @@
     document.querySelectorAll(".day-chip").forEach(attachDayChipHandlers);
     setupDayNavDrag();
 
+    document.querySelectorAll(".day-header").forEach(makeDayItemDraggable);
+    document.querySelectorAll(".day-hint").forEach(makeDayItemDraggable);
     document.querySelectorAll(".spot-card").forEach(makeDayItemDraggable);
+    document.querySelectorAll(".add-spot-card").forEach(makeDayItemDraggable);
     document.querySelectorAll(".day-note-card").forEach(makeDayItemDraggable);
     setupDayItemDropZones();
 
     attachAddSpotButtons(document);
     enhanceSpotCardsForCopy(document);
+    attachLongPressHandlers(document);
     setupButtonActions();
-    attachDateListeners();
 
     const addDayBtn = document.getElementById("addDayBtn");
     if (addDayBtn) addDayBtn.onclick = addDay;
@@ -1298,6 +1376,16 @@
           importFile.value = "";
         }
       };
+    }
+
+    const firstDateSpan =
+      document.querySelector('.day-section[data-id="day-1"] .day-hint span[contenteditable]') ||
+      document.querySelector('.day-chip[data-id="day-1"] .day-chip-sub');
+    if (firstDateSpan) {
+      firstDateSpan.addEventListener("input", () => {
+        updateDayNumbersAndDates();
+        scheduleSave();
+      });
     }
 
     updateDayNumbersAndDates();
