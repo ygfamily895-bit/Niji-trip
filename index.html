@@ -1460,6 +1460,15 @@
   const loginBtn = document.getElementById("loginBtn");
   const logoutBtn = document.getElementById("logoutBtn");
   const authStatus = document.getElementById("authStatus");
+  onAuthStateChanged(auth, (user) => {
+  if (user) {
+    authStatus.textContent = `已登入：${user.displayName || user.email}`;
+    authStatus.style.display = "inline-block";
+  } else {
+    authStatus.textContent = "尚未登入";
+    authStatus.style.display = "inline-block";
+  }
+});
 
   function setStatus(msg) {
     if (authStatus) authStatus.textContent = msg;
