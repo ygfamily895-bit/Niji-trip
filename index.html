@@ -500,7 +500,8 @@
       <button class="btn primary" type="button" id="addDayBtn">＋ 新增一天</button>
       <button class="btn danger" type="button" id="removeLastDayBtn">－ 刪除最後一天</button>
    <button class="btn" type="button" id="loginBtn">Google 登入</button>
-<button class="btn" type="button" id="logoutBtn" style="display:none;">Google 登出</button>
+<button class="btn" type="button" id="logoutBtn" style="display:none;">登出</button>
+
 <span id="authStatus"
   style="
     font-size:14px;
@@ -1454,6 +1455,36 @@
   // ====== Init ======
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
+  const loginBtn = document.getElementById("loginBtn");
+const logoutBtn = document.getElementById("logoutBtn");
+const authStatus = document.getElementById("authStatus");
+
+// ① 先監聽登入狀態（最重要：看得出有沒有登入）
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    const name = user.displayName || user.email || "使用者";
+    authStatus.textContent = `✅ 已登入：${name}`;
+    if (loginBtn) loginBtn.style.display = "none";
+    if (logoutBtn) logoutBtn.style.display = "inline-block";
+  } else {
+    authStatus.textContent = "❌ 尚未登入";
+    if (loginBtn) loginBtn.style.display = "inline-block";
+    if (logoutBtn) logoutBtn.style.display = "none";
+  }
+});
+
+// ② Redirect 回來後，抓結果（可有可無，但能顯示錯誤）
+getRedirectResult(auth).catch((e) => {
+  alert("登入失敗：" + (e?.message || e));
+});
+
+// ③ 按鈕事件
+if (loginBtn) {
+  loginBtn.onclick = () => signInWithRedirect(auth, new GoogleAuthProvider());
+}
+if (logoutBtn) {
+  logoutBtn.onclick = () => signOut(auth);
+}
   const provider = new GoogleAuthProvider();
 
   // ====== UI elements ======
