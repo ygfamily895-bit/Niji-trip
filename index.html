@@ -90,8 +90,8 @@ main{
   <div class="btn-row">
     <button id="addDayBtn">＋ 新增一天</button>
     <button id="clearBtn">清除儲存</button>
-    <button type="button" id="btnGoogleLogin">Google 登入</button>
-    <span id="authStatus">未登入</span>
+    <button id="btnGoogleLogin">Google 登入</button>
+<span id="authStatus"></span>
   </div>
 </header>
 
@@ -145,51 +145,50 @@ render();
 
 <!-- ✅ Firebase + Google 登入（乾淨版） -->
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-  import {
-    getAuth,
-    GoogleAuthProvider,
-    signInWithRedirect,
-    getRedirectResult,
-    onAuthStateChanged
-  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import {
+  getAuth,
+  GoogleAuthProvider,
+  signInWithRedirect,
+  getRedirectResult,
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyAkFpjZVwRDA92YLK-JfDPeoHJ3hbgKVXM",
-    authDomain: "trip-db86d.firebaseapp.com",
-    projectId: "trip-db86d",
-    storageBucket: "trip-db86d.firebasestorage.app",
-    messagingSenderId: "709795426974",
-    appId: "1:709795426974:web:ec3e2f03f2116b68c1418f"
-  };
+const firebaseConfig = {
+  apiKey: "AIzaSyAkFpjZVwRDA92YLK-JfDPeoHJ3hbgKVXM",
+  authDomain: "trip-db86d.firebaseapp.com",
+  projectId: "trip-db86d",
+  storageBucket: "trip-db86d.firebasestorage.app",
+  messagingSenderId: "709795426974",
+  appId: "1:709795426974:web:ec3e2f03f2116b68c1418f"
+};
 
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const provider = new GoogleAuthProvider();
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const provider = new GoogleAuthProvider();
 
-  const btnGoogleLogin = document.getElementById("btnGoogleLogin");
-  const authStatus = document.getElementById("authStatus");
+const btnLogin = document.getElementById("btnGoogleLogin");
+const authStatus = document.getElementById("authStatus");
 
-  // 點擊登入（redirect 最穩）
-  btnGoogleLogin.addEventListener("click", () => {
-    signInWithRedirect(auth, provider);
-  });
+// 點登入
+btnLogin.onclick = () => {
+  signInWithRedirect(auth, provider);
+};
 
-  // 回來後取結果（可有可無，但建議放）
-  getRedirectResult(auth).catch(() => {});
+// redirect 回來後（一定要有）
+getRedirectResult(auth).catch(() => {});
 
-  // 監聽登入狀態 → 更新畫面
-  onAuthStateChanged(auth, (user) => {
-    if (user) {
-      authStatus.textContent = `已登入：${user.email || user.displayName || "Google 使用者"}`;
-      btnGoogleLogin.textContent = "已登入";
-      btnGoogleLogin.disabled = true;
-    } else {
-      authStatus.textContent = "未登入";
-      btnGoogleLogin.textContent = "Google 登入";
-      btnGoogleLogin.disabled = false;
-    }
-  });
+// 監聽登入狀態（只留這一個）
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    authStatus.textContent = `已登入：${user.displayName || user.email}`;
+    btnLogin.style.display = "none";
+  } else {
+    authStatus.textContent = "未登入";
+    btnLogin.style.display = "inline-block";
+  }
+});
+</script>
 </script>
 
 </body>
