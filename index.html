@@ -81,6 +81,7 @@ main{
   <div class="btn-row">
     <button id="addDayBtn">＋ 新增一天</button>
     <button id="clearBtn">清除儲存</button>
+    <button class="btn" type="button" id="btnGoogleLogin">Google 登入</button>
   </div>
 </header>
 
@@ -129,6 +130,13 @@ clearBtn.onclick = ()=>{
 };
 
 render();
+  // ✅ Google 登入按鈕（先做 UI 測試，不接 Firebase）
+const btnGoogleLogin = document.getElementById("btnGoogleLogin");
+if (btnGoogleLogin) {
+  btnGoogleLogin.addEventListener("click", () => {
+    alert("Google 登入按鈕已點到 ✅（下一步才會接 Firebase）");
+  });
+}
 </script>
 
 </body>
