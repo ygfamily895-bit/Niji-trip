@@ -138,6 +138,48 @@ if (btnGoogleLogin) {
   });
 }
 </script>
+<script type="module">
+  // Firebase CDN（手機建議用 redirect）
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import {
+    getAuth,
+    GoogleAuthProvider,
+    signInWithRedirect,
+    getRedirectResult,
+    onAuthStateChanged
+  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
+  // 🔑 你的 Firebase 設定（你之前用過的那組）
+  const firebaseConfig = {
+    apiKey: "AIzaSyAkFpjZVwRDA92YLK-JfDPeoHJ3hbgKVXM",
+    authDomain: "trip-db86d.firebaseapp.com",
+    projectId: "trip-db86d",
+    storageBucket: "trip-db86d.firebasestorage.app",
+    messagingSenderId: "709795426974",
+    appId: "1:709795426974:web:ec3e2f03f2116b68c1418f"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const provider = new GoogleAuthProvider();
+
+  // 點擊 Google 登入
+  const btn = document.getElementById("btnGoogleLogin");
+  if (btn) {
+    btn.onclick = () => {
+      signInWithRedirect(auth, provider);
+    };
+  }
+
+  // 登入完成後（重新導回頁面）
+  getRedirectResult(auth).catch(() => {});
+
+  // 監聽登入狀態
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      alert("登入成功 🎉\n" + user.email);
+    }
+  });
+</script>
 </body>
 </html>
