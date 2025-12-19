@@ -1,235 +1,144 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Niji Trip 2026</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Niji Trip 2026</title>
 
-  <style>
-    :root{
-      --bg-main:#ffe4b8;
-      --bg-card:#fff7e8;
-      --bg-head:#fff3da;
-      --blue-soft:#eaf6ff;
-      --brown:#7a4a26;
-      --brown-soft:#a26b3a;
-      --radius:20px;
-      --shadow:0 6px 14px rgba(0,0,0,.08);
-    }
-    body{
-      margin:0;
-      font-family:system-ui,-apple-system,"Noto Sans TC",sans-serif;
-      background:var(--bg-main);
-      color:#3b2a1e;
-    }
-    header{
-      padding:16px;
-      background:var(--bg-head);
-      border-radius:0 0 var(--radius) var(--radius);
-      box-shadow:var(--shadow);
-    }
-    h1{
-      margin:0 0 6px;
-      color:var(--brown);
-      font-size:34px;
-      letter-spacing:.3px;
-    }
-    .sub{
-      margin:0;
-      color:#6b4a31;
-      line-height:1.4;
-    }
-    .btn-row{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      align-items:center;
-      margin-top:12px;
-    }
-    button{
-      border:none;
-      padding:10px 14px;
-      border-radius:999px;
-      background:#ffd89a;
-      color:#5c3a1c;
-      font-weight:700;
-      cursor:pointer;
-      box-shadow:0 4px 10px rgba(0,0,0,.08);
-    }
-    button:active{ transform: translateY(1px); }
-    .btn-danger{
-      background:#f5a6a6;
-      color:#5a1f1f;
-    }
-    .btn-ghost{
-      background:#ffe9c5;
-      color:#5c3a1c;
-    }
-    .status{
-      display:inline-block;
-      font-size:13px;
-      font-weight:700;
-      color:var(--brown);
-      background:#fff3cd;
-      padding:7px 10px;
-      border-radius:10px;
-      box-shadow:0 2px 8px rgba(0,0,0,.06);
-      margin-left:auto;
-      max-width:100%;
-      overflow:hidden;
-      text-overflow:ellipsis;
-      white-space:nowrap;
-    }
-
-    main{ padding:16px; }
-
-    .day{
-      background:var(--blue-soft);
-      border-radius:var(--radius);
-      padding:14px;
-      margin-bottom:14px;
-      box-shadow:var(--shadow);
-    }
-    .day-title{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      font-weight:800;
-      color:#3e2a1a;
-      margin-bottom:10px;
-    }
-    .card{
-      background:var(--bg-card);
-      border-radius:16px;
-      padding:12px;
-      margin-top:10px;
-      border:1px dashed rgba(122,74,38,.25);
-      min-height:56px;
-      line-height:1.6;
-    }
-    [contenteditable]{ outline:none; }
-    .hint{
-      font-size:12px;
-      color:#6b4a31;
-      opacity:.9;
-      margin-top:8px;
-    }
-    .err{
-      margin-top:10px;
-      color:#b42318;
-      font-weight:700;
-      font-size:13px;
-      display:none;
-    }
-  </style>
+<style>
+:root{
+  --bg-main:#ffe4b8;
+  --bg-card:#fff7e8;
+  --brown:#7a4a26;
+  --radius:20px;
+}
+body{
+  margin:0;
+  font-family:system-ui,-apple-system,"Noto Sans TC",sans-serif;
+  background:var(--bg-main);
+}
+header{
+  padding:16px;
+  background:#fff3da;
+  border-radius:0 0 var(--radius) var(--radius);
+}
+h1{ margin:0 0 6px; color:var(--brown); }
+.btn-row{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-top:10px;
+  align-items:center;
+}
+button{
+  border:none;
+  padding:8px 14px;
+  border-radius:999px;
+  background:#ffd89a;
+  color:#5c3a1c;
+  font-weight:700;
+}
+.badge{
+  display:inline-block;
+  padding:8px 12px;
+  border-radius:999px;
+  background:#fff3c5;
+  color:#5c3a1c;
+  font-weight:700;
+}
+.hint{
+  margin-top:10px;
+  font-size:13px;
+  color:#6b4a2c;
+  opacity:.9;
+}
+main{ padding:16px; }
+.day{
+  background:#eaf6ff;
+  border-radius:var(--radius);
+  padding:14px;
+  margin-bottom:14px;
+}
+.card{
+  background:var(--bg-card);
+  border-radius:16px;
+  padding:12px;
+  margin-top:10px;
+}
+[contenteditable]{ outline:none; }
+</style>
 </head>
 
 <body>
 
 <header>
   <h1>Niji Trip 2026 🌈</h1>
-
-  <div class="sub" contenteditable="true" id="headerDesc">
-    東京行程，可自由編輯。
-  </div>
+  <div contenteditable="true">東京行程，可自由編輯。</div>
 
   <div class="btn-row">
     <button id="addDayBtn">＋ 新增一天</button>
-    <button id="clearBtn" class="btn-ghost">清除儲存</button>
+    <button id="clearBtn">清除儲存</button>
 
-    <!-- ✅ 你指定的按鈕文字 -->
-    <button id="btnGoogleLogin">Google 登入</button>
-    <button id="btnLogout" class="btn-danger" style="display:none;">登出</button>
+    <!-- ✅ 你要的顯示文字：Google 登入 -->
+    <button id="btnGoogleLogin" type="button">Google 登入</button>
 
-    <!-- ✅ 右側登入狀態 -->
-    <span id="authStatus" class="status">未登入</span>
+    <!-- ✅ 登入狀態顯示 -->
+    <span id="authStatus" class="badge">未登入</span>
   </div>
 
-  <div id="errBox" class="err"></div>
-  <div class="hint">提示：手機登入用 Redirect，點「Google 登入」會跳轉到 Google，完成後會回到此頁。</div>
+  <div class="hint">
+    提示：手機登入用 Redirect，點「Google 登入」會跳到 Google，完成後會回到此頁並顯示已登入。
+  </div>
 </header>
 
 <main id="days"></main>
 
+<!-- ✅ 你的行程（保留 localStorage 功能） -->
 <script>
-/* ========= 本機儲存 + 內容編輯 ========= */
 const daysEl = document.getElementById("days");
 const addDayBtn = document.getElementById("addDayBtn");
 const clearBtn = document.getElementById("clearBtn");
-const headerDesc = document.getElementById("headerDesc");
 
 let days = JSON.parse(localStorage.getItem("days") || "[]");
-let headerText = localStorage.getItem("headerDesc") || headerDesc.innerText;
 
-headerDesc.innerText = headerText;
-
-function saveLocal(){
-  localStorage.setItem("days", JSON.stringify(days));
-  localStorage.setItem("headerDesc", headerDesc.innerText);
-}
+function save(){ localStorage.setItem("days", JSON.stringify(days)); }
 
 function render(){
   daysEl.innerHTML = "";
   days.forEach((d,i)=>{
-    const wrap = document.createElement("div");
-    wrap.className = "day";
-    wrap.innerHTML = `
-      <div class="day-title">
-        <span>Day ${i+1}</span>
-        <button data-del="${i}" class="btn-danger" style="padding:8px 12px;">刪除</button>
-      </div>
-      <div class="card" contenteditable="true">${escapeHtml(d.text || "")}</div>
+    const el = document.createElement("div");
+    el.className = "day";
+    el.innerHTML = `
+      <strong>Day ${i+1}</strong>
+      <div class="card" contenteditable="true">${d.text || ""}</div>
     `;
-
-    wrap.querySelector(".card").addEventListener("input", (e)=>{
+    el.querySelector(".card").oninput = e=>{
       days[i].text = e.target.innerText;
-      saveLocal();
-    });
-
-    wrap.querySelector("[data-del]").addEventListener("click", ()=>{
-      days.splice(i,1);
-      saveLocal();
-      render();
-    });
-
-    daysEl.appendChild(wrap);
+      save();
+    };
+    daysEl.appendChild(el);
   });
-}
-
-function escapeHtml(str){
-  return String(str)
-    .replaceAll("&","&amp;")
-    .replaceAll("<","&lt;")
-    .replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;")
-    .replaceAll("'","&#39;");
 }
 
 addDayBtn.onclick = ()=>{
   days.push({ text:"新增行程內容…" });
-  saveLocal();
+  save();
   render();
 };
 
 clearBtn.onclick = ()=>{
-  if(confirm("確定清除所有資料（包含標題下那段文字 + 所有天數內容）？")){
+  if(confirm("確定清除所有資料？")){
     localStorage.removeItem("days");
-    localStorage.removeItem("headerDesc");
     days = [];
-    headerDesc.innerText = "東京行程，可自由編輯。";
-    saveLocal();
     render();
   }
 };
 
-headerDesc.addEventListener("input", saveLocal);
-
 render();
 </script>
 
+<!-- ✅ Firebase Auth（只保留一套邏輯：Redirect） -->
 <script type="module">
-  /* ========= Firebase Auth (Redirect) ========= */
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
   import {
     getAuth,
@@ -240,7 +149,7 @@ render();
     signOut
   } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-  // 🔑 你的 Firebase 設定
+  // ✅ 你提供的 Firebase 設定
   const firebaseConfig = {
     apiKey: "AIzaSyAkFpjZVwRDA92YLK-JfDPeoHJ3hbgKVXM",
     authDomain: "trip-db86d.firebaseapp.com",
@@ -255,67 +164,32 @@ render();
   const auth = getAuth(app);
   const provider = new GoogleAuthProvider();
 
-  // UI elements
-  const btnLogin = document.getElementById("btnGoogleLogin");
-  const btnLogout = document.getElementById("btnLogout");
-  const authStatus = document.getElementById("authStatus");
-  const errBox = document.getElementById("errBox");
+  const btn = document.getElementById("btnGoogleLogin");
+  const statusEl = document.getElementById("authStatus");
 
-  function showErr(msg){
-    if(!msg) return;
-    errBox.style.display = "block";
-    errBox.textContent = msg;
-  }
-  function clearErr(){
-    errBox.style.display = "none";
-    errBox.textContent = "";
-  }
-
-  // 1) 點登入 => redirect
-  btnLogin.addEventListener("click", async ()=>{
-    clearErr();
-    try{
-      await signInWithRedirect(auth, provider);
-      // 這行通常不會跑到（因為會立刻跳轉）
-    }catch(e){
-      showErr("登入啟動失敗：" + (e?.message || e));
-    }
-  });
-
-  // 2) 點登出
-  btnLogout.addEventListener("click", async ()=>{
-    clearErr();
-    try{
-      await signOut(auth);
-    }catch(e){
-      showErr("登出失敗：" + (e?.message || e));
-    }
-  });
-
-  // 3) 重要：回來後先抓 redirect result（有些手機需要這步才會完成狀態）
-  //    ✅ 抓到就代表 redirect 登入流程完成（成功或失敗）
-  try{
+  // ✅ 1) 先處理 Redirect 回來的結果（避免你遇到「回來還是未登入」）
+  try {
     await getRedirectResult(auth);
-  }catch(e){
-    // 常見：使用者取消、或瀏覽器阻擋
-    // 不要用 alert 轟炸，改顯示錯誤文字即可
-    if(e?.code && e.code !== "auth/no-auth-event"){
-      showErr("Redirect 回來後處理失敗：" + (e?.message || e));
-    }
+  } catch (e) {
+    // 常見：使用者取消、或已處理過；不彈窗避免干擾
+    console.warn("getRedirectResult:", e?.code || e?.message || e);
   }
 
-  // 4) 監聽登入狀態（這個才是最終判定）
-  onAuthStateChanged(auth, (user)=>{
-    clearErr();
-    if(user){
-      const name = user.displayName || user.email || "Google 使用者";
-      authStatus.textContent = "已登入：" + name;
-      btnLogin.style.display = "none";
-      btnLogout.style.display = "inline-block";
-    }else{
-      authStatus.textContent = "未登入";
-      btnLogin.style.display = "inline-block";
-      btnLogout.style.display = "none";
+  // ✅ 2) 監聽登入狀態，統一在這裡更新 UI
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      const name = user.email || user.displayName || "Google 使用者";
+      statusEl.textContent = "已登入：" + name;
+      btn.textContent = "登出";
+      btn.onclick = async () => {
+        await signOut(auth);
+      };
+    } else {
+      statusEl.textContent = "未登入";
+      btn.textContent = "Google 登入";
+      btn.onclick = async () => {
+        await signInWithRedirect(auth, provider);
+      };
     }
   });
 </script>
