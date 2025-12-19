@@ -161,7 +161,34 @@ if (btnGoogleLogin) {
 
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
-  const provider = new GoogleAuthProvider();
+  const provider = new GoogleAuthProvider();const loginBtn = document.getElementById("loginBtn");
+const logoutBtn = document.getElementById("logoutBtn");
+const authStatus = document.getElementById("authStatus");
+
+// 初始先隱藏登出
+if (logoutBtn) logoutBtn.style.display = "none";
+
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    // ✅ 已登入
+    if (authStatus) authStatus.textContent = `已登入：${user.email || user.displayName || "Google使用者"}`;
+    if (loginBtn) loginBtn.style.display = "none";
+    if (logoutBtn) logoutBtn.style.display = "inline-block";
+  } else {
+    // ✅ 未登入
+    if (authStatus) authStatus.textContent = "未登入";
+    if (loginBtn) loginBtn.style.display = "inline-block";
+    if (logoutBtn) logoutBtn.style.display = "none";
+  }
+});
+
+loginBtn?.addEventListener("click", async () => {
+  await signInWithRedirect(auth, provider);
+});
+
+logoutBtn?.addEventListener("click", async () => {
+  await signOut(auth);
+});
 
   // 點擊 Google 登入
   const btn = document.getElementById("btnGoogleLogin");
