@@ -139,15 +139,18 @@ render();
 
 <!-- ✅ Firebase Auth（只保留一套邏輯：Redirect） -->
 <script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
   import {
-  getAuth,
-  GoogleAuthProvider,
-  signInWithRedirect,
-  getRedirectResult,
-  onAuthStateChanged,
-  setPersistence,
-  browserLocalPersistence
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    getAuth,
+    GoogleAuthProvider,
+    signInWithRedirect,
+    getRedirectResult,
+    onAuthStateChanged,
+    setPersistence,
+    browserLocalPersistence,
+    signOut
+  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
   const firebaseConfig = {
     apiKey: "AIzaSyAkFpjZVwRDA92YLK-JfDPeoHJ3hbgKVXM",
     authDomain: "trip-db86d.firebaseapp.com",
@@ -163,15 +166,9 @@ render();
   const provider = new GoogleAuthProvider();
 
   const btn = document.getElementById("btnGoogleLogin");
+  const statusEl = document.getElementById("authStatus");
 
-if (btn) {
-  btn.onclick = async () => {
-    await setPersistence(auth, browserLocalPersistence);
-    await signInWithRedirect(auth, provider);
-  };
-}  const statusEl = document.getElementById("authStatus");
-
-  // ✅ 在 header 底下加一個「診斷區」
+  // --- 診斷區 ---
   const diag = document.createElement("div");
   diag.style.marginTop = "10px";
   diag.style.fontSize = "12px";
@@ -180,36 +177,43 @@ if (btn) {
   diag.style.whiteSpace = "pre-wrap";
   diag.style.wordBreak = "break-word";
   diag.textContent = `Firebase init OK: ${app?.options?.projectId || "(unknown)"}\n`;
-  // 插到 header 最後
   document.querySelector("header")?.appendChild(diag);
 
-  const log = (msg) => {
-    diag.textContent += msg + "\n";
-  };
+  const log = (msg) => (diag.textContent += msg + "\n");
 
-  // ✅ 先預設按鈕行為：登入
+  // --- UI ---
   const setLoggedOutUI = () => {
     statusEl.textContent = "未登入";
     btn.textContent = "Google 登入";
-    btn.onclick = async () => {
-      log("Click login -> signInWithRedirect()");
-      await signInWithRedirect(auth, provider);
-    };
+    btn.disabled = false;
   };
 
   const setLoggedInUI = (user) => {
     const name = user.email || user.displayName || "Google 使用者";
     statusEl.textContent = "已登入：" + name;
     btn.textContent = "登出";
-    btn.onclick = async () => {
-      log("Click logout -> signOut()");
-      await signOut(auth);
-    };
+    btn.disabled = false;
   };
 
-  setLoggedOutUI();
+  // ✅ 只綁一次：按鈕依狀態做登入/登出
+  btn.addEventListener("click", async () => {
+    try {
+      const user = auth.currentUser;
+      if (user) {
+        log("Click logout -> signOut()");
+        await signOut(auth);
+      } else {
+        log("Click login -> setPersistence + signInWithRedirect()");
+        await setPersistence(auth, browserLocalPersistence);
+        await signInWithRedirect(auth, provider);
+      }
+    } catch (e) {
+      log("Button ERROR ❌ " + (e?.code || "") + " " + (e?.message || ""));
+      alert("操作失敗：" + (e?.message || e));
+    }
+  });
 
-  // ✅ 1) 先取 Redirect 結果（成功/失敗都印出來）
+  // ✅ 先抓 redirect 結果
   try {
     log("getRedirectResult() ...");
     const res = await getRedirectResult(auth);
@@ -224,7 +228,7 @@ if (btn) {
     log("message: " + (e?.message || "(none)"));
   }
 
-  // ✅ 2) 再監聽登入狀態（這裡是最後的真相）
+  // ✅ 最終真相：登入狀態
   onAuthStateChanged(auth, (user) => {
     if (user) {
       log("onAuthStateChanged: logged IN ✅");
@@ -235,6 +239,5 @@ if (btn) {
     }
   });
 </script>
-
 </body>
 </html>
