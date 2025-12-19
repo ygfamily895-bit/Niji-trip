@@ -149,7 +149,6 @@ render();
     signOut
   } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-  // ✅ 你提供的 Firebase 設定
   const firebaseConfig = {
     apiKey: "AIzaSyAkFpjZVwRDA92YLK-JfDPeoHJ3hbgKVXM",
     authDomain: "trip-db86d.firebaseapp.com",
@@ -167,29 +166,67 @@ render();
   const btn = document.getElementById("btnGoogleLogin");
   const statusEl = document.getElementById("authStatus");
 
-  // ✅ 1) 先處理 Redirect 回來的結果（避免你遇到「回來還是未登入」）
+  // ✅ 在 header 底下加一個「診斷區」
+  const diag = document.createElement("div");
+  diag.style.marginTop = "10px";
+  diag.style.fontSize = "12px";
+  diag.style.lineHeight = "1.4";
+  diag.style.color = "#6b4a2c";
+  diag.style.whiteSpace = "pre-wrap";
+  diag.style.wordBreak = "break-word";
+  diag.textContent = `Firebase init OK: ${app?.options?.projectId || "(unknown)"}\n`;
+  // 插到 header 最後
+  document.querySelector("header")?.appendChild(diag);
+
+  const log = (msg) => {
+    diag.textContent += msg + "\n";
+  };
+
+  // ✅ 先預設按鈕行為：登入
+  const setLoggedOutUI = () => {
+    statusEl.textContent = "未登入";
+    btn.textContent = "Google 登入";
+    btn.onclick = async () => {
+      log("Click login -> signInWithRedirect()");
+      await signInWithRedirect(auth, provider);
+    };
+  };
+
+  const setLoggedInUI = (user) => {
+    const name = user.email || user.displayName || "Google 使用者";
+    statusEl.textContent = "已登入：" + name;
+    btn.textContent = "登出";
+    btn.onclick = async () => {
+      log("Click logout -> signOut()");
+      await signOut(auth);
+    };
+  };
+
+  setLoggedOutUI();
+
+  // ✅ 1) 先取 Redirect 結果（成功/失敗都印出來）
   try {
-    await getRedirectResult(auth);
+    log("getRedirectResult() ...");
+    const res = await getRedirectResult(auth);
+    if (res?.user) {
+      log("RedirectResult: SUCCESS ✅ " + (res.user.email || res.user.displayName || ""));
+    } else {
+      log("RedirectResult: (no user returned)");
+    }
   } catch (e) {
-    // 常見：使用者取消、或已處理過；不彈窗避免干擾
-    console.warn("getRedirectResult:", e?.code || e?.message || e);
+    log("RedirectResult: ERROR ❌");
+    log("code: " + (e?.code || "(none)"));
+    log("message: " + (e?.message || "(none)"));
   }
 
-  // ✅ 2) 監聽登入狀態，統一在這裡更新 UI
+  // ✅ 2) 再監聽登入狀態（這裡是最後的真相）
   onAuthStateChanged(auth, (user) => {
     if (user) {
-      const name = user.email || user.displayName || "Google 使用者";
-      statusEl.textContent = "已登入：" + name;
-      btn.textContent = "登出";
-      btn.onclick = async () => {
-        await signOut(auth);
-      };
+      log("onAuthStateChanged: logged IN ✅");
+      setLoggedInUI(user);
     } else {
-      statusEl.textContent = "未登入";
-      btn.textContent = "Google 登入";
-      btn.onclick = async () => {
-        await signInWithRedirect(auth, provider);
-      };
+      log("onAuthStateChanged: logged OUT ❌");
+      setLoggedOutUI();
     }
   });
 </script>
