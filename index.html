@@ -139,16 +139,15 @@ render();
 
 <!-- ✅ Firebase Auth（只保留一套邏輯：Redirect） -->
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
   import {
-    getAuth,
-    GoogleAuthProvider,
-    signInWithRedirect,
-    getRedirectResult,
-    onAuthStateChanged,
-    signOut
-  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-
+  getAuth,
+  GoogleAuthProvider,
+  signInWithRedirect,
+  getRedirectResult,
+  onAuthStateChanged,
+  setPersistence,
+  browserLocalPersistence
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
   const firebaseConfig = {
     apiKey: "AIzaSyAkFpjZVwRDA92YLK-JfDPeoHJ3hbgKVXM",
     authDomain: "trip-db86d.firebaseapp.com",
@@ -164,7 +163,13 @@ render();
   const provider = new GoogleAuthProvider();
 
   const btn = document.getElementById("btnGoogleLogin");
-  const statusEl = document.getElementById("authStatus");
+
+if (btn) {
+  btn.onclick = async () => {
+    await setPersistence(auth, browserLocalPersistence);
+    await signInWithRedirect(auth, provider);
+  };
+}  const statusEl = document.getElementById("authStatus");
 
   // ✅ 在 header 底下加一個「診斷區」
   const diag = document.createElement("div");
