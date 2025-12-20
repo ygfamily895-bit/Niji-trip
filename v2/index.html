@@ -1,528 +1,1349 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Niji Trip 2026 (v2.2)</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Niji Trip 2026 · 行程表</title>
 
-<style>
-:root{
-  --bg-main:#ffe4b8;
-  --bg-card:#fff7e8;
-  --brown:#7a4a26;
-  --radius:20px;
-  --btn:#ffd89a;
-}
-*{box-sizing:border-box;}
-body{
-  margin:0;
-  font-family:system-ui,-apple-system,"Noto Sans TC",sans-serif;
-  background:var(--bg-main);
-  color:#3b2a1b;
-}
-header{
-  padding:16px;
-  background:#fff3da;
-  border-radius:0 0 var(--radius) var(--radius);
-}
-h1{
-  margin:0 0 8px;
-  color:var(--brown);
-  font-size:34px;
-  font-weight:900;
-  letter-spacing:.5px;
-}
-.subtitle{
-  background:#fff7e8;
-  padding:10px 12px;
-  border-radius:14px;
-  font-weight:800;
-}
-.btn-row{
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
-  margin-top:12px;
-  align-items:center;
-}
-button{
-  border:none;
-  padding:10px 14px;
-  border-radius:999px;
-  background:var(--btn);
-  color:#5c3a1c;
-  font-weight:900;
-  cursor:pointer;
-}
-button:disabled{
-  opacity:.55;
-  cursor:not-allowed;
-}
-.badge{
-  display:inline-block;
-  padding:10px 12px;
-  border-radius:999px;
-  background:#fff3c5;
-  color:#5c3a1c;
-  font-weight:900;
-}
-.small{
-  font-size:12px;
-  opacity:.9;
-}
-main{ padding:16px; }
+  <style>
+    :root{
+      --bg-main:#ffe4b8;
+      --bg-card:#fff7e8;
+      --bg-chip:#fff6e5;
+      --bg-chip-active:#ffffff;
+      --blue-soft:#e5f4ff;
+      --brown:#7a4a26;
+      --brown-soft:#a26b3a;
+      --border: rgba(186,140,91,.35);
+      --shadow: 0 2px 4px rgba(0,0,0,.08);
+      --r-big: 26px;
+      --r-card: 20px;
+      --r-small: 14px;
+    }
+    *{ box-sizing:border-box; }
+    html,body{ margin:0; padding:0; font-family:system-ui,-apple-system,"Noto Sans TC","PingFang TC",sans-serif; background:#fce0b3; color:var(--brown); }
+    .page{ max-width:920px; margin:0 auto; padding:18px 14px 60px; }
 
-.day{
-  background:#eaf6ff;
-  border-radius:var(--radius);
-  padding:14px;
-  margin-bottom:14px;
-  box-shadow:0 2px 0 rgba(0,0,0,.04);
-}
-.day-head{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:10px;
-}
-.day-title{
-  font-size:22px;
-  font-weight:900;
-}
-.del{
-  background:#ffd1c7;
-}
-.card{
-  background:var(--bg-card);
-  border-radius:16px;
-  padding:12px;
-  margin-top:10px;
-  min-height:54px;
-  white-space:pre-wrap;
-  word-break:break-word;
-}
-[contenteditable]{ outline:none; }
+    header{
+      background:var(--bg-card);
+      border-radius: var(--r-big);
+      padding:18px 16px 14px;
+      box-shadow:var(--shadow);
+      margin-bottom:14px;
+    }
+    .title-row{ display:flex; align-items:center; gap:10px; }
+    h1{ margin:0; font-size:28px; font-weight:900; letter-spacing:.04em; }
+    .emoji{ font-size:26px; }
+    .desc{ margin:8px 0 10px; line-height:1.6; font-size:14px; color:var(--brown-soft); }
+    .desc[contenteditable]{ outline:none; border-bottom:1px dashed rgba(122,74,38,.2); }
 
-.panel{
-  margin-top:14px;
-  background:#fff7e8;
-  border-radius:18px;
-  padding:14px;
-  box-shadow:0 2px 0 rgba(0,0,0,.04);
-}
-.panel h2{
-  margin:0 0 8px;
-  font-size:18px;
-  color:#5c3a1c;
-}
-.form-row{
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
-}
-input{
-  width:100%;
-  max-width:360px;
-  padding:10px 12px;
-  border-radius:14px;
-  border:2px solid rgba(0,0,0,.08);
-  background:#fff;
-  font-size:15px;
-}
-.footer-links{
-  margin-top:12px;
-  display:flex;
-  gap:14px;
-  flex-wrap:wrap;
-}
-.footer-links a{
-  color:#3a59c9;
-  font-weight:800;
-  text-decoration:underline;
-}
-.diag{
-  margin-top:10px;
-  font-size:12px;
-  line-height:1.5;
-  color:#6b4a2c;
-  white-space:pre-wrap;
-  word-break:break-word;
-  background:rgba(255,255,255,.65);
-  padding:10px 12px;
-  border-radius:14px;
-}
-</style>
+    .btn-row{ display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-top:10px; }
+    .btn{
+      border:none; border-radius:999px; padding:8px 14px;
+      background:#ffd59a; color:#5a351e; font-weight:800;
+      box-shadow:var(--shadow); cursor:pointer; white-space:nowrap;
+    }
+    .btn.primary{ background:#ffb85c; }
+    .btn.danger{ background:#ffb0a6; color:#7a221b; }
+    .btn.ghost{ background:#fff3da; }
+    .btn:active{ transform:translateY(1px); box-shadow:0 1px 2px rgba(0,0,0,.15); }
+
+    .badge{
+      display:inline-flex; align-items:center; gap:6px;
+      padding:8px 12px; border-radius:999px;
+      background:#fff3c5; color:#5c3a1c; font-weight:800;
+    }
+
+    /* Auth panel */
+    .auth-panel{
+      margin-top:10px;
+      border-top:1px dashed var(--border);
+      padding-top:10px;
+      display:flex; flex-wrap:wrap; gap:10px; align-items:center;
+    }
+    .auth-panel input{
+      flex:1 1 160px;
+      padding:8px 12px;
+      border-radius:999px;
+      border:1px solid var(--border);
+      background:#fffdf6;
+      font-size:14px;
+      outline:none;
+      color:var(--brown);
+    }
+    .auth-hint{
+      font-size:12px; color:var(--brown-soft); opacity:.95; line-height:1.4;
+      flex: 1 1 100%;
+    }
+
+    /* Day nav chips */
+    .day-nav{
+      background:#e3f2ff;
+      border-radius: 24px 24px 18px 18px;
+      padding:10px 8px;
+      margin: 0 -6px 12px;
+      overflow-x:auto;
+      display:flex;
+      gap:10px;
+      scroll-behavior:smooth;
+    }
+    .day-chip{
+      flex:0 0 auto;
+      min-width:92px;
+      background:var(--bg-chip);
+      border-radius:999px;
+      padding:8px 12px 7px;
+      text-align:center;
+      box-shadow:var(--shadow);
+      cursor:grab;
+      border:1px solid transparent;
+      user-select:none;
+    }
+    .day-chip.active{ background:var(--bg-chip-active); border-color:rgba(122,74,38,.18); }
+    .day-chip.dragging{ opacity:.6; cursor:grabbing; }
+    .day-chip-main{ font-weight:900; font-size:14px; display:block; }
+    .day-chip-sub{ font-size:12px; color:var(--brown-soft); display:block; margin-top:2px; }
+    .day-chip-main[contenteditable], .day-chip-sub[contenteditable]{ outline:none; }
+
+    /* Day section */
+    .day-section{ margin-bottom:14px; }
+    .day-card{
+      background:var(--blue-soft);
+      border-radius:28px;
+      padding:14px 10px 16px;
+      box-shadow:var(--shadow);
+    }
+    .day-header{
+      display:flex; flex-wrap:wrap; align-items:baseline; gap:8px;
+      margin-bottom:8px; padding:0 6px;
+    }
+    .day-header-main{
+      background:#fff; border-radius:999px;
+      padding:7px 14px; font-size:18px; font-weight:900; box-shadow:var(--shadow);
+    }
+    .day-header-main span[contenteditable]{ outline:none; }
+    .day-header-sub{ font-size:15px; color:var(--brown-soft); }
+    .day-header-sub span[contenteditable]{ outline:none; border-bottom:1px dashed rgba(122,74,38,.2); }
+    .day-hint{
+      font-size:12px; color:var(--brown-soft);
+      margin:2px 6px 10px;
+    }
+    .day-hint span[contenteditable]{ outline:none; border-bottom:1px dashed rgba(122,74,38,.2); }
+
+    /* Spot card */
+    .spot-card{
+      background:var(--bg-card);
+      border-radius:var(--r-card);
+      padding:12px 12px 10px;
+      box-shadow:var(--shadow);
+      margin:0 4px 10px;
+      cursor:grab;
+      user-select:none;
+    }
+    .spot-card.dragging{ opacity:.65; cursor:grabbing; }
+    .spot-title{ font-weight:900; font-size:16px; margin-bottom:6px; }
+    .spot-title[contenteditable]{ outline:none; border-bottom:1px dashed rgba(122,74,38,.18); }
+
+    .form-row{
+      display:flex; flex-wrap:wrap; gap:8px; margin:8px 0;
+      align-items:center;
+    }
+    .field{
+      flex:1 1 160px;
+      padding:8px 12px;
+      border-radius:999px;
+      border:1px solid var(--border);
+      background:#fffdf6;
+      font-size:14px;
+      color:var(--brown);
+      outline:none;
+    }
+    .field.small{ flex:0 1 130px; max-width:160px; }
+    .field.wide{ flex: 2 1 280px; }
+
+    textarea.note{
+      width:100%;
+      min-height:56px;
+      resize:vertical;
+      padding:10px 12px;
+      border-radius:14px;
+      border:1px dashed var(--border);
+      background:#fffdf6;
+      outline:none;
+      font-size:14px;
+      color:var(--brown);
+      line-height:1.45;
+    }
+
+    .chip-actions{
+      display:flex; flex-wrap:wrap; gap:8px; margin-top:8px;
+      justify-content:flex-end;
+    }
+    .btn-mini{
+      border:none; border-radius:999px;
+      padding:6px 11px;
+      font-size:13px;
+      background:#ffe1a8;
+      color:var(--brown);
+      box-shadow:var(--shadow);
+      cursor:pointer;
+      white-space:nowrap;
+    }
+    .btn-mini.del{ background:#ffb0a6; color:#7a221b; font-weight:900; }
+    .btn-mini:active{ transform:translateY(1px); box-shadow:0 1px 2px rgba(0,0,0,.15); }
+
+    .add-spot-row{
+      margin: 4px 6px 0;
+      padding: 0 8px 4px;
+      display:flex;
+      justify-content:flex-start;
+    }
+
+    .day-note-card{
+      background:var(--bg-card);
+      border-radius:var(--r-card);
+      padding:12px 12px 10px;
+      box-shadow:var(--shadow);
+      margin:10px 4px 0;
+    }
+    .day-note-head{
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+      font-weight:900;
+      margin-bottom:6px;
+    }
+    .day-note-box{
+      border-radius:12px;
+      border:1px dashed var(--border);
+      background:#fffdf6;
+      padding:10px 12px;
+      min-height:34px;
+      white-space:pre-wrap;
+      outline:none;
+      line-height:1.45;
+      font-size:14px;
+      color:var(--brown);
+    }
+    .day-note-box[contenteditable]{ outline:none; }
+
+    /* Undo floating */
+    .undo-floating{
+      position:fixed;
+      left:10px;
+      bottom:10px;
+      z-index:50;
+      display:flex;
+      gap:10px;
+      align-items:center;
+    }
+    .undo-floating button{
+      width:46px; height:46px;
+      border-radius:50%;
+      border:none;
+      background:#ffcf8f;
+      box-shadow:var(--shadow);
+      font-size:22px;
+      cursor:pointer;
+    }
+    .toast{
+      position:fixed;
+      right:12px;
+      bottom:12px;
+      background:rgba(90,53,30,.92);
+      color:#fff;
+      padding:8px 12px;
+      border-radius:999px;
+      font-size:12px;
+      opacity:0;
+      transform:translateY(6px);
+      transition: opacity .2s ease, transform .2s ease;
+      z-index:60;
+      pointer-events:none;
+    }
+    .toast.show{ opacity:1; transform:translateY(0); }
+
+    /* Long press menu */
+    .sheet-mask{
+      position:fixed; inset:0;
+      background:rgba(0,0,0,.25);
+      z-index:80;
+      display:none;
+    }
+    .sheet{
+      position:fixed;
+      left:0; right:0;
+      bottom:-420px;
+      background:#fffdf6;
+      border-radius:18px 18px 0 0;
+      box-shadow: 0 -8px 24px rgba(0,0,0,.18);
+      padding:12px 12px 18px;
+      z-index:81;
+      transition: bottom .22s ease;
+    }
+    .sheet.show{ bottom:0; }
+    .sheet-title{
+      font-weight:900;
+      color:var(--brown);
+      display:flex; align-items:center; justify-content:space-between;
+      margin-bottom:10px;
+    }
+    .sheet-actions{
+      display:flex; flex-direction:column; gap:10px;
+    }
+    .sheet-actions button{
+      width:100%;
+      border:none;
+      border-radius:14px;
+      padding:12px 12px;
+      background:#ffe7bf;
+      color:var(--brown);
+      font-weight:900;
+      box-shadow:var(--shadow);
+      cursor:pointer;
+      text-align:left;
+    }
+    .sheet-actions button.danger{
+      background:#ffb0a6;
+      color:#7a221b;
+    }
+
+    @media (max-width:600px){
+      h1{ font-size:24px; }
+      .day-card{ border-radius:24px; }
+      .spot-card{ padding:12px 11px 10px; }
+    }
+  </style>
 </head>
 
 <body>
-
-<header>
-  <h1>Niji Trip 2026 🌈 <span class="small">(v2.2)</span></h1>
-
-  <div id="subtitleEl" class="subtitle" contenteditable="true">東京行程，可自由編輯。</div>
-
-  <div class="btn-row">
-    <button id="addDayBtn">＋ 新增一天</button>
-    <button id="clearBtn">清除儲存</button>
-    <span id="saveStatus" class="badge">已載入 ✅</span>
-  </div>
-
-  <div class="panel" id="authPanel">
-    <h2>網站帳號登入（Email / 密碼）</h2>
-    <div class="small">登入後可把行程同步到雲端（Firestore），不同裝置登入同帳號即可載入。</div>
-    <div class="form-row" style="margin-top:10px;">
-      <input id="emailEl" type="email" placeholder="Email（例如 ygfamily895@gmail.com）" autocomplete="email" />
-      <input id="passwordEl" type="password" placeholder="密碼（至少 6 碼）" autocomplete="current-password" />
-    </div>
-
-    <div class="btn-row" style="margin-top:10px;">
-      <button id="btnSignup">註冊</button>
-      <button id="btnLogin">登入</button>
-      <button id="btnLogout" class="del" style="display:none;">登出</button>
-      <span id="authStatus" class="badge">未登入</span>
-    </div>
-
-    <div class="btn-row" style="margin-top:10px;">
-      <button id="btnLoadCloud">從雲端載入</button>
-      <button id="btnSyncCloud">同步到雲端</button>
-      <span class="small">建議第一次登入：先按「從雲端載入」確認雲端是否已有資料；沒有再按「同步到雲端」。</span>
-    </div>
-
-    <div class="footer-links">
-      <a id="privacyLink" href="./privacy.html" target="_blank" rel="noopener">隱私權政策</a>
-      <a id="tosLink" href="./terms.html" target="_blank" rel="noopener">服務條款</a>
-    </div>
-
-    <div id="diag" class="diag">（診斷區）</div>
-  </div>
-</header>
-
-<main id="days"></main>
-
-<script>
-/* -----------------------------
-   LocalStorage: keys
------------------------------ */
-const KEY_DAYS = "days";
-const KEY_SUB  = "subtitle";
-
-/* -----------------------------
-   UI elements
------------------------------ */
-const daysEl = document.getElementById("days");
-const addDayBtn = document.getElementById("addDayBtn");
-const clearBtn = document.getElementById("clearBtn");
-const saveStatus = document.getElementById("saveStatus");
-const subtitleEl = document.getElementById("subtitleEl");
-
-const emailEl = document.getElementById("emailEl");
-const passwordEl = document.getElementById("passwordEl");
-const btnSignup = document.getElementById("btnSignup");
-const btnLogin = document.getElementById("btnLogin");
-const btnLogout = document.getElementById("btnLogout");
-const btnLoadCloud = document.getElementById("btnLoadCloud");
-const btnSyncCloud = document.getElementById("btnSyncCloud");
-const authStatus = document.getElementById("authStatus");
-const diag = document.getElementById("diag");
-
-/* -----------------------------
-   Helpers
------------------------------ */
-function log(msg){
-  diag.textContent += msg + "\n";
-}
-function setStatus(text){
-  saveStatus.textContent = text;
-}
-
-function loadLocal(){
-  const sub = localStorage.getItem(KEY_SUB);
-  if (sub !== null && sub !== undefined && sub !== "") subtitleEl.textContent = sub;
-
-  const raw = localStorage.getItem(KEY_DAYS);
-  try{
-    return raw ? JSON.parse(raw) : [];
-  }catch{
-    return [];
-  }
-}
-function saveLocal(days){
-  localStorage.setItem(KEY_DAYS, JSON.stringify(days));
-  localStorage.setItem(KEY_SUB, subtitleEl.textContent || "");
-}
-
-/* -----------------------------
-   Render days
------------------------------ */
-let days = loadLocal();
-
-function render(){
-  daysEl.innerHTML = "";
-  days.forEach((d,i)=>{
-    const wrap = document.createElement("div");
-    wrap.className = "day";
-    wrap.innerHTML = `
-      <div class="day-head">
-        <div class="day-title">Day ${i+1}</div>
-        <button class="del">刪除</button>
+  <div class="page">
+    <header>
+      <div class="title-row">
+        <h1 contenteditable="true" id="titleText">Niji Trip 2026</h1>
+        <span class="emoji">🌈</span>
       </div>
-      <div class="card" contenteditable="true"></div>
-    `;
-    const card = wrap.querySelector(".card");
-    const delBtn = wrap.querySelector(".del");
-    card.textContent = d?.text || "";
-    card.addEventListener("input", ()=>{
-      days[i].text = card.textContent;
-      saveLocal(days);
-      setStatus("已儲存 ✅");
-    });
-    delBtn.addEventListener("click", ()=>{
-      if(confirm(`確定刪除 Day ${i+1}？`)){
-        days.splice(i,1);
-        saveLocal(days);
-        render();
-        setStatus("已儲存 ✅");
+
+      <div class="desc" id="subtitleText" contenteditable="true">
+        東京行程・暖色主題。Day 可拖拉排序、行程卡可拖拉/複製/刪除。每張卡可存出發地/目的地/途經點，並一鍵開啟 Google Maps 路線。
+      </div>
+
+      <div class="btn-row">
+        <button class="btn primary" id="addDayBtn" type="button">＋ 新增一天</button>
+        <button class="btn danger" id="removeLastDayBtn" type="button">－ 刪除最後一天</button>
+        <button class="btn" id="exportBtn" type="button">匯出 JSON</button>
+        <button class="btn" id="importBtn" type="button">匯入 JSON</button>
+        <button class="btn ghost" id="clearLocalBtn" type="button">清除本機</button>
+        <span class="badge" id="authBadge">未登入（僅本機）</span>
+      </div>
+
+      <!-- 自家帳號登入（Email/Password） -->
+      <div class="auth-panel">
+        <input id="email" type="email" placeholder="Email（用來同步）" autocomplete="email" />
+        <input id="password" type="password" placeholder="密碼（至少 6 碼）" autocomplete="current-password" />
+        <button class="btn" id="btnSignUp" type="button">註冊</button>
+        <button class="btn" id="btnLogin" type="button">登入</button>
+        <button class="btn danger" id="btnLogout" type="button" style="display:none;">登出</button>
+        <button class="btn" id="btnCloudPush" type="button" style="display:none;">存到雲端</button>
+        <button class="btn" id="btnCloudPull" type="button" style="display:none;">從雲端載入</button>
+
+        <div class="auth-hint">
+          ✅ 這裡不用 Google 登入。<br>
+          同一組 Email/密碼在 A/B 裝置登入後，就能看見相同行程（同步靠 Firestore）。<br>
+          你需要在 Firebase Console 開啟：Authentication → Email/Password，以及 Firestore Database。
+        </div>
+      </div>
+    </header>
+
+    <!-- 上方 Day chips -->
+    <div class="day-nav" id="dayNav"></div>
+
+    <!-- Days container -->
+    <div id="daysRoot"></div>
+  </div>
+
+  <div class="undo-floating">
+    <button id="undoBtn" title="上一步">↩</button>
+  </div>
+  <div class="toast" id="toast">已儲存</div>
+
+  <!-- Long press sheet -->
+  <div class="sheet-mask" id="sheetMask"></div>
+  <div class="sheet" id="sheet">
+    <div class="sheet-title">
+      <span id="sheetTitle">操作</span>
+      <button class="btn-mini" id="sheetClose" type="button">關閉</button>
+    </div>
+    <div class="sheet-actions">
+      <button type="button" id="sheetDup">複製此卡片</button>
+      <button type="button" id="sheetUp">上移</button>
+      <button type="button" id="sheetDown">下移</button>
+      <button type="button" class="danger" id="sheetDel">刪除此卡片</button>
+    </div>
+  </div>
+
+  <input id="importFile" type="file" accept="application/json" style="display:none" />
+
+  <script>
+    (function(){
+      // ========== Local-only app state ==========
+      const LS_KEY_DAYS = "days";
+      const LS_KEY_SUBTITLE = "subtitle";
+      const LS_KEY_TITLE = "title";
+      const UNDO_LIMIT = 10;
+
+      const HOTEL_NAME = "ベッセルイン上野入谷駅前"; // 你想固定的飯店，可改成你的
+
+      // state
+      let state = {
+        title: "Niji Trip 2026",
+        subtitle: "",
+        days: []
+      };
+
+      let undoStack = [];
+      let isApplyingRemote = false;
+
+      // drag
+      let draggingChip = null;
+      let draggingCard = null;
+
+      // long press sheet target
+      let sheetTarget = null;
+
+      // elements
+      const titleText = document.getElementById("titleText");
+      const subtitleText = document.getElementById("subtitleText");
+      const dayNav = document.getElementById("dayNav");
+      const daysRoot = document.getElementById("daysRoot");
+      const toastEl = document.getElementById("toast");
+
+      const addDayBtn = document.getElementById("addDayBtn");
+      const removeLastDayBtn = document.getElementById("removeLastDayBtn");
+      const clearLocalBtn = document.getElementById("clearLocalBtn");
+      const exportBtn = document.getElementById("exportBtn");
+      const importBtn = document.getElementById("importBtn");
+      const importFile = document.getElementById("importFile");
+      const undoBtn = document.getElementById("undoBtn");
+
+      const sheetMask = document.getElementById("sheetMask");
+      const sheet = document.getElementById("sheet");
+      const sheetClose = document.getElementById("sheetClose");
+      const sheetTitle = document.getElementById("sheetTitle");
+      const sheetDup = document.getElementById("sheetDup");
+      const sheetUp = document.getElementById("sheetUp");
+      const sheetDown = document.getElementById("sheetDown");
+      const sheetDel = document.getElementById("sheetDel");
+
+      function uid(){ return Math.random().toString(36).slice(2,10) + "-" + Date.now().toString(36); }
+
+      function toast(msg="已儲存"){
+        toastEl.textContent = msg;
+        toastEl.classList.add("show");
+        setTimeout(()=>toastEl.classList.remove("show"), 900);
       }
-    });
-    daysEl.appendChild(wrap);
-  });
-}
 
-subtitleEl.addEventListener("input", ()=>{
-  saveLocal(days);
-  setStatus("已儲存 ✅");
-});
+      function deepClone(obj){ return JSON.parse(JSON.stringify(obj)); }
 
-addDayBtn.addEventListener("click", ()=>{
-  days.push({ text:"新增行程內容…" });
-  saveLocal(days);
-  render();
-  setStatus("已儲存 ✅");
-});
+      function pushUndo(){
+        const snap = deepClone(state);
+        undoStack.push(snap);
+        if(undoStack.length > UNDO_LIMIT) undoStack.shift();
+      }
 
-clearBtn.addEventListener("click", ()=>{
-  if(confirm("確定清除本機資料（localStorage）？\n（不會刪掉雲端）")){
-    localStorage.removeItem(KEY_DAYS);
-    localStorage.removeItem(KEY_SUB);
-    days = [];
-    subtitleEl.textContent = "東京行程，可自由編輯。";
-    render();
-    setStatus("已清除 ✅");
-  }
-});
+      function undo(){
+        if(undoStack.length <= 0) return;
+        const prev = undoStack.pop();
+        if(!prev) return;
+        state = prev;
+        saveLocal(false);
+        renderAll();
+        toast("已復原");
+      }
 
-render();
-setStatus("已載入 ✅");
-</script>
+      function saveLocal(showToast=true){
+        try{
+          localStorage.setItem(LS_KEY_DAYS, JSON.stringify(state.days || []));
+          localStorage.setItem(LS_KEY_SUBTITLE, state.subtitle || "");
+          localStorage.setItem(LS_KEY_TITLE, state.title || "Niji Trip 2026");
+          if(showToast) toast("已儲存");
+        }catch(e){
+          console.warn("localStorage 寫入失敗", e);
+        }
+        // 如果有登入且不是 remote 套用，就觸發雲端排程同步（由 Firebase module 接手）
+        if(!isApplyingRemote && window.__cloudSchedulePush){
+          window.__cloudSchedulePush();
+        }
+      }
 
-<!-- Firebase (Auth + Firestore) -->
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-  import {
-    getAuth,
-    onAuthStateChanged,
-    createUserWithEmailAndPassword,
-    signInWithEmailAndPassword,
-    signOut
-  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-  import {
-    getFirestore,
-    doc,
-    getDoc,
-    setDoc,
-    serverTimestamp
-  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+      function loadLocal(){
+        try{
+          const days = JSON.parse(localStorage.getItem(LS_KEY_DAYS) || "[]");
+          const subtitle = localStorage.getItem(LS_KEY_SUBTITLE) || "";
+          const title = localStorage.getItem(LS_KEY_TITLE) || "Niji Trip 2026";
+          state.days = Array.isArray(days) ? days : [];
+          state.subtitle = subtitle;
+          state.title = title;
+        }catch(e){
+          console.warn("localStorage 讀取失敗", e);
+        }
+        migrateIfNeeded();
+      }
 
-  // ✅ 你的 Firebase 設定（照你給的）
-  const firebaseConfig = {
-    apiKey: "AIzaSyAkFpjZVwRDA92YLK-JfDPeoHJ3hbgKVXM",
-    authDomain: "trip-db86d.firebaseapp.com",
-    projectId: "trip-db86d",
-    storageBucket: "trip-db86d.firebasestorage.app",
-    messagingSenderId: "709795426974",
-    appId: "1:709795426974:web:ec3e2f03f2116b68c1418f",
-    measurementId: "G-FD0411E3XH"
-  };
+      // ---- data model (supports advanced routing) ----
+      // day: { id, label, date, header, items:[item], dayNote }
+      // item: { id, title, time, origin, destination, waypoints:[...], note }
+      function migrateIfNeeded(){
+        // ensure basics
+        if(!Array.isArray(state.days)) state.days = [];
+        // if empty init 3 days example
+        if(state.days.length === 0){
+          state.days = [
+            makeDay(1, "5/8", "（範例）成田機場・入住上野"),
+            makeDay(2, "5/9", "（範例）上野・淺草散步"),
+            makeDay(3, "5/10", "（範例）自由活動日")
+          ];
+          // add a sample card to day1/day2
+          state.days[0].items.push(makeItem("範例景點", "10:30"));
+          state.days[1].items.push(makeItem("範例景點 2", "11:00"));
+          saveLocal(false);
+        }
 
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db = getFirestore(app);
+        state.days.forEach((d,idx)=>{
+          d.id = d.id || uid();
+          d.label = typeof d.label === "string" ? d.label : ("Day " + (idx+1));
+          d.date = typeof d.date === "string" ? d.date : "";
+          d.header = typeof d.header === "string" ? d.header : "";
+          d.dayNote = typeof d.dayNote === "string" ? d.dayNote : "";
+          if(!Array.isArray(d.items)) d.items = [];
+          d.items.forEach(it=>{
+            it.id = it.id || uid();
+            it.title = (it.title ?? "").toString();
+            it.time = (it.time ?? "").toString();
+            it.origin = (it.origin ?? "").toString();
+            it.destination = (it.destination ?? "").toString();
+            if(!Array.isArray(it.waypoints)) it.waypoints = [];
+            it.waypoints = it.waypoints.map(x => (x ?? "").toString());
+            it.note = (it.note ?? "").toString();
+          });
+        });
+      }
 
-  // 讓外層 script 也能用 log（簡單做法：抓 DOM）
-  const diag = document.getElementById("diag");
-  const log = (msg)=>{ diag.textContent += msg + "\n"; };
+      function makeDay(n, date, header){
+        return {
+          id: uid(),
+          label: "Day " + n,
+          date: date || "",
+          header: header || "",
+          items: [],
+          dayNote: ""
+        };
+      }
+      function makeItem(title, time){
+        return {
+          id: uid(),
+          title: title || "新行程",
+          time: time || "",
+          origin: HOTEL_NAME,
+          destination: "",
+          waypoints: [],
+          note: ""
+        };
+      }
 
-  const authStatus = document.getElementById("authStatus");
-  const btnSignup = document.getElementById("btnSignup");
-  const btnLogin = document.getElementById("btnLogin");
-  const btnLogout = document.getElementById("btnLogout");
-  const btnLoadCloud = document.getElementById("btnLoadCloud");
-  const btnSyncCloud = document.getElementById("btnSyncCloud");
-  const emailEl = document.getElementById("emailEl");
-  const passwordEl = document.getElementById("passwordEl");
+      // ---- render ----
+      function renderAll(){
+        // header texts
+        titleText.textContent = state.title || "Niji Trip 2026";
+        subtitleText.textContent = state.subtitle || "";
 
-  const subtitleEl = document.getElementById("subtitleEl");
-  const saveStatus = document.getElementById("saveStatus");
+        renderDayNav();
+        renderDays();
+        bindGlobalInputs();
+      }
 
-  const KEY_DAYS = "days";
-  const KEY_SUB  = "subtitle";
+      function renderDayNav(){
+        dayNav.innerHTML = "";
+        state.days.forEach((d, idx)=>{
+          const chip = document.createElement("div");
+          chip.className = "day-chip" + (idx===0 ? " active" : "");
+          chip.draggable = true;
+          chip.dataset.dayId = d.id;
 
-  function setSaveStatus(t){ saveStatus.textContent = t; }
-  function getLocalPayload(){
-    let days = [];
-    try{ days = JSON.parse(localStorage.getItem(KEY_DAYS) || "[]"); }catch{ days = []; }
-    const subtitle = localStorage.getItem(KEY_SUB) ?? subtitleEl.textContent ?? "";
-    return { subtitle, days };
-  }
-  function setLocalPayload(payload){
-    const subtitle = payload?.subtitle ?? "東京行程，可自由編輯。";
-    const days = Array.isArray(payload?.days) ? payload.days : [];
-    localStorage.setItem(KEY_SUB, subtitle);
-    localStorage.setItem(KEY_DAYS, JSON.stringify(days));
-    subtitleEl.textContent = subtitle;
+          chip.innerHTML = `
+            <span class="day-chip-main" contenteditable="true">${escapeHTML(d.label || ("Day "+(idx+1)))}</span>
+            <span class="day-chip-sub" contenteditable="true">${escapeHTML(d.date || "")}</span>
+          `;
+          // click scroll
+          chip.addEventListener("click", ()=>{
+            document.querySelectorAll(".day-chip").forEach(x=>x.classList.remove("active"));
+            chip.classList.add("active");
+            const sec = document.querySelector('.day-section[data-day-id="'+d.id+'"]');
+            if(sec) sec.scrollIntoView({behavior:"smooth", block:"start"});
+          });
 
-    // 觸發重新 render：最簡單是 reload（避免你現有 render 變數作用域）
-    // 但我們用「小技巧」：直接 location.reload() 讓 UI 100% 同步
-    setSaveStatus("已載入 ✅（將重新整理）");
-    setTimeout(()=>location.reload(), 250);
-  }
+          // edit chip label/date
+          const main = chip.querySelector(".day-chip-main");
+          const sub = chip.querySelector(".day-chip-sub");
+          main.addEventListener("input", ()=>{
+            d.label = main.textContent.trim();
+            saveLocal();
+          });
+          sub.addEventListener("input", ()=>{
+            d.date = sub.textContent.trim();
+            saveLocal();
+          });
 
-  let currentUser = null;
+          // drag reorder
+          chip.addEventListener("dragstart", (e)=>{
+            draggingChip = chip;
+            chip.classList.add("dragging");
+            e.dataTransfer.effectAllowed = "move";
+          });
+          chip.addEventListener("dragend", ()=>{
+            if(!draggingChip) return;
+            draggingChip.classList.remove("dragging");
+            draggingChip = null;
 
-  log(`Firebase init OK : ${app?.options?.projectId || "(unknown)"}`);
+            // sync state order based on DOM order
+            const ids = Array.from(dayNav.querySelectorAll(".day-chip")).map(x=>x.dataset.dayId);
+            state.days.sort((a,b)=> ids.indexOf(a.id) - ids.indexOf(b.id));
+            saveLocal();
+            renderAll();
+          });
 
-  // --- Auth UI state ---
-  function setLoggedOutUI(){
-    authStatus.textContent = "未登入";
-    btnLogout.style.display = "none";
-    btnSignup.disabled = false;
-    btnLogin.disabled = false;
-    btnLoadCloud.disabled = true;
-    btnSyncCloud.disabled = true;
-  }
-  function setLoggedInUI(user){
-    const name = user.email || user.uid;
-    authStatus.textContent = "已登入：" + name;
-    btnLogout.style.display = "inline-block";
-    btnSignup.disabled = true;
-    btnLogin.disabled = true;
-    btnLoadCloud.disabled = false;
-    btnSyncCloud.disabled = false;
-  }
+          dayNav.appendChild(chip);
+        });
 
-  // --- Firestore path (固定一個主檔案) ---
-  function getMainDocRef(uid){
-    // users/{uid}/trip/main
-    return doc(db, "users", uid, "trip", "main");
-  }
+        // container dragover logic
+        dayNav.addEventListener("dragover", (e)=>{
+          if(!draggingChip) return;
+          e.preventDefault();
+          const after = getAfterChip(dayNav, e.clientX);
+          if(after == null) dayNav.appendChild(draggingChip);
+          else dayNav.insertBefore(draggingChip, after);
+        }, { passive:false });
+      }
 
-  // --- Buttons ---
-  btnSignup.addEventListener("click", async ()=>{
-    const email = (emailEl.value || "").trim();
-    const pass  = (passwordEl.value || "").trim();
-    if(!email || !pass){ log("註冊：請輸入 Email 與密碼"); return; }
-    try{
-      log("註冊中...");
-      const cred = await createUserWithEmailAndPassword(auth, email, pass);
-      log("註冊成功 ✅ " + (cred.user.email || ""));
-    }catch(e){
-      log("註冊錯誤 ❌");
-      log("code: " + (e?.code || "(none)"));
-      log("message: " + (e?.message || "(none)"));
-      alert("註冊失敗：\n" + (e?.message || e));
+      function getAfterChip(container, x){
+        const chips = [...container.querySelectorAll(".day-chip:not(.dragging)")];
+        let closest = { offset: Number.NEGATIVE_INFINITY, el: null };
+        chips.forEach(ch=>{
+          const box = ch.getBoundingClientRect();
+          const offset = x - (box.left + box.width/2);
+          if(offset < 0 && offset > closest.offset){
+            closest = { offset, el: ch };
+          }
+        });
+        return closest.el;
+      }
+
+      function renderDays(){
+        daysRoot.innerHTML = "";
+        state.days.forEach((d, idx)=>{
+          const sec = document.createElement("section");
+          sec.className = "day-section";
+          sec.dataset.dayId = d.id;
+
+          const dayCard = document.createElement("div");
+          dayCard.className = "day-card";
+
+          dayCard.innerHTML = `
+            <div class="day-header">
+              <div class="day-header-main"><span contenteditable="true">${escapeHTML(d.label || ("Day "+(idx+1)))}</span></div>
+              <div class="day-header-sub"><span contenteditable="true">${escapeHTML(d.header || "")}</span></div>
+            </div>
+            <div class="day-hint">
+              日期：<span contenteditable="true">${escapeHTML(d.date || "")}</span>
+              <span style="margin-left:6px; opacity:.9;" contenteditable="true">（可自由修改）</span>
+            </div>
+            <div class="items"></div>
+            <div class="add-spot-row">
+              <button class="btn-mini" type="button" data-act="addCard">＋ 新增行程卡片</button>
+            </div>
+            <div class="day-note-card">
+              <div class="day-note-head">
+                <div>當日備註／花費</div>
+              </div>
+              <div class="day-note-box" contenteditable="true"></div>
+            </div>
+          `;
+
+          const itemsEl = dayCard.querySelector(".items");
+          // day header editable
+          const dayLabelEl = dayCard.querySelector(".day-header-main span[contenteditable]");
+          const dayHeaderEl = dayCard.querySelector(".day-header-sub span[contenteditable]");
+          const dayDateEl = dayCard.querySelector(".day-hint span[contenteditable]");
+          const dayNoteBox = dayCard.querySelector(".day-note-box");
+
+          dayLabelEl.addEventListener("input", ()=>{ d.label = dayLabelEl.textContent.trim(); saveLocal(); });
+          dayHeaderEl.addEventListener("input", ()=>{ d.header = dayHeaderEl.textContent.trim(); saveLocal(); });
+          dayDateEl.addEventListener("input", ()=>{ d.date = dayDateEl.textContent.trim(); saveLocal(); });
+          dayNoteBox.textContent = d.dayNote || "";
+          dayNoteBox.addEventListener("input", ()=>{ d.dayNote = dayNoteBox.textContent; saveLocal(); });
+
+          // render cards
+          d.items.forEach((it)=>{
+            itemsEl.appendChild(renderCard(d, it));
+          });
+
+          // add button
+          dayCard.querySelector('[data-act="addCard"]').addEventListener("click", ()=>{
+            pushUndo();
+            const newIt = makeItem("新行程", "");
+            d.items.push(newIt);
+            saveLocal();
+            renderAll();
+            // scroll to new item
+            setTimeout(()=>{
+              const card = document.querySelector('.spot-card[data-item-id="'+newIt.id+'"]');
+              if(card) card.scrollIntoView({behavior:"smooth", block:"center"});
+            }, 80);
+          });
+
+          // setup dropzone within day for cards drag reorder + auto scroll
+          setupDayCardDnD(dayCard, d);
+
+          sec.appendChild(dayCard);
+          daysRoot.appendChild(sec);
+        });
+      }
+
+      function renderCard(day, it){
+        const card = document.createElement("article");
+        card.className = "spot-card";
+        card.draggable = true;
+        card.dataset.itemId = it.id;
+
+        card.innerHTML = `
+          <div class="spot-title" contenteditable="true">${escapeHTML(it.title || "新行程")}</div>
+
+          <div class="form-row">
+            <input class="field small it-time" placeholder="時間 10:30" value="${escapeHTML(it.time || "")}">
+            <input class="field wide it-origin" placeholder="出發地 Origin（留空會用飯店）" value="${escapeHTML(it.origin || "")}">
+          </div>
+
+          <div class="form-row">
+            <input class="field wide it-dest" placeholder="目的地 Destination" value="${escapeHTML(it.destination || "")}">
+            <button class="btn-mini" type="button" data-iact="route">一鍵導航路線</button>
+            <button class="btn-mini" type="button" data-iact="search">地圖搜尋</button>
+          </div>
+
+          <div class="form-row">
+            <input class="field wide it-wp-input" placeholder="途經點 Waypoint（可不填）">
+            <button class="btn-mini" type="button" data-iact="addWp">＋ 途經點</button>
+          </div>
+
+          <div class="form-row it-wp-list"></div>
+
+          <textarea class="note it-note" placeholder="備註（票券/排隊/地址/提醒…）">${escapeHTML(it.note || "")}</textarea>
+
+          <div class="chip-actions">
+            <button class="btn-mini" type="button" data-iact="dup">複製</button>
+            <button class="btn-mini del" type="button" data-iact="del">刪除</button>
+          </div>
+        `;
+
+        // editable
+        const titleEl = card.querySelector(".spot-title");
+        const timeEl = card.querySelector(".it-time");
+        const originEl = card.querySelector(".it-origin");
+        const destEl = card.querySelector(".it-dest");
+        const noteEl = card.querySelector(".it-note");
+        const wpInput = card.querySelector(".it-wp-input");
+        const wpList = card.querySelector(".it-wp-list");
+
+        function rerenderWp(){
+          wpList.innerHTML = "";
+          (it.waypoints || []).forEach((w, idx)=>{
+            const pill = document.createElement("span");
+            pill.className = "badge";
+            pill.style.background = "#fff1d7";
+            pill.style.fontWeight = "800";
+            pill.style.cursor = "pointer";
+            pill.textContent = "途經：" + (w || "(空)") + " ✕";
+            pill.title = "點擊移除這個途經點";
+            pill.addEventListener("click", ()=>{
+              pushUndo();
+              it.waypoints.splice(idx,1);
+              saveLocal();
+              rerenderWp();
+            });
+            wpList.appendChild(pill);
+          });
+        }
+        rerenderWp();
+
+        const update = ()=>{
+          it.title = titleEl.textContent.trim();
+          it.time = timeEl.value;
+          it.origin = originEl.value;
+          it.destination = destEl.value;
+          it.note = noteEl.value;
+          saveLocal();
+        };
+
+        titleEl.addEventListener("input", update);
+        timeEl.addEventListener("input", update);
+        originEl.addEventListener("input", update);
+        destEl.addEventListener("input", update);
+        noteEl.addEventListener("input", update);
+
+        // actions
+        card.addEventListener("click", (e)=>{
+          const btn = e.target.closest("button");
+          if(!btn) return;
+          const act = btn.dataset.iact;
+          if(!act) return;
+
+          if(act === "addWp"){
+            const v = (wpInput.value || "").trim();
+            if(!v) return;
+            pushUndo();
+            it.waypoints = Array.isArray(it.waypoints) ? it.waypoints : [];
+            it.waypoints.push(v);
+            wpInput.value = "";
+            saveLocal();
+            rerenderWp();
+            return;
+          }
+
+          if(act === "search"){
+            const q = (destEl.value || titleEl.textContent || "").trim();
+            if(!q) return alert("請先填目的地或標題");
+            const url = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(q);
+            window.open(url, "_blank", "noopener");
+            return;
+          }
+
+          if(act === "route"){
+            // Build directions:
+            // origin = originEl or HOTEL_NAME
+            // destination = destEl
+            // waypoints = it.waypoints joined by |
+            const origin = (originEl.value || "").trim() || HOTEL_NAME;
+            const destination = (destEl.value || "").trim();
+            if(!destination) return alert("請先填目的地 Destination");
+            const wps = (it.waypoints || []).map(x=> (x||"").trim()).filter(Boolean);
+            let url = "https://www.google.com/maps/dir/?api=1" +
+              "&origin=" + encodeURIComponent(origin) +
+              "&destination=" + encodeURIComponent(destination);
+            if(wps.length){
+              url += "&waypoints=" + encodeURIComponent(wps.join("|"));
+            }
+            url += "&travelmode=transit"; // 你也可改 driving/walking
+            window.open(url, "_blank", "noopener");
+            return;
+          }
+
+          if(act === "dup"){
+            pushUndo();
+            const clone = deepClone(it);
+            clone.id = uid();
+            day.items.splice(day.items.indexOf(it)+1, 0, clone);
+            saveLocal();
+            renderAll();
+            return;
+          }
+
+          if(act === "del"){
+            if(!confirm("確定刪除此卡片？")) return;
+            pushUndo();
+            day.items = day.items.filter(x=>x.id !== it.id);
+            saveLocal();
+            renderAll();
+            return;
+          }
+        });
+
+        // long press menu for mobile (delete/dup/move)
+        attachLongPress(card, ()=>{
+          sheetTarget = { dayId: day.id, itemId: it.id };
+          sheetTitle.textContent = "卡片操作";
+          openSheet();
+        });
+
+        // drag handlers set in setupDayCardDnD
+        card.addEventListener("dragstart", (e)=>{
+          draggingCard = card;
+          card.classList.add("dragging");
+          e.dataTransfer.effectAllowed = "move";
+        });
+        card.addEventListener("dragend", ()=>{
+          card.classList.remove("dragging");
+          draggingCard = null;
+          stopAutoScroll();
+          saveLocal();
+        });
+
+        return card;
+      }
+
+      function setupDayCardDnD(dayCard, day){
+        dayCard.addEventListener("dragover", (e)=>{
+          if(!draggingCard) return;
+          e.preventDefault();
+
+          startAutoScroll(e.clientY);
+
+          const itemsEl = dayCard.querySelector(".items");
+          if(!itemsEl) return;
+          const after = getAfterCard(itemsEl, e.clientY);
+          if(after == null) itemsEl.appendChild(draggingCard);
+          else itemsEl.insertBefore(draggingCard, after);
+        }, { passive:false });
+
+        dayCard.addEventListener("drop", ()=>{
+          if(!draggingCard) return;
+          // sync day.items order by DOM
+          const ids = Array.from(dayCard.querySelectorAll(".spot-card")).map(x=>x.dataset.itemId);
+          day.items.sort((a,b)=> ids.indexOf(a.id) - ids.indexOf(b.id));
+          saveLocal();
+        });
+      }
+
+      function getAfterCard(container, y){
+        const cards = [...container.querySelectorAll(".spot-card:not(.dragging)")];
+        let closest = { offset: Number.NEGATIVE_INFINITY, el: null };
+        cards.forEach(c=>{
+          const box = c.getBoundingClientRect();
+          const offset = y - (box.top + box.height/2);
+          if(offset < 0 && offset > closest.offset){
+            closest = { offset, el: c };
+          }
+        });
+        return closest.el;
+      }
+
+      function escapeHTML(s){
+        return (s ?? "").toString()
+          .replaceAll("&","&amp;")
+          .replaceAll("<","&lt;")
+          .replaceAll(">","&gt;")
+          .replaceAll('"',"&quot;")
+          .replaceAll("'","&#039;");
+      }
+
+      // ---- Long press sheet ----
+      let lpTimer = null;
+      function attachLongPress(el, onLongPress){
+        el.addEventListener("pointerdown", (e)=>{
+          // ignore when pressing inside inputs/textarea/buttons
+          const t = e.target;
+          if(t && (t.tagName==="INPUT" || t.tagName==="TEXTAREA" || t.tagName==="BUTTON")) return;
+          if(lpTimer) clearTimeout(lpTimer);
+          lpTimer = setTimeout(()=>{
+            onLongPress();
+          }, 520);
+        });
+        el.addEventListener("pointerup", ()=>{ if(lpTimer) clearTimeout(lpTimer); });
+        el.addEventListener("pointercancel", ()=>{ if(lpTimer) clearTimeout(lpTimer); });
+        el.addEventListener("pointermove", ()=>{ if(lpTimer) clearTimeout(lpTimer); });
+      }
+
+      function openSheet(){
+        sheetMask.style.display = "block";
+        sheet.classList.add("show");
+      }
+      function closeSheet(){
+        sheetMask.style.display = "none";
+        sheet.classList.remove("show");
+        sheetTarget = null;
+      }
+      sheetClose.addEventListener("click", closeSheet);
+      sheetMask.addEventListener("click", closeSheet);
+
+      function getTargetRefs(){
+        if(!sheetTarget) return null;
+        const day = state.days.find(d=>d.id===sheetTarget.dayId);
+        if(!day) return null;
+        const idx = day.items.findIndex(x=>x.id===sheetTarget.itemId);
+        if(idx < 0) return null;
+        return { day, idx };
+      }
+
+      sheetDup.addEventListener("click", ()=>{
+        const ref = getTargetRefs();
+        if(!ref) return closeSheet();
+        pushUndo();
+        const it = ref.day.items[ref.idx];
+        const clone = deepClone(it);
+        clone.id = uid();
+        ref.day.items.splice(ref.idx+1, 0, clone);
+        saveLocal();
+        renderAll();
+        closeSheet();
+      });
+      sheetUp.addEventListener("click", ()=>{
+        const ref = getTargetRefs();
+        if(!ref) return closeSheet();
+        if(ref.idx===0) return;
+        pushUndo();
+        const arr = ref.day.items;
+        [arr[ref.idx-1], arr[ref.idx]] = [arr[ref.idx], arr[ref.idx-1]];
+        saveLocal();
+        renderAll();
+        closeSheet();
+      });
+      sheetDown.addEventListener("click", ()=>{
+        const ref = getTargetRefs();
+        if(!ref) return closeSheet();
+        const arr = ref.day.items;
+        if(ref.idx >= arr.length-1) return;
+        pushUndo();
+        [arr[ref.idx+1], arr[ref.idx]] = [arr[ref.idx], arr[ref.idx+1]];
+        saveLocal();
+        renderAll();
+        closeSheet();
+      });
+      sheetDel.addEventListener("click", ()=>{
+        const ref = getTargetRefs();
+        if(!ref) return closeSheet();
+        if(!confirm("確定刪除此卡片？")) return;
+        pushUndo();
+        ref.day.items.splice(ref.idx,1);
+        saveLocal();
+        renderAll();
+        closeSheet();
+      });
+
+      // ---- Auto scroll while dragging ----
+      let autoScrollRAF = null;
+      let autoScrollDir = 0; // -1 up, 1 down
+      function startAutoScroll(clientY){
+        const padding = 80;
+        const speed = 14;
+        const vh = window.innerHeight;
+        if(clientY < padding) autoScrollDir = -1;
+        else if(clientY > vh - padding) autoScrollDir = 1;
+        else autoScrollDir = 0;
+
+        if(autoScrollDir !== 0 && !autoScrollRAF){
+          const step = ()=>{
+            if(autoScrollDir===0){ stopAutoScroll(); return; }
+            window.scrollBy(0, autoScrollDir * speed);
+            autoScrollRAF = requestAnimationFrame(step);
+          };
+          autoScrollRAF = requestAnimationFrame(step);
+        }
+      }
+      function stopAutoScroll(){
+        if(autoScrollRAF){
+          cancelAnimationFrame(autoScrollRAF);
+          autoScrollRAF = null;
+        }
+        autoScrollDir = 0;
+      }
+
+      // ---- global binds ----
+      function bindGlobalInputs(){
+        titleText.oninput = ()=>{
+          state.title = titleText.textContent.trim() || "Niji Trip 2026";
+          saveLocal();
+        };
+        subtitleText.oninput = ()=>{
+          state.subtitle = subtitleText.textContent;
+          saveLocal();
+        };
+      }
+
+      // ---- buttons ----
+      addDayBtn.addEventListener("click", ()=>{
+        pushUndo();
+        const next = state.days.length + 1;
+        const d = makeDay(next, "", "（新的一天行程）");
+        d.items.push(makeItem("新行程", ""));
+        state.days.push(d);
+        saveLocal();
+        renderAll();
+        toast("已新增一天");
+      });
+
+      removeLastDayBtn.addEventListener("click", ()=>{
+        if(state.days.length<=1) return alert("至少保留一天");
+        if(!confirm("確定刪除最後一天？")) return;
+        pushUndo();
+        state.days.pop();
+        saveLocal();
+        renderAll();
+      });
+
+      clearLocalBtn.addEventListener("click", ()=>{
+        if(!confirm("確定清除本機所有資料？（雲端資料不會被清掉，除非你也另外存回去）")) return;
+        pushUndo();
+        state.days = [ makeDay(1,"","（清空後的新 Day）") ];
+        state.days[0].items.push(makeItem("新行程",""));
+        state.subtitle = "";
+        state.title = "Niji Trip 2026";
+        try{
+          localStorage.removeItem(LS_KEY_DAYS);
+          localStorage.removeItem(LS_KEY_SUBTITLE);
+          localStorage.removeItem(LS_KEY_TITLE);
+        }catch(_){}
+        saveLocal(false);
+        renderAll();
+        toast("已清除本機");
+      });
+
+      exportBtn.addEventListener("click", ()=>{
+        const payload = {
+          version: 1,
+          exportedAt: new Date().toISOString(),
+          state
+        };
+        const blob = new Blob([JSON.stringify(payload, null, 2)], {type:"application/json"});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "NijiTrip_backup.json";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+      });
+
+      importBtn.addEventListener("click", ()=>{
+        importFile.value = "";
+        importFile.click();
+      });
+
+      importFile.addEventListener("change", ()=>{
+        const file = importFile.files && importFile.files[0];
+        if(!file) return;
+        const r = new FileReader();
+        r.onload = ()=>{
+          try{
+            const json = JSON.parse(r.result);
+            if(!json || !json.state) return alert("檔案格式不正確");
+            pushUndo();
+            state = json.state;
+            migrateIfNeeded();
+            saveLocal();
+            renderAll();
+            toast("已匯入");
+          }catch(e){
+            alert("匯入失敗：檔案格式不正確");
+          }
+        };
+        r.readAsText(file, "utf-8");
+      });
+
+      undoBtn.addEventListener("click", undo);
+
+      // ---- init ----
+      loadLocal();
+      pushUndo(); // baseline
+      renderAll();
+
+      // expose helpers to Firebase module
+      window.__nijiGetState = ()=> deepClone(state);
+      window.__nijiApplyRemoteState = (remoteState)=>{
+        if(!remoteState) return;
+        pushUndo();
+        isApplyingRemote = true;
+        state = remoteState;
+        migrateIfNeeded();
+        saveLocal(false);
+        renderAll();
+        isApplyingRemote = false;
+        toast("已從雲端更新");
+      };
+      window.__nijiToast = toast;
+      window.__nijiSetApplyingRemote = (v)=>{ isApplyingRemote = !!v; };
+    })();
+  </script>
+
+  <!-- Firebase (Email/Password) + Firestore Sync -->
+  <script type="module">
+    // ✅ 你提供的 firebaseConfig
+    const firebaseConfig = {
+      apiKey: "AIzaSyAkFpjZVwRDA92YLK-JfDPeoHJ3hbgKVXM",
+      authDomain: "trip-db86d.firebaseapp.com",
+      projectId: "trip-db86d",
+      storageBucket: "trip-db86d.firebasestorage.app",
+      messagingSenderId: "709795426974",
+      appId: "1:709795426974:web:ec3e2f03f2116b68c1418f",
+      measurementId: "G-FD0411E3XH"
+    };
+
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import {
+      getAuth,
+      onAuthStateChanged,
+      createUserWithEmailAndPassword,
+      signInWithEmailAndPassword,
+      signOut
+    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+    import {
+      getFirestore,
+      doc,
+      setDoc,
+      getDoc,
+      onSnapshot,
+      serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    const authBadge = document.getElementById("authBadge");
+    const emailEl = document.getElementById("email");
+    const passEl = document.getElementById("password");
+    const btnSignUp = document.getElementById("btnSignUp");
+    const btnLogin = document.getElementById("btnLogin");
+    const btnLogout = document.getElementById("btnLogout");
+    const btnCloudPush = document.getElementById("btnCloudPush");
+    const btnCloudPull = document.getElementById("btnCloudPull");
+
+    let currentUid = null;
+    let unsub = null;
+    let pushingTimer = null;
+    let lastRemoteUpdatedAt = 0;
+
+    // Cloud doc path: users/{uid}/apps/nijiTrip2026
+    function userDocRef(uid){
+      return doc(db, "users", uid, "apps", "nijiTrip2026");
     }
-  });
 
-  btnLogin.addEventListener("click", async ()=>{
-    const email = (emailEl.value || "").trim();
-    const pass  = (passwordEl.value || "").trim();
-    if(!email || !pass){ log("登入：請輸入 Email 與密碼"); return; }
-    try{
-      log("登入中...");
-      const cred = await signInWithEmailAndPassword(auth, email, pass);
-      log("登入成功 ✅ " + (cred.user.email || ""));
-    }catch(e){
-      log("登入錯誤 ❌");
-      log("code: " + (e?.code || "(none)"));
-      log("message: " + (e?.message || "(none)"));
-      alert("登入失敗：\n" + (e?.message || e));
+    function setUILoggedOut(){
+      authBadge.textContent = "未登入（僅本機）";
+      btnLogout.style.display = "none";
+      btnCloudPush.style.display = "none";
+      btnCloudPull.style.display = "none";
+      btnLogin.style.display = "inline-block";
+      btnSignUp.style.display = "inline-block";
     }
-  });
 
-  btnLogout.addEventListener("click", async ()=>{
-    try{
-      log("登出中...");
+    function setUILoggedIn(user){
+      const name = user.email || "已登入";
+      authBadge.textContent = "已登入：" + name;
+      btnLogout.style.display = "inline-block";
+      btnCloudPush.style.display = "inline-block";
+      btnCloudPull.style.display = "inline-block";
+      btnLogin.style.display = "none";
+      btnSignUp.style.display = "none";
+    }
+
+    async function doSignUp(){
+      const email = (emailEl.value || "").trim();
+      const pass = (passEl.value || "").trim();
+      if(!email || !pass) return alert("請輸入 Email + 密碼");
+      if(pass.length < 6) return alert("密碼至少 6 碼");
+      await createUserWithEmailAndPassword(auth, email, pass);
+    }
+
+    async function doLogin(){
+      const email = (emailEl.value || "").trim();
+      const pass = (passEl.value || "").trim();
+      if(!email || !pass) return alert("請輸入 Email + 密碼");
+      await signInWithEmailAndPassword(auth, email, pass);
+    }
+
+    async function doLogout(){
       await signOut(auth);
-      log("已登出 ✅");
-    }catch(e){
-      log("登出錯誤 ❌ " + (e?.message || e));
     }
-  });
 
-  btnSyncCloud.addEventListener("click", async ()=>{
-    if(!currentUser){ alert("請先登入"); return; }
-    try{
-      const ref = getMainDocRef(currentUser.uid);
-      const payload = getLocalPayload();
-      log("同步到雲端... (setDoc)");
+    btnSignUp.addEventListener("click", ()=> doSignUp().catch(err=>{
+      alert("註冊失敗：\n" + (err?.message || err));
+    }));
+    btnLogin.addEventListener("click", ()=> doLogin().catch(err=>{
+      alert("登入失敗：\n" + (err?.message || err));
+    }));
+    btnLogout.addEventListener("click", ()=> doLogout().catch(err=>{
+      alert("登出失敗：\n" + (err?.message || err));
+    }));
+
+    // push/pull
+    async function pushToCloud(){
+      if(!currentUid) return alert("請先登入");
+      const ref = userDocRef(currentUid);
+      const state = window.__nijiGetState ? window.__nijiGetState() : null;
+      if(!state) return;
+
       await setDoc(ref, {
-        subtitle: payload.subtitle,
-        days: payload.days,
-        updatedAt: serverTimestamp(),
-        schema: "niji-trip-v2"
+        state,
+        updatedAt: serverTimestamp()
       }, { merge: true });
-      log("同步成功 ✅");
-      setSaveStatus("已同步到雲端 ✅");
-      alert("已同步到雲端 ✅\n\nB 裝置請登入後按「從雲端載入」。");
-    }catch(e){
-      log("同步錯誤 ❌");
-      log("code: " + (e?.code || "(none)"));
-      log("message: " + (e?.message || "(none)"));
-      alert("同步失敗：\n" + (e?.message || e));
-    }
-  });
 
-  btnLoadCloud.addEventListener("click", async ()=>{
-    if(!currentUser){ alert("請先登入"); return; }
-    try{
-      const ref = getMainDocRef(currentUser.uid);
-      log("從雲端載入... (getDoc)");
+      window.__nijiToast && window.__nijiToast("已存到雲端");
+    }
+
+    async function pullFromCloud(){
+      if(!currentUid) return alert("請先登入");
+      const ref = userDocRef(currentUid);
       const snap = await getDoc(ref);
       if(!snap.exists()){
-        log("雲端沒有資料（doc 不存在）");
-        alert("雲端目前沒有資料。\n\n如果 A 裝置有資料：請在 A 裝置按「同步到雲端」。");
+        alert("雲端還沒有資料（你可以先按『存到雲端』）");
         return;
       }
-      const data = snap.data() || {};
-      log("雲端讀取成功 ✅");
-      // 覆蓋本機
-      setLocalPayload({
-        subtitle: data.subtitle ?? "東京行程，可自由編輯。",
-        days: Array.isArray(data.days) ? data.days : []
+      const data = snap.data();
+      if(data?.state){
+        window.__nijiApplyRemoteState && window.__nijiApplyRemoteState(data.state);
+      }
+    }
+
+    btnCloudPush.addEventListener("click", ()=> pushToCloud().catch(err=>{
+      alert("存到雲端失敗：\n" + (err?.message || err));
+    }));
+    btnCloudPull.addEventListener("click", ()=> pullFromCloud().catch(err=>{
+      alert("載入雲端失敗：\n" + (err?.message || err));
+    }));
+
+    // Debounced auto push (called by local app save)
+    window.__cloudSchedulePush = function(){
+      if(!currentUid) return;
+      if(pushingTimer) clearTimeout(pushingTimer);
+      pushingTimer = setTimeout(()=>{
+        pushToCloud().catch(()=>{});
+      }, 900);
+    };
+
+    function attachRealtimeListener(uid){
+      if(unsub) unsub();
+      const ref = userDocRef(uid);
+      unsub = onSnapshot(ref, (snap)=>{
+        if(!snap.exists()) return;
+        const data = snap.data();
+        const state = data?.state;
+        const updatedAt = data?.updatedAt?.toMillis ? data.updatedAt.toMillis() : 0;
+
+        // avoid applying older remote
+        if(updatedAt && updatedAt <= lastRemoteUpdatedAt) return;
+        lastRemoteUpdatedAt = updatedAt || Date.now();
+
+        // apply remote state
+        if(state && window.__nijiApplyRemoteState){
+          window.__nijiSetApplyingRemote && window.__nijiSetApplyingRemote(true);
+          window.__nijiApplyRemoteState(state);
+          window.__nijiSetApplyingRemote && window.__nijiSetApplyingRemote(false);
+        }
       });
-    }catch(e){
-      log("載入錯誤 ❌");
-      log("code: " + (e?.code || "(none)"));
-      log("message: " + (e?.message || "(none)"));
-      alert("載入失敗：\n" + (e?.message || e));
     }
-  });
 
-  // --- Auth state ---
-  onAuthStateChanged(auth, (user)=>{
-    if(user){
-      currentUser = user;
-      log("onAuthStateChanged: logged IN ✅");
-      setLoggedInUI(user);
-      // 小提醒：登入不會自動覆蓋本機，避免誤蓋
-      log("提示：要跨裝置同步 -> A 先『同步到雲端』，B 再『從雲端載入』");
-    }else{
-      currentUser = null;
-      log("onAuthStateChanged: logged OUT ❌");
-      setLoggedOutUI();
-    }
-  });
-</script>
+    onAuthStateChanged(auth, async (user)=>{
+      if(!user){
+        currentUid = null;
+        if(unsub){ unsub(); unsub = null; }
+        setUILoggedOut();
+        return;
+      }
+      currentUid = user.uid;
+      setUILoggedIn(user);
+      attachRealtimeListener(currentUid);
 
+      // 第一次登入：如果雲端有就拉下來；沒有就把本機推上去（避免空空）
+      try{
+        const ref = userDocRef(currentUid);
+        const snap = await getDoc(ref);
+        if(snap.exists() && snap.data()?.state){
+          window.__nijiApplyRemoteState && window.__nijiApplyRemoteState(snap.data().state);
+        }else{
+          await pushToCloud();
+        }
+      }catch(_){}
+    });
+
+    setUILoggedOut();
+  </script>
 </body>
 </html>
