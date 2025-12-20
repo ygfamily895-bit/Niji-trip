@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Niji Trip 2026 (v2)</title>
+  <style>
+    body{margin:0;font-family:system-ui,-apple-system,"Noto Sans TC",sans-serif;background:#ffe4b8}
+    header{padding:16px;background:#fff3da;border-radius:0 0 20px 20px}
+    h1{margin:0 0 6px;color:#7a4a26}
+    .btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;align-items:center}
+    button{border:none;padding:8px 14px;border-radius:999px;background:#ffd89a;color:#5c3a1c;font-weight:700}
+    .badge{display:inline-block;padding:8px 12px;border-radius:999px;background:#fff3c5;color:#5c3a1c;font-weight:700}
+    main{padding:16px}
+    .card{background:#fff7e8;border-radius:16px;padding:12px}
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Niji Trip 2026 🌈 <small style="font-size:14px;opacity:.75">(v2)</small></h1>
+    <div class="btn-row">
+      <button id="btnTest" type="button">測試按鈕</button>
+      <span class="badge" id="status">v2 網站正常 ✅</span>
+    </div>
+  </header>
+
+  <main>
+    <div class="card">如果你看到這段，表示 v2 路徑與 JS 都 OK。</div>
+  </main>
+
+  <script>
+    document.getElementById('btnTest').onclick = () => alert('v2 JS 正常 ✅');
+  </script>
+</body>
+</html>
