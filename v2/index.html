@@ -36,7 +36,7 @@ h1{ margin:0 0 6px; color:var(--brown); }
 }
 button{
   border:none;
-  padding:8px 14px;
+  padding:8px 14px;i
   border-radius:999px;
   background:#ffd89a;
   color:#5c3a1c;
@@ -213,7 +213,10 @@ function render(){
     `;
 
     el.querySelector(".card").addEventListener("input", (e)=>{
-      days[i].text = e.target.innerText;
+    days[i].text = e.target.innerText;
+save();          // 你的 save() 會寫 localStorage
+scheduleAutoSync();
+render();
       saveLocal();
       // 登入狀態下：標記需要同步（不自動每打字就上傳，避免太頻繁）
       window.__NEED_SYNC__ = true;
@@ -265,28 +268,38 @@ render();
   // =========================
 
   // 1) Firebase 核心
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 
-  // 2) Firebase Auth（Email/Password）
-  import {
-    getAuth,
-    createUserWithEmailAndPassword,
-    signInWithEmailAndPassword,
-    signOut,
-    onAuthStateChanged,
-    setPersistence,
-    browserLocalPersistence
-  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import {
+  getAuth,
+  onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    currentUid = user.uid;
 
-  // 3) Firestore
-  import {
-    getFirestore,
-    doc,
-    setDoc,
-    getDoc,
-    serverTimestamp
-  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    // ✅ 登入後自動從雲端載入
+    try {
+      await loadFromCloud(user.uid);
+      // setStatus?.("已從雲端載入 ✅");
+    } catch (e) {
+      console.error("loadFromCloud error:", e);
+    }
 
+  } else {
+    currentUid = null;
+  }
+});
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+import {
+  getFirestore,
+  doc,
+  getDoc,
+  setDoc,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
   // =========================
   // 你的 Firebase Config（你提供的）
   // =========================
@@ -305,6 +318,89 @@ render();
   // =========================
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
+  // ====== localStorage keys（你已確認是 days + subtitle）======
+const KEY_DAYS = "days";
+const KEY_SUB  = "subtitle";
+
+// 讀/寫本機
+function loadLocal() {
+  const days = JSON.parse(localStorage.getItem(KEY_DAYS) || "[]");
+  const subtitle = localStorage.getItem(KEY_SUB) || "";
+  return { days, subtitle };
+}
+function saveLocal(days, subtitle) {
+  localStorage.setItem(KEY_DAYS, JSON.stringify(days || []));
+  localStorage.setItem(KEY_SUB, subtitle || "");
+}
+
+// ====== Firestore ======
+const db = getFirestore(app);
+
+// 取得目前登入者的文件參考
+function userDocRef(uid) {
+  return doc(db, "users", uid, "planner", "main");
+}
+
+// 從雲端載入 -> 覆蓋本機 + 重畫
+async function loadFromCloud(uid) {
+  const ref = userDocRef(uid);
+  const snap = await getDoc(ref);
+
+  if (!snap.exists()) {
+    // 雲端還沒有資料：第一次登入就把本機推上去（避免空白）
+    const local = loadLocal();
+    await saveToCloud(uid, local.days, local.subtitle);
+    return { loaded: false, reason: "cloud_empty_uploaded_local" };
+  }
+
+  const data = snap.data() || {};
+  const cloudDays = Array.isArray(data.days) ? data.days : [];
+  const cloudSubtitle = typeof data.subtitle === "string" ? data.subtitle : "";
+
+  // 覆蓋本機
+  saveLocal(cloudDays, cloudSubtitle);
+
+  // 你原本的 render 需要用到全域 days/subtitle 的話：
+  // 這裡把它們更新掉（依你的程式架構調整）
+  if (window.days !== undefined) window.days = cloudDays;
+  const subtitleEl = document.querySelector('[contenteditable="true"]');
+  if (subtitleEl) subtitleEl.innerText = cloudSubtitle;
+
+  // 重新 render（如果你的 render 是全域 function）
+  if (typeof window.render === "function") window.render();
+
+  return { loaded: true, reason: "cloud_loaded" };
+}
+
+// 存到雲端
+async function saveToCloud(uid, days, subtitle) {
+  const ref = userDocRef(uid);
+  await setDoc(ref, {
+    days: Array.isArray(days) ? days : [],
+    subtitle: subtitle || "",
+    updatedAt: serverTimestamp()
+  }, { merge: true });
+}
+
+// ====== 自動同步（防抖，避免你打字時狂寫雲端）======
+let currentUid = null;
+let syncTimer = null;
+
+function scheduleAutoSync() {
+  if (!currentUid) return;
+  clearTimeout(syncTimer);
+  syncTimer = setTimeout(async () => {
+    const local = loadLocal();
+    try {
+      await saveToCloud(currentUid, local.days, local.subtitle);
+      // 你若有狀態欄可顯示：已同步✅
+      // setStatus?.("已同步到雲端 ✅");
+    } catch (e) {
+      // setStatus?.("同步失敗 ❌");
+      console.error("AutoSync failed:", e);
+    }
+  }, 700);
+}
   const db = getFirestore(app);
 
   // 建議：手機/跨頁穩定
