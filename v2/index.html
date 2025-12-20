@@ -261,25 +261,36 @@ render();
 
 <!-- ✅ Firebase（Email/Password + Firestore） -->
 <script type="module">
-  // Firebase SDK (v10 modular)
+  // =========================
+  // Firebase (Auth + Firestore) 完整版
+  // =========================
+
+  // 1) Firebase 核心
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+
+  // 2) Firebase Auth（Email/Password）
   import {
     getAuth,
-    onAuthStateChanged,
     createUserWithEmailAndPassword,
     signInWithEmailAndPassword,
-    signOut
+    signOut,
+    onAuthStateChanged,
+    setPersistence,
+    browserLocalPersistence
   } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
+  // 3) Firestore
   import {
     getFirestore,
     doc,
-    getDoc,
     setDoc,
+    getDoc,
     serverTimestamp
   } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-  // 你的 Firebase config
+  // =========================
+  // 你的 Firebase Config（你提供的）
+  // =========================
   const firebaseConfig = {
     apiKey: "AIzaSyAkFpjZVwRDA92YLK-JfDPeoHJ3hbgKVXM",
     authDomain: "trip-db86d.firebaseapp.com",
@@ -290,153 +301,190 @@ render();
     measurementId: "G-FD0411E3XH"
   };
 
-  // DOM
-  const authStatusEl = document.getElementById("authStatus");
-  const diag = document.getElementById("diag");
-  const emailEl = document.getElementById("email");
-  const pwEl = document.getElementById("password");
-  const btnSignUp = document.getElementById("btnSignUp");
-  const btnSignIn = document.getElementById("btnSignIn");
-  const btnSignOut = document.getElementById("btnSignOut");
-  const btnSyncDown = document.getElementById("btnSyncDown");
-  const btnSyncUp = document.getElementById("btnSyncUp");
-
-  const log = (m)=>{ diag.textContent += m + "\n"; };
-
-  // Init
+  // =========================
+  // 初始化
+  // =========================
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const db = getFirestore(app);
 
-  log(`Firebase init OK: ${firebaseConfig.projectId}`);
+  // 建議：手機/跨頁穩定
+  await setPersistence(auth, browserLocalPersistence);
 
-  // Cloud doc path: users/{uid}/trip/main
-  const getUserDocRef = (uid) => doc(db, "users", uid, "trip", "main");
+  // =========================
+  // 讀取你頁面上的元件
+  // =========================
+  const emailEl = document.getElementById("email");
+  const passwordEl = document.getElementById("password");
 
-  // --- Sync functions ---
-  async function syncDown(user){
-    const ref = getUserDocRef(user.uid);
+  const btnSignup = document.getElementById("btnSignup");
+  const btnLogin = document.getElementById("btnLogin");
+  const btnLogout = document.getElementById("btnLogout");
+  const btnLoadCloud = document.getElementById("btnLoadCloud");
+  const btnSyncCloud = document.getElementById("btnSyncCloud");
+
+  const authStatus = document.getElementById("authStatus");
+
+  // =========================
+  // 診斷區（顯示在頁面底下）
+  // =========================
+  const diag = document.createElement("div");
+  diag.style.marginTop = "10px";
+  diag.style.fontSize = "12px";
+  diag.style.lineHeight = "1.5";
+  diag.style.color = "#6b4a2c";
+  diag.style.whiteSpace = "pre-wrap";
+  diag.style.wordBreak = "break-word";
+  diag.textContent = `Firebase init OK: ${app.options?.projectId || "(unknown)"}\n`;
+  document.querySelector("header")?.appendChild(diag);
+
+  const log = (msg) => {
+    diag.textContent += msg + "\n";
+  };
+
+  // =========================
+  // localStorage Key（你已確認）
+  // =========================
+  const KEY_DAYS = "days";
+  const KEY_SUBTITLE = "subtitle";
+
+  // =========================
+  // Firestore 路徑：users/{uid}/trip/main
+  // =========================
+  function docRefForUser(user) {
+    return doc(db, "users", user.uid, "trip", "main");
+  }
+
+  // =========================
+  // 從雲端載入 → local
+  // =========================
+  async function loadFromCloud(user) {
+    const ref = docRefForUser(user);
+    log("getDoc(users/{uid}/trip/main) ...");
+
     const snap = await getDoc(ref);
-    if(!snap.exists()){
-      log("雲端沒有資料（第一次登入正常）");
-      return false;
+    if (!snap.exists()) {
+      log("Cloud: no document yet.");
+      alert("雲端尚無資料（第一次使用請先「同步到雲端」）");
+      return;
     }
-    const data = snap.data();
-    // 只接受我們定義的欄位
-    const cloudDays = Array.isArray(data.days) ? data.days : [];
-    const cloudSubtitle = typeof data.subtitle === "string" ? data.subtitle : "東京行程，可自由編輯。";
 
-    // 套用到畫面 + localStorage
-    window.days = cloudDays.map(x => ({ text: String(x?.text ?? "") }));
-    document.getElementById("subtitle").textContent = cloudSubtitle;
+    const data = snap.data() || {};
+    localStorage.setItem(KEY_DAYS, JSON.stringify(data.days || []));
+    localStorage.setItem(KEY_SUBTITLE, data.subtitle || "");
 
-    localStorage.setItem("days_v2", JSON.stringify(window.days));
-    localStorage.setItem("subtitle_v2", cloudSubtitle);
+    // 如果你原本頁面有 render()，就會更新畫面
+    if (typeof window.render === "function") window.render();
 
-    // 重新渲染（呼叫全域 render）
-    window.__NEED_SYNC__ = false;
-    // render() 在上一段 script scope；這裡用簡單方式觸發：reload page UI
-    location.reload();
-    return true;
+    log("Cloud -> Local: OK ✅");
+    alert("已從雲端載入 ✅");
   }
 
-  async function syncUp(user){
-    const ref = getUserDocRef(user.uid);
-    const payload = {
-      subtitle: localStorage.getItem("subtitle_v2") || "東京行程，可自由編輯。",
-      days: JSON.parse(localStorage.getItem("days_v2") || "[]").map(x=>({ text: String(x?.text ?? "") })),
-      updatedAt: serverTimestamp(),
-      version: "v2"
-    };
-    await setDoc(ref, payload, { merge: true });
-    window.__NEED_SYNC__ = false;
-    log("已同步到雲端 ✅");
-    return true;
+  // =========================
+  // 同步 local → 雲端
+  // =========================
+  async function syncToCloud(user) {
+    const ref = docRefForUser(user);
+
+    const days = JSON.parse(localStorage.getItem(KEY_DAYS) || "[]");
+    const subtitle = localStorage.getItem(KEY_SUBTITLE) || "";
+
+    log("setDoc(users/{uid}/trip/main) ...");
+    await setDoc(ref, {
+      days,
+      subtitle,
+      updatedAt: serverTimestamp()
+    }, { merge: true });
+
+    log("Local -> Cloud: OK ✅");
+    alert("已同步到雲端 ✅");
   }
 
-  // --- Auth UI ---
-  function setLoggedOutUI(){
-    authStatusEl.textContent = "未登入";
-    btnSignOut.style.display = "none";
-    btnSyncDown.disabled = true;
-    btnSyncUp.disabled = true;
+  // =========================
+  // UI 狀態切換
+  // =========================
+  function setLoggedOutUI() {
+    if (authStatus) authStatus.textContent = "未登入";
+    if (btnLogout) btnLogout.style.display = "none";
+    if (btnLogin) btnLogin.style.display = "inline-block";
+    if (btnSignup) btnSignup.style.display = "inline-block";
   }
 
-  function setLoggedInUI(user){
-    authStatusEl.textContent = "已登入：" + (user.email || "使用者");
-    btnSignOut.style.display = "inline-block";
-    btnSyncDown.disabled = false;
-    btnSyncUp.disabled = false;
+  function setLoggedInUI(user) {
+    const name = user.email || "使用者";
+    if (authStatus) authStatus.textContent = "已登入：" + name;
+    if (btnLogout) btnLogout.style.display = "inline-block";
+    if (btnLogin) btnLogin.style.display = "none";
+    if (btnSignup) btnSignup.style.display = "none";
   }
 
-  // Events
-  btnSignUp.addEventListener("click", async ()=>{
-    try{
-      const email = emailEl.value.trim();
-      const pw = pwEl.value;
-      if(!email || !pw) return alert("請輸入 Email 與密碼");
-      const cred = await createUserWithEmailAndPassword(auth, email, pw);
-      log("註冊成功 ✅ " + cred.user.email);
-      alert("註冊成功！\n建議下一步按：從雲端載入（通常是空）→ 同步到雲端");
-    }catch(e){
-      log("註冊失敗 ❌ " + (e?.code || "") + " " + (e?.message || ""));
-      alert("註冊失敗：\n" + (e?.message || e));
-    }
-  });
+  // =========================
+  // 綁定按鈕：註冊/登入/登出/載入/同步
+  // =========================
+  btnSignup?.addEventListener("click", async () => {
+    try {
+      const email = emailEl?.value?.trim();
+      const pw = passwordEl?.value;
+      if (!email || !pw) return alert("請輸入 Email 與密碼");
 
-  btnSignIn.addEventListener("click", async ()=>{
-    try{
-      const email = emailEl.value.trim();
-      const pw = pwEl.value;
-      if(!email || !pw) return alert("請輸入 Email 與密碼");
-      const cred = await signInWithEmailAndPassword(auth, email, pw);
-      log("登入成功 ✅ " + cred.user.email);
-    }catch(e){
-      log("登入失敗 ❌ " + (e?.code || "") + " " + (e?.message || ""));
-      alert("登入失敗：\n" + (e?.message || e));
+      log("createUserWithEmailAndPassword() ...");
+      await createUserWithEmailAndPassword(auth, email, pw);
+      log("Signup OK ✅");
+      alert("註冊成功 ✅");
+    } catch (e) {
+      log("Signup ERROR ❌ " + (e?.code || "") + " " + (e?.message || ""));
+      alert("註冊失敗：" + (e?.code || e?.message || "未知錯誤"));
     }
   });
 
-  btnSignOut.addEventListener("click", async ()=>{
-    try{
+  btnLogin?.addEventListener("click", async () => {
+    try {
+      const email = emailEl?.value?.trim();
+      const pw = passwordEl?.value;
+      if (!email || !pw) return alert("請輸入 Email 與密碼");
+
+      log("signInWithEmailAndPassword() ...");
+      await signInWithEmailAndPassword(auth, email, pw);
+      log("Login OK ✅");
+      alert("登入成功 ✅");
+    } catch (e) {
+      log("Login ERROR ❌ " + (e?.code || "") + " " + (e?.message || ""));
+      alert("登入失敗：" + (e?.code || e?.message || "未知錯誤"));
+    }
+  });
+
+  btnLogout?.addEventListener("click", async () => {
+    try {
+      log("signOut() ...");
       await signOut(auth);
-      log("已登出 ✅");
-    }catch(e){
-      log("登出失敗 ❌ " + (e?.message || ""));
-      alert("登出失敗：\n" + (e?.message || e));
+      log("Logout OK ✅");
+      alert("已登出");
+    } catch (e) {
+      log("Logout ERROR ❌ " + (e?.code || "") + " " + (e?.message || ""));
+      alert("登出失敗：" + (e?.code || e?.message || "未知錯誤"));
     }
   });
 
-  btnSyncDown.addEventListener("click", async ()=>{
+  btnLoadCloud?.addEventListener("click", async () => {
     const user = auth.currentUser;
-    if(!user) return alert("請先登入");
-    try{
-      log("從雲端載入中...");
-      await syncDown(user);
-    }catch(e){
-      log("從雲端載入失敗 ❌ " + (e?.message || ""));
-      alert("從雲端載入失敗：\n" + (e?.message || e));
-    }
+    if (!user) return alert("請先登入");
+    await loadFromCloud(user);
   });
 
-  btnSyncUp.addEventListener("click", async ()=>{
+  btnSyncCloud?.addEventListener("click", async () => {
     const user = auth.currentUser;
-    if(!user) return alert("請先登入");
-    try{
-      log("同步到雲端中...");
-      await syncUp(user);
-    }catch(e){
-      log("同步失敗 ❌ " + (e?.message || ""));
-      alert("同步失敗：\n" + (e?.message || e));
-    }
+    if (!user) return alert("請先登入");
+    await syncToCloud(user);
   });
 
-  // Auth state
-  onAuthStateChanged(auth, async (user)=>{
-    if(user){
+  // =========================
+  // 監聽登入狀態（最重要）
+  // =========================
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
       log("onAuthStateChanged: logged IN ✅");
       setLoggedInUI(user);
-    }else{
+    } else {
       log("onAuthStateChanged: logged OUT ❌");
       setLoggedOutUI();
     }
