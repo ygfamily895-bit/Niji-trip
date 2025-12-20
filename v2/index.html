@@ -5,31 +5,184 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Niji Trip 2026 (v2)</title>
   <style>
-    body{margin:0;font-family:system-ui,-apple-system,"Noto Sans TC",sans-serif;background:#ffe4b8}
-    header{padding:16px;background:#fff3da;border-radius:0 0 20px 20px}
-    h1{margin:0 0 6px;color:#7a4a26}
-    .btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;align-items:center}
-    button{border:none;padding:8px 14px;border-radius:999px;background:#ffd89a;color:#5c3a1c;font-weight:700}
-    .badge{display:inline-block;padding:8px 12px;border-radius:999px;background:#fff3c5;color:#5c3a1c;font-weight:700}
+    :root{
+      --bg-main:#ffe4b8;
+      --bg-card:#fff7e8;
+      --brown:#7a4a26;
+      --radius:20px;
+    }
+    body{
+      margin:0;
+      font-family:system-ui,-apple-system,"Noto Sans TC",sans-serif;
+      background:var(--bg-main);
+    }
+    header{
+      padding:16px;
+      background:#fff3da;
+      border-radius:0 0 var(--radius) var(--radius);
+    }
+    h1{margin:0 0 6px;color:var(--brown)}
+    .sub{opacity:.85;color:#5c3a1c}
+    .btn-row{
+      display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;align-items:center;
+    }
+    button{
+      border:none;
+      padding:8px 14px;
+      border-radius:999px;
+      background:#ffd89a;
+      color:#5c3a1c;
+      font-weight:700;
+    }
+    .badge{
+      display:inline-block;
+      padding:8px 12px;
+      border-radius:999px;
+      background:#fff3c5;
+      color:#5c3a1c;
+      font-weight:700;
+    }
     main{padding:16px}
-    .card{background:#fff7e8;border-radius:16px;padding:12px}
+    .day{
+      background:#eaf6ff;
+      border-radius:var(--radius);
+      padding:14px;
+      margin-bottom:14px;
+    }
+    .card{
+      background:var(--bg-card);
+      border-radius:16px;
+      padding:12px;
+      margin-top:10px;
+      white-space:pre-wrap;
+      word-break:break-word;
+      min-height:44px;
+    }
+    .row{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+    }
+    .del{
+      background:#ffd1c7;
+    }
+    [contenteditable]{outline:none}
+    .hint{margin-top:10px;font-size:13px;color:#6b4a2c;opacity:.9}
   </style>
 </head>
+
 <body>
   <header>
     <h1>Niji Trip 2026 🌈 <small style="font-size:14px;opacity:.75">(v2)</small></h1>
+    <div class="sub" contenteditable="true" id="subtitle">東京行程，可自由編輯。</div>
+
     <div class="btn-row">
-      <button id="btnTest" type="button">測試按鈕</button>
-      <span class="badge" id="status">v2 網站正常 ✅</span>
+      <button id="addDayBtn" type="button">＋ 新增一天</button>
+      <button id="clearBtn" type="button">清除儲存</button>
+      <span class="badge" id="saveStatus">已載入 ✅</span>
     </div>
+
+    <div class="hint">目前版本：只使用本機 localStorage（不含 Firebase）。</div>
   </header>
 
-  <main>
-    <div class="card">如果你看到這段，表示 v2 路徑與 JS 都 OK。</div>
-  </main>
+  <main id="days"></main>
 
   <script>
-    document.getElementById('btnTest').onclick = () => alert('v2 JS 正常 ✅');
+    // ====== localStorage keys（v2 專用，避免跟舊版打架）======
+    const KEY_DAYS = "niji_v2_days";
+    const KEY_SUB  = "niji_v2_subtitle";
+
+    const daysEl = document.getElementById("days");
+    const addDayBtn = document.getElementById("addDayBtn");
+    const clearBtn = document.getElementById("clearBtn");
+    const saveStatus = document.getElementById("saveStatus");
+    const subtitleEl = document.getElementById("subtitle");
+
+    let days = safeParse(localStorage.getItem(KEY_DAYS), []);
+    subtitleEl.textContent = localStorage.getItem(KEY_SUB) || subtitleEl.textContent;
+
+    function safeParse(raw, fallback){
+      try { return raw ? JSON.parse(raw) : fallback; }
+      catch { return fallback; }
+    }
+
+    function setStatus(text){
+      saveStatus.textContent = text;
+      window.clearTimeout(setStatus._t);
+      setStatus._t = window.setTimeout(()=> saveStatus.textContent = "已儲存 ✅", 800);
+    }
+
+    function save(){
+      localStorage.setItem(KEY_DAYS, JSON.stringify(days));
+      setStatus("儲存中…");
+    }
+
+    function render(){
+      daysEl.innerHTML = "";
+      days.forEach((d, i) => {
+        const wrap = document.createElement("div");
+        wrap.className = "day";
+
+        wrap.innerHTML = `
+          <div class="row">
+            <strong>Day ${i + 1}</strong>
+            <button class="del" type="button" data-del="${i}">刪除</button>
+          </div>
+          <div class="card" contenteditable="true" data-idx="${i}"></div>
+        `;
+
+        const card = wrap.querySelector(".card");
+        card.textContent = d.text || "";
+
+        card.addEventListener("input", () => {
+          days[i].text = card.innerText;
+          save();
+        });
+
+        wrap.querySelector("[data-del]").addEventListener("click", () => {
+          if (confirm(`確定刪除 Day ${i+1}？`)) {
+            days.splice(i, 1);
+            save();
+            render();
+          }
+        });
+
+        daysEl.appendChild(wrap);
+      });
+
+      if (days.length === 0) {
+        const empty = document.createElement("div");
+        empty.className = "day";
+        empty.innerHTML = `<strong>還沒有行程</strong><div class="card">按「＋ 新增一天」開始。</div>`;
+        daysEl.appendChild(empty);
+      }
+    }
+
+    addDayBtn.addEventListener("click", () => {
+      days.push({ text: "新增行程內容…" });
+      save();
+      render();
+    });
+
+    clearBtn.addEventListener("click", () => {
+      if (confirm("確定清除 v2 的所有資料？（不影響舊版）")) {
+        localStorage.removeItem(KEY_DAYS);
+        localStorage.removeItem(KEY_SUB);
+        days = [];
+        subtitleEl.textContent = "東京行程，可自由編輯。";
+        setStatus("已清除 ✅");
+        render();
+      }
+    });
+
+    subtitleEl.addEventListener("input", () => {
+      localStorage.setItem(KEY_SUB, subtitleEl.innerText);
+      setStatus("儲存中…");
+    });
+
+    render();
+    setStatus("已載入 ✅");
   </script>
 </body>
 </html>
