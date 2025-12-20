@@ -1,252 +1,267 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Niji Trip 2026 🌈</title>
+
   <style>
-    body {
-      font-family: "Noto Sans TC", sans-serif;
-      background: #fde8c7;
-      color: #4a2c1a;
-      margin: 0;
-      padding: 20px;
+    body{
+      margin:0;
+      padding:20px;
+      font-family:"Noto Sans TC",system-ui,sans-serif;
+      background:#fde7c4;
+      color:#4b2f1b;
     }
-    h1 { font-size: 28px; margin-bottom: 4px; }
-    h2 { margin-top: 0; font-size: 16px; color: #6b4a2b; }
-    button {
-      border: none; border-radius: 10px;
-      padding: 8px 14px; margin: 5px;
-      background: #ffd69e; font-weight: bold;
+    h1{margin-bottom:4px}
+    h2{
+      margin-top:0;
+      font-size:16px;
+      color:#6b4a2b;
     }
-    button:hover { background: #ffca77; }
-    .card {
-      background: #e9f6ff; border-radius: 12px;
-      padding: 10px 14px; margin: 10px 0;
+    button{
+      border:none;
+      border-radius:14px;
+      padding:8px 14px;
+      background:#ffd79a;
+      font-weight:700;
+      margin:4px;
     }
-    .removeBtn {
-      float: right;
-      background: #ffb3a3; border-radius: 12px;
-      padding: 3px 8px; font-size: 13px;
+    .card{
+      background:#e9f6ff;
+      border-radius:16px;
+      padding:12px;
+      margin-top:12px;
     }
-    .statusBox {
-      background: #fff4e0;
-      padding: 8px;
-      border-radius: 10px;
-      margin-top: 10px;
-      font-size: 14px;
-      line-height: 1.5;
+    .remove{
+      float:right;
+      background:#ffb3a3;
+      padding:4px 10px;
+      border-radius:12px;
+      font-size:13px;
     }
-    [contenteditable="true"] {
-      background: #fffbe7;
-      border-radius: 8px;
-      padding: 4px;
-      min-height: 20px;
+    .box{
+      background:#fff3df;
+      border-radius:14px;
+      padding:12px;
+      margin-top:12px;
+      font-size:14px;
+      line-height:1.6;
+    }
+    [contenteditable]{
+      background:#fffbe8;
+      border-radius:8px;
+      padding:6px;
+      outline:none;
+    }
+    input{
+      padding:8px;
+      border-radius:10px;
+      border:none;
+      margin:4px 0;
+      width:100%;
     }
   </style>
 </head>
 
 <body>
-  <h1>Niji Trip 2026 🌈 <small>(v2.1)</small></h1>
-  <h2 id="subtitle" contenteditable="true">東京行程，可自由編輯。</h2>
 
-  <button id="addDayBtn" type="button">＋ 新增一天</button>
-  <button id="clearBtn" type="button">清除儲存</button>
-  <button id="googleBtn" type="button">Google 登入</button>
+<h1>Niji Trip 2026 🌈 <small>(v2)</small></h1>
+<h2 id="subtitle" contenteditable="true">東京行程，可自由編輯。</h2>
 
-  <div id="authBox" class="statusBox">
-    <b>網站帳號登入（Email / 密碼）</b><br>
-    <input id="email" placeholder="Email (例如 ygfamily895@gmail.com)">
-    <input id="password" placeholder="密碼 (至少 6 碼)" type="password">
-    <div>
-      <button id="btnSignup" type="button">註冊</button>
-      <button id="btnLogin" type="button">登入</button>
-      <button id="btnLogout" type="button" style="display:none;">登出</button>
-    </div>
-  </div>
+<button id="addDay">＋ 新增一天</button>
+<button id="clearAll">清除儲存</button>
 
-  <div id="authStatus" class="statusBox">未登入</div>
+<div class="box">
+  <b>網站帳號登入（Email / 密碼）</b><br>
+  <input id="email" placeholder="Email">
+  <input id="password" placeholder="密碼（至少 6 碼）" type="password">
+  <button id="signup">註冊</button>
+  <button id="login">登入</button>
+  <button id="logout" style="display:none;">登出</button>
+</div>
 
-  <div id="tripContainer"></div>
+<div id="status" class="box">未登入</div>
 
-  <div class="statusBox" id="debugBox"></div>
+<div id="days"></div>
 
-  <p style="margin-top:30px;">
-    <a href="#">隱私權政策</a>｜<a href="#">服務條款</a>
-  </p>
+<div id="debug" class="box"></div>
 
-  <!-- Firebase -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import {
-      getAuth, onAuthStateChanged,
-      createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut
-    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import {
-      getFirestore, doc, getDoc, setDoc, serverTimestamp
-    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+<p style="margin-top:30px;">
+  <a href="#">隱私權政策</a>｜<a href="#">服務條款</a>
+</p>
 
-    // ===== Firebase 初始化 =====
-    const firebaseConfig = {
-      apiKey: "AIzaSyAkFpjZVwRDA92YLK-JfDPeoHJ3hbgKVXM",
-    authDomain: "trip-db86d.firebaseapp.com",
-    projectId: "trip-db86d",
-    storageBucket: "trip-db86d.firebasestorage.app",
-    messagingSenderId: "709795426974",
-    appId: "1:709795426974:web:ec3e2f03f2116b68c1418f",
-    measurementId: "G-FD0411E3XH"
-  };
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+<!-- Firebase -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import {
+  getAuth,onAuthStateChanged,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import {
+  getFirestore,doc,getDoc,setDoc,serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-    // ===== 元素 =====
-    const addDayBtn = document.getElementById("addDayBtn");
-    const clearBtn = document.getElementById("clearBtn");
-    const subtitleEl = document.getElementById("subtitle");
-    const tripContainer = document.getElementById("tripContainer");
-    const debugBox = document.getElementById("debugBox");
-    const emailEl = document.getElementById("email");
-    const passwordEl = document.getElementById("password");
-    const btnSignup = document.getElementById("btnSignup");
-    const btnLogin = document.getElementById("btnLogin");
-    const btnLogout = document.getElementById("btnLogout");
-    const authStatus = document.getElementById("authStatus");
+/* ===== Firebase 設定（你的） ===== */
+const firebaseConfig = {
+  apiKey: "AIzaSyAkFpjZVwRDA92YLK-JfDPeoHJ3hbgKVXM",
+  authDomain: "trip-db86d.firebaseapp.com",
+  projectId: "trip-db86d",
+  storageBucket: "trip-db86d.firebasestorage.app",
+  messagingSenderId: "709795426974",
+  appId: "1:709795426974:web:ec3e2f03f2116b68c1418f",
+  measurementId: "G-FD0411E3XH"
+};
 
-    // ===== Local Storage Key =====
-    const KEY_DAYS = "days";
-    const KEY_SUB = "subtitle";
-    let days = JSON.parse(localStorage.getItem(KEY_DAYS) || "[]");
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
-    function log(msg){ debugBox.innerHTML += msg + "<br>"; }
+/* ===== DOM ===== */
+const subtitleEl = document.getElementById("subtitle");
+const daysEl = document.getElementById("days");
+const statusEl = document.getElementById("status");
+const debugEl = document.getElementById("debug");
 
-    // ===== Render =====
-    function render() {
-      tripContainer.innerHTML = "";
-      days.forEach((d, i) => {
-        const div = document.createElement("div");
-        div.className = "card";
-        div.innerHTML = `<b>Day ${i + 1}</b> 
-          <button class="removeBtn" data-i="${i}">刪除</button>
-          <div contenteditable="true" data-i="${i}">${d.text}</div>`;
-        tripContainer.appendChild(div);
-      });
-    }
+const emailEl = document.getElementById("email");
+const passEl = document.getElementById("password");
+const btnSignup = document.getElementById("signup");
+const btnLogin = document.getElementById("login");
+const btnLogout = document.getElementById("logout");
 
-    // ===== 儲存本機 =====
-    function save() {
-      localStorage.setItem(KEY_DAYS, JSON.stringify(days));
-      localStorage.setItem(KEY_SUB, subtitleEl.innerText);
-    }
+const btnAdd = document.getElementById("addDay");
+const btnClear = document.getElementById("clearAll");
 
-    // ===== Firestore =====
-    function userDocRef(uid) {
-      return doc(db, "users", uid, "planner", "main");
-    }
+/* ===== Storage Key ===== */
+const KEY_DAYS = "days";
+const KEY_SUB = "subtitle";
 
-    async function loadFromCloud(uid) {
-      const snap = await getDoc(userDocRef(uid));
-      if (snap.exists()) {
-        const data = snap.data();
-        days = data.days || [];
-        subtitleEl.innerText = data.subtitle || "";
-        save();
-        render();
-        log("☁ 已從雲端載入");
-      } else {
-        log("☁ 雲端無資料，上傳本機版本");
-        await saveToCloud(uid);
-      }
-    }
+let days = JSON.parse(localStorage.getItem(KEY_DAYS) || "[]");
+let currentUID = null;
+let syncTimer = null;
 
-    async function saveToCloud(uid) {
-      await setDoc(userDocRef(uid), {
-        days: days,
-        subtitle: subtitleEl.innerText,
-        updatedAt: serverTimestamp()
-      }, { merge: true });
-      log("☁ 已同步到雲端");
-    }
+/* ===== 工具 ===== */
+const log = (t)=> debugEl.innerHTML += t + "<br>";
 
-    // ===== Auto Sync =====
-    let currentUid = null;
-    let syncTimer = null;
-    function scheduleAutoSync() {
-      if (!currentUid) return;
-      clearTimeout(syncTimer);
-      syncTimer = setTimeout(() => saveToCloud(currentUid), 700);
-    }
+const saveLocal = ()=>{
+  localStorage.setItem(KEY_DAYS, JSON.stringify(days));
+  localStorage.setItem(KEY_SUB, subtitleEl.innerText);
+};
 
-    // ===== 事件綁定 =====
-    addDayBtn.addEventListener("click", () => {
-      days.push({ text: "新增行程內容…" });
-      save(); render(); scheduleAutoSync();
-    });
+const render = ()=>{
+  daysEl.innerHTML="";
+  days.forEach((d,i)=>{
+    const div = document.createElement("div");
+    div.className="card";
+    div.innerHTML = `
+      <b>Day ${i+1}</b>
+      <button class="remove" data-i="${i}">刪除</button>
+      <div contenteditable="true" data-i="${i}">${d.text}</div>
+    `;
+    daysEl.appendChild(div);
+  });
+};
 
-    clearBtn.addEventListener("click", () => {
-      if (confirm("確定清除所有行程？")) {
-        days = [];
-        subtitleEl.innerText = "";
-        save(); render(); scheduleAutoSync();
-      }
-    });
+const userDoc = uid => doc(db,"users",uid,"planner","main");
 
-    subtitleEl.addEventListener("input", () => {
-      save(); scheduleAutoSync();
-    });
+const saveCloud = async ()=>{
+  if(!currentUID) return;
+  await setDoc(userDoc(currentUID),{
+    days,
+    subtitle: subtitleEl.innerText,
+    updatedAt: serverTimestamp()
+  },{merge:true});
+  log("☁ 已同步到雲端");
+};
 
-    tripContainer.addEventListener("input", e => {
-      const i = e.target.dataset.i;
-      if (i !== undefined) {
-        days[i].text = e.target.innerText;
-        save(); scheduleAutoSync();
-      }
-    });
+const scheduleSync = ()=>{
+  if(!currentUID) return;
+  clearTimeout(syncTimer);
+  syncTimer = setTimeout(saveCloud,800);
+};
 
-    tripContainer.addEventListener("click", e => {
-      if (e.target.classList.contains("removeBtn")) {
-        days.splice(e.target.dataset.i, 1);
-        save(); render(); scheduleAutoSync();
-      }
-    });
-
-    // ===== Auth =====
-    btnSignup.addEventListener("click", async () => {
-      try {
-        await createUserWithEmailAndPassword(auth, emailEl.value, passwordEl.value);
-        log("✅ 註冊成功");
-      } catch (e) { log("註冊錯誤: " + e.message); }
-    });
-
-    btnLogin.addEventListener("click", async () => {
-      try {
-        await signInWithEmailAndPassword(auth, emailEl.value, passwordEl.value);
-        log("✅ 登入成功");
-      } catch (e) { log("登入錯誤: " + e.message); }
-    });
-
-    btnLogout.addEventListener("click", async () => {
-      await signOut(auth);
-      log("🚪 已登出");
-    });
-
-    // ===== 登入狀態監聽 =====
-    onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        currentUid = user.uid;
-        authStatus.innerText = `已登入：${user.email}`;
-        btnLogout.style.display = "inline";
-        await loadFromCloud(user.uid);
-      } else {
-        currentUid = null;
-        authStatus.innerText = "未登入";
-        btnLogout.style.display = "none";
-      }
-    });
-
-    // ===== 啟動 =====
+const loadCloud = async(uid)=>{
+  const snap = await getDoc(userDoc(uid));
+  if(snap.exists()){
+    days = snap.data().days || [];
+    subtitleEl.innerText = snap.data().subtitle || "";
+    saveLocal();
     render();
-    log("Firebase init OK ✅");
-  </script>
+    log("☁ 從雲端載入完成");
+  }else{
+    await saveCloud();
+  }
+};
+
+/* ===== 事件 ===== */
+btnAdd.onclick=()=>{
+  days.push({text:"新增行程內容…"});
+  saveLocal(); render(); scheduleSync();
+};
+
+btnClear.onclick=()=>{
+  if(confirm("確定清除？")){
+    days=[]; subtitleEl.innerText="";
+    saveLocal(); render(); scheduleSync();
+  }
+};
+
+daysEl.oninput = e=>{
+  if(e.target.dataset.i!==undefined){
+    days[e.target.dataset.i].text = e.target.innerText;
+    saveLocal(); scheduleSync();
+  }
+};
+
+daysEl.onclick = e=>{
+  if(e.target.classList.contains("remove")){
+    days.splice(e.target.dataset.i,1);
+    saveLocal(); render(); scheduleSync();
+  }
+};
+
+subtitleEl.oninput=()=>{ saveLocal(); scheduleSync(); };
+
+/* ===== Auth ===== */
+btnSignup.onclick=async()=>{
+  try{
+    await createUserWithEmailAndPassword(auth,emailEl.value,passEl.value);
+    log("✅ 註冊成功");
+  }catch(e){ log("❌ "+e.message); }
+};
+
+btnLogin.onclick=async()=>{
+  try{
+    await signInWithEmailAndPassword(auth,emailEl.value,passEl.value);
+    log("✅ 登入成功");
+  }catch(e){ log("❌ "+e.message); }
+};
+
+btnLogout.onclick=async()=>{
+  await signOut(auth);
+  log("🚪 已登出");
+};
+
+onAuthStateChanged(auth,async(user)=>{
+  if(user){
+    currentUID = user.uid;
+    statusEl.innerHTML = `已登入：${user.email}`;
+    btnLogout.style.display="inline";
+    await loadCloud(user.uid);
+  }else{
+    currentUID = null;
+    statusEl.innerHTML = "未登入（僅本機儲存）";
+    btnLogout.style.display="none";
+  }
+});
+
+/* ===== Init ===== */
+subtitleEl.innerText = localStorage.getItem(KEY_SUB) || subtitleEl.innerText;
+render();
+log("Firebase init OK : trip-db86d");
+</script>
+
 </body>
 </html>
