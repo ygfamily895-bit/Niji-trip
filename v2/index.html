@@ -2063,7 +2063,54 @@
   }
 
   (async () => {
-    const ok = await waitCloudSyncReady();
+    const ok = await waitCloudSyncReady();// ===== ✅ 開啟就自動載入：補上 autoLoadFromCloudOnce =====
+let _autoLoaded = false;
+
+function subscribeCloud(){
+  if (!window.CloudSync) return;
+
+  window.CloudSync.subscribe((remoteState) => {
+    try{
+      const localStr = JSON.stringify(state);
+      const remoteStr = JSON.stringify(remoteState);
+      if (localStr === remoteStr) return;
+
+      state = remoteState;
+      if (typeof ensureDatesFromDay1 === "function") ensureDatesFromDay1();
+      saveNow(false); // 只存本機
+      render();
+      setStatus("雲端已更新 ✅");
+    }catch(e){
+      console.warn("subscribe apply failed", e);
+    }
+  });
+}
+
+async function autoLoadFromCloudOnce(){
+  if (_autoLoaded) return;
+  if (!window.CloudSync) return;
+  _autoLoaded = true;
+
+  try{
+    setStatus("雲端載入中…");
+    const remote = await window.CloudSync.load();
+
+    if (remote && typeof remote === "object"){
+      state = remote;
+      if (typeof ensureDatesFromDay1 === "function") ensureDatesFromDay1();
+      saveNow(false); // 只存本機，不立刻回寫雲端
+      render();
+      setStatus("已從雲端載入 ✅");
+    }else{
+      setStatus("雲端尚無資料（維持本機）");
+    }
+
+    subscribeCloud(); // 載入後再開始監聽
+  }catch(e){
+    console.warn("cloud auto load failed", e);
+    setStatus("雲端載入失敗（維持本機）");
+  }
+}
     if (!ok){
       // CloudSync module 還沒載到（或網路慢），就不阻擋本機使用
       return;
