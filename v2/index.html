@@ -66,7 +66,6 @@
       margin-top:10px; font-size:13px; color:var(--brown-soft); line-height:1.55;
     }
 
-    /* Sticky day nav */
     .sticky-wrap{
       position:sticky; top:0; z-index:20;
       padding-top:10px;
@@ -100,7 +99,6 @@
     .chip-sub{ font-size:12px; color:var(--brown-soft); display:block; margin-top:2px; }
     .chip-main[contenteditable], .chip-sub[contenteditable]{ outline:none; }
 
-    /* Day section */
     .day-section{ margin-top:12px; margin-bottom:16px; }
     .day-card{
       background:var(--bg-soft);
@@ -147,7 +145,6 @@
       font-size:13px;
     }
 
-    /* Sections */
     .sections{
       display:grid;
       grid-template-columns: 1fr;
@@ -178,7 +175,6 @@
     .sec-actions{ display:flex; gap:6px; flex-wrap:wrap; }
     .sec-actions .btn{ box-shadow:none; background:#ffe7bf; }
 
-    /* Spot card */
     .spot-card{
       background:var(--bg-card);
       border-radius:var(--r-card);
@@ -278,7 +274,6 @@
     }
     .thumb:active{ transform:scale(0.98); }
 
-    /* Expense */
     .expense{
       display:flex; gap:10px; flex-wrap:wrap; align-items:center;
       margin-top:8px;
@@ -300,7 +295,6 @@
     }
     .expense .calc{ font-size:12px; font-weight:1000; color:#5c3a1c; }
 
-    /* Day note card (kept at bottom) */
     .day-note-card{
       background:var(--bg-card);
       border-radius:var(--r-card);
@@ -327,7 +321,6 @@
       display:flex; flex-wrap:wrap; gap:6px; margin-top:8px;
     }
 
-    /* Tickets */
     .tickets{
       background:rgba(255,255,255,0.70);
       border-radius:14px;
@@ -343,7 +336,6 @@
       display:flex; flex-wrap:wrap; gap:6px;
     }
 
-    /* Modal map preview */
     .modal{
       position:fixed; inset:0; z-index:100;
       background:rgba(0,0,0,0.35);
@@ -370,7 +362,6 @@
     .modal-body{ flex:1; }
     .modal-body iframe{ width:100%; height:100%; border:0; }
 
-    /* Long-press menu */
     .menu{
       position:fixed; z-index:120;
       min-width:220px;
@@ -401,7 +392,6 @@
     .menu button.danger{ background:#ffb0a6; color:#7a221b; }
     .menu button.secondary{ background:#eaf6ff; }
 
-    /* Floating actions */
     .floating{
       position:fixed; right:10px; bottom:12px;
       z-index:50;
@@ -433,7 +423,6 @@
     }
     .save-toast.show{ opacity:1; }
 
-    /* Search panel */
     .search-panel{
       display:flex; gap:8px; flex-wrap:wrap; align-items:center;
       margin-top:10px;
@@ -452,10 +441,44 @@
     }
     .search-panel .badge{ background:#eaf6ff; }
 
-    /* Auto-scroll hint when dragging */
     .drag-hint{
       font-size:12px; color:var(--brown-soft); margin-top:6px;
       opacity:0.9;
+    }
+
+    /* Login card */
+    .login-card{
+      margin-top:10px;
+      background:#fff3da;
+      border:1px solid rgba(122,74,38,0.12);
+      border-radius:18px;
+      padding:10px;
+    }
+    .login-title{
+      font-weight:1000; color:#5c3a1c; margin-bottom:8px;
+    }
+    .login-grid{
+      display:grid; gap:8px;
+      grid-template-columns: 1fr;
+    }
+    .login-grid input{
+      border:none; outline:none;
+      padding:10px 12px;
+      border-radius:999px;
+      background:#fff;
+      box-shadow:var(--shadow);
+      font-weight:800;
+      color:#5c3a1c;
+    }
+    .login-actions{
+      display:flex; gap:8px; flex-wrap:wrap;
+      margin-top:8px;
+    }
+    .login-status{
+      margin-top:8px;
+      font-size:13px;
+      color:var(--brown-soft);
+      font-weight:900;
     }
 
     @media (max-width:600px){
@@ -487,6 +510,22 @@
         <span class="badge" id="syncBadge">離線可用：已自動保存</span>
       </div>
 
+      <!-- ✅ Email/密碼登入（不使用 Google 登入） -->
+      <div class="login-card">
+        <div class="login-title">網站帳號登入（Email / 密碼）</div>
+        <div class="login-grid">
+          <input id="loginEmail" placeholder="Email" inputmode="email" autocomplete="email" />
+          <input id="loginPassword" placeholder="密碼（至少 6 碼）" type="password" autocomplete="current-password" />
+        </div>
+        <div class="login-actions">
+          <button class="btn" id="btnRegister" type="button">註冊</button>
+          <button class="btn primary" id="btnLogin" type="button">登入</button>
+          <button class="btn" id="btnLogout" type="button" disabled>登出</button>
+          <button class="btn ghost" id="btnCloudReload" type="button" disabled>手動雲端載入</button>
+        </div>
+        <div class="login-status" id="loginStatus">尚未登入（目前只使用本機資料）</div>
+      </div>
+
       <div class="search-panel">
         <input id="searchInput" placeholder="🔎 搜尋：景點/備註/票券文字（輸入後按 Enter）" />
         <button class="btn" id="btnSearch" type="button">搜尋</button>
@@ -497,6 +536,7 @@
         ✅ Day1 日期可編輯；新增天數會自動接續日期。<br/>
         ✅ 長按卡片可刪除/複製/置頂/移動/拖拉。拖拉時會自動滾動。<br/>
         ✅ 圖片「點一下直接刪除」。票券/QR 也可放在「票券收納」。<br/>
+        ✅ 登入後會自動從雲端載入，並與其他裝置同步。
       </div>
 
       <div class="drag-hint">
@@ -547,25 +587,19 @@
 <script>
 (() => {
   /* =========================
-     Storage + Undo
+     Helpers
   ========================== */
-  const STORAGE_KEY = "niji_trip_2026_full_v1";
-  const UNDO_LIMIT = 10;
-
-  let state = null;
-  let undoStack = [];
-  let activeDayId = null;
-
-  // 顯示在上方 badge 的狀態字
-  let statusText = "離線可用：已自動保存";
-
   const $ = (sel, root=document) => root.querySelector(sel);
   const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
 
   function setStatus(text){
-    statusText = text || "離線可用：已自動保存";
-    // 讓 badge 立即更新（會在 recalcTotals 裡統一輸出）
-    recalcTotals();
+    const b = $("#syncBadge");
+    if (b) b.textContent = text;
+  }
+
+  function setLoginStatus(text){
+    const el = $("#loginStatus");
+    if (el) el.textContent = text;
   }
 
   function toastSaved(){
@@ -574,6 +608,19 @@
     setTimeout(()=>t.classList.remove("show"), 700);
   }
 
+  /* =========================
+     Storage + Undo
+  ========================== */
+  const STORAGE_KEY = "niji_trip_2026_full_v2";
+  const UNDO_LIMIT = 10;
+
+  let state = null;
+  let undoStack = [];
+  let activeDayId = null;
+
+  let cloudUnsub = null;
+  let cloudEnabled = false; // 登入後才會 true
+
   function pushUndo(){
     const snap = JSON.stringify(state);
     undoStack.push(snap);
@@ -581,7 +628,6 @@
     $("#btnUndo").disabled = undoStack.length <= 1;
   }
 
-  // ✅ 單一版本：load / saveNow（不要重複宣告）
   function loadLocal(){
     try{
       const raw = localStorage.getItem(STORAGE_KEY);
@@ -591,99 +637,36 @@
   }
 
   function saveNow(pushCloud=true){
-    // 本機保存
     try{
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     }catch(e){
       console.warn("local save failed", e);
     }
-
-    // 雲端保存（若 CloudSync 已就緒）
-    if (pushCloud && window.CloudSync){
-      window.CloudSync.save(state)
-        .then(()=>{
-          // 不要一直閃，給短暫提示後回到正常顯示
-          setStatus("已同步到雲端 ✅");
-          setTimeout(()=>setStatus("離線可用：已自動保存"), 1200);
-        })
-        .catch(err => console.warn("cloud save failed", err));
+    // 雲端保存：只有登入後才做
+    if (pushCloud && cloudEnabled && window.CloudSync){
+      window.CloudSync.save(state).then(()=>{
+        setStatus("已同步到雲端 ✅（離線也會自動保存）");
+      }).catch(err=>{
+        console.warn("cloud save failed", err);
+        setStatus("雲端同步失敗 ❌（仍已保存本機）");
+      });
     }
-
     toastSaved();
+  }
+
+  let saveTimer = null;
+  function scheduleSave(){
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(() => {
+      saveNow(true);
+      pushUndo();
+      recalcTotals();
+    }, 250);
   }
 
   function clearLocal(){
     localStorage.removeItem(STORAGE_KEY);
   }
-
-  /* =========================
-     ✅ 雲端：載入一次 + 開始監聽
-  ========================== */
-  let _autoLoaded = false;
-  let _unsubscribeCloud = null;
-
-  function subscribeCloud(){
-    if (!window.CloudSync) return;
-    // 若之前訂閱過，先解除
-    if (typeof _unsubscribeCloud === "function"){
-      try{ _unsubscribeCloud(); }catch(e){}
-      _unsubscribeCloud = null;
-    }
-
-    _unsubscribeCloud = window.CloudSync.subscribe((remoteState) => {
-      // 避免自己剛寫上去又覆蓋自己：用字串比對快速判斷
-      const localStr = JSON.stringify(state);
-      const remoteStr = JSON.stringify(remoteState);
-      if (localStr === remoteStr) return;
-
-      state = remoteState;
-      ensureDatesFromDay1();
-      saveNow(false); // 只存本機，不要回寫雲端（避免循環）
-      render();
-      setStatus("已同步其他裝置變更 ✅");
-      setTimeout(()=>setStatus("離線可用：已自動保存"), 1000);
-    });
-  }
-
-  async function autoLoadFromCloudOnce(){
-    if (_autoLoaded) return;
-    if (!window.CloudSync) return;
-
-    try{
-      setStatus("雲端載入中…");
-      const remoteState = await window.CloudSync.load();
-
-      if (remoteState && typeof remoteState === "object") {
-        state = remoteState;
-        ensureDatesFromDay1();
-        saveNow(false); // 只存本機，不立刻回寫雲端
-        render();
-        setStatus("已從雲端載入 ✅");
-        setTimeout(()=>setStatus("離線可用：已自動保存"), 1200);
-      } else {
-        setStatus("雲端尚無資料（維持本機）");
-        setTimeout(()=>setStatus("離線可用：已自動保存"), 1200);
-      }
-
-      subscribeCloud(); // 載入完再開始監聽
-      _autoLoaded = true;
-
-    }catch(e){
-      console.error(e);
-      setStatus("雲端載入失敗 ❌（先用本機資料）");
-      setTimeout(()=>setStatus("離線可用：已自動保存"), 1800);
-    }
-  }
-
-  // ✅ CloudSync 是 module script 才會建立，等它通知 ready 再自動載入
-  window.addEventListener("cloudsync-ready", () => {
-    autoLoadFromCloudOnce();
-  });
-
-  // 若某些瀏覽器 module 先跑完，也補一個保險
-  setTimeout(() => {
-    if (window.CloudSync) autoLoadFromCloudOnce();
-  }, 800);
 
   /* =========================
      Date helpers
@@ -701,7 +684,6 @@
     return `${mm}/${dd}`;
   }
   function ensureDatesFromDay1(){
-    if (!state || !Array.isArray(state.days) || state.days.length===0) return;
     const first = state.days[0];
     const md = parseMD(first.dateText);
     let base = md ? new Date(state.settings.year, md.mm-1, md.dd) : new Date(state.settings.year, 4, 8);
@@ -742,42 +724,6 @@
     };
   }
 
-  function initState(){
-    const s = loadLocal();
-    if (s){
-      state = s;
-      if (!state.settings) state.settings = {};
-      if (!state.settings.rate) state.settings.rate = 0.22;
-      if (!state.settings.year) state.settings.year = 2026;
-      if (!state.settings.hotelName) state.settings.hotelName = "VESSEL INN 上野入谷站 飯店";
-      if (!state.settings.hotelNameJP) state.settings.hotelNameJP = "ベッセルイン上野入谷駅前";
-      if (!state.settings.currencyLabel) state.settings.currencyLabel = "JPY→TWD";
-      if (!Array.isArray(state.days)) state.days = [];
-      if (state.days.length === 0){
-        state.days = makeDefaultDays();
-      }
-      ensureDatesFromDay1();
-      return;
-    }
-
-    state = {
-      settings:{
-        year: 2026,
-        rate: 0.22,
-        hotelName: "VESSEL INN 上野入谷站 飯店",
-        hotelNameJP: "ベッセルイン上野入谷駅前",
-        currencyLabel: "JPY→TWD"
-      },
-      appTitle: "Niji Trip 2026",
-      appDesc: "東京行程・暖色主題。支援拖拉排序、卡片模板、多地點路線、一鍵導航、圖片/票券收納、日幣換算、預算提醒、搜尋、Undo（10步）。",
-      days: []
-    };
-    state.days = makeDefaultDays();
-    ensureDatesFromDay1();
-    pushUndo();
-    saveNow(false); // 新建時先只存本機（CloudSync 可能尚未 ready）
-  }
-
   function makeDefaultDays(){
     const days = [];
     for (let i=1;i<=3;i++){
@@ -790,17 +736,10 @@
         dateText: i===1 ? "5/8" : i===2 ? "5/9" : "5/10",
         budgetJPY: "",
         tickets: { text:"（可放票券/QR/訂位資訊）", photos:[] },
-        sections: {
-          morning: [],
-          noon: [],
-          night: [],
-          transport: [],
-          shopping: []
-        },
+        sections: { morning: [], noon: [], night: [], transport: [], shopping: [] },
         dayNote: { text:"例：餐飲 xxx、交通 xxx、購物 xxx、心得…", photos:[] }
       });
     }
-
     const c1 = newCardTemplate("spot");
     c1.title="範例景點";
     c1.ja="日文名稱或地址";
@@ -809,6 +748,7 @@
     c1.destination="日文名稱或地址";
     days[0].sections.morning.push(c1);
 
+    // lodging fixed card
     days.forEach(d=>{
       const lod = newCardTemplate("lodging");
       lod.title = `住宿：${state?.settings?.hotelName || "住宿"}`;
@@ -819,6 +759,38 @@
     });
 
     return days;
+  }
+
+  function initState(){
+    const s = loadLocal();
+    if (s){
+      state = s;
+      if (!state.settings) state.settings = {};
+      if (!state.settings.rate) state.settings.rate = 0.22;
+      if (!state.settings.year) state.settings.year = 2026;
+      if (!state.settings.hotelName) state.settings.hotelName = "VESSEL INN 上野入谷站 飯店";
+      if (!state.settings.hotelNameJP) state.settings.hotelNameJP = "ベッセルイン上野入谷駅前";
+      if (!Array.isArray(state.days)) state.days = [];
+      if (state.days.length === 0) state.days = makeDefaultDays();
+      ensureDatesFromDay1();
+      return;
+    }
+
+    state = {
+      settings:{
+        year: 2026,
+        rate: 0.22,
+        hotelName: "VESSEL INN 上野入谷站 飯店",
+        hotelNameJP: "ベッセルイン上野入谷駅前",
+      },
+      appTitle: "Niji Trip 2026",
+      appDesc: "東京行程・暖色主題。支援拖拉排序、卡片模板、多地點路線、一鍵導航、圖片/票券收納、日幣換算、預算提醒、搜尋、Undo（10步）。",
+      days: []
+    };
+    state.days = makeDefaultDays();
+    ensureDatesFromDay1();
+    pushUndo();
+    saveNow(false);
   }
 
   /* =========================
@@ -937,11 +909,11 @@
           </div>
 
           <div class="sections">
-            ${renderSectionHTML("morning","☀️ 早上", "早上新增")}
-            ${renderSectionHTML("noon","🌤️ 下午", "下午新增")}
-            ${renderSectionHTML("night","🌙 晚上", "晚上新增")}
-            ${renderSectionHTML("transport","🚇 交通", "交通新增")}
-            ${renderSectionHTML("shopping","🛍️ 購物", "購物新增")}
+            ${renderSectionHTML("morning","☀️ 早上")}
+            ${renderSectionHTML("noon","🌤️ 下午")}
+            ${renderSectionHTML("night","🌙 晚上")}
+            ${renderSectionHTML("transport","🚇 交通")}
+            ${renderSectionHTML("shopping","🛍️ 購物")}
           </div>
 
           <div class="day-note-card" data-fixed="dayNote">
@@ -1047,7 +1019,7 @@
     });
   }
 
-  function renderSectionHTML(key, title, addLabel){
+  function renderSectionHTML(key, title){
     const dotColor = key==="morning" ? "#ffb85c" :
                      key==="noon" ? "#ffd59a" :
                      key==="night" ? "#a9e2ff" :
@@ -1084,6 +1056,7 @@
       const secEl = daySectionEl.querySelector(`.sec[data-sec="${secKey}"] .sec-body`);
       secEl.innerHTML = "";
 
+      // lodging keep last in night
       if (list && list.length){
         const lodIdx = list.findIndex(x => x && x.type==="lodging");
         if (lodIdx >= 0 && lodIdx !== list.length-1){
@@ -1101,6 +1074,15 @@
     });
   }
 
+  function escapeHTML(s){
+    return String(s||"")
+      .replaceAll("&","&amp;")
+      .replaceAll("<","&lt;")
+      .replaceAll(">","&gt;")
+      .replaceAll('"',"&quot;")
+      .replaceAll("'","&#39;");
+  }
+
   function renderCard(card, dayObj){
     const el = document.createElement("article");
     el.className = "spot-card";
@@ -1109,7 +1091,6 @@
     el.draggable = true;
 
     const tag = card.tag || "景點";
-
     const rate = Number(state.settings.rate||0.22);
     const jpyVal = parseFloat(card.jpy||"");
     const twdCalc = (!isNaN(jpyVal) ? (jpyVal*rate) : null);
@@ -1298,11 +1279,8 @@
     d.sections[secKey] = d.sections[secKey] || [];
     if (secKey==="night"){
       const lodIdx = d.sections.night.findIndex(x=>x.type==="lodging");
-      if (lodIdx >= 0){
-        d.sections.night.splice(lodIdx,0,c);
-      }else{
-        d.sections.night.push(c);
-      }
+      if (lodIdx >= 0) d.sections.night.splice(lodIdx,0,c);
+      else d.sections.night.push(c);
     }else{
       d.sections[secKey].push(c);
     }
@@ -1383,6 +1361,7 @@
     const dest = (card.destination || card.ja || card.title || "").trim();
     if (!dest) return alert("請先填『目的地/地址』");
     const vias = (card.vias||[]).map(x=>String(x||"").trim()).filter(Boolean);
+
     const ori = origin || state.settings.hotelNameJP || state.settings.hotelName || "上野";
     let url = `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(ori)}&destination=${encodeURIComponent(dest)}`;
     if (vias.length){
@@ -1444,6 +1423,7 @@
   ========================== */
   function recalcTotals(){
     const rate = Number(state.settings.rate||0.22);
+
     let tripJPY = 0, tripTWD = 0;
 
     state.days.forEach(d=>{
@@ -1480,8 +1460,10 @@
       }
     });
 
-    // ✅ 這裡統一把狀態文字放到括號內
-    $("#syncBadge").textContent = `全旅程合計：${Math.round(tripJPY)} JPY / ${Math.round(tripTWD)} TWD（${statusText}）`;
+    // 不覆蓋同步狀態提示，僅在未登入時顯示合計
+    if (!cloudEnabled){
+      $("#syncBadge").textContent = `全旅程合計：${Math.round(tripJPY)} JPY / ${Math.round(tripTWD)} TWD（離線可用：已自動保存）`;
+    }
   }
 
   /* =========================
@@ -1706,11 +1688,8 @@
     const top = margin;
     const bottom = window.innerHeight - margin;
 
-    if (clientY < top){
-      window.scrollBy(0, -speed);
-    }else if (clientY > bottom){
-      window.scrollBy(0, speed);
-    }
+    if (clientY < top) window.scrollBy(0, -speed);
+    else if (clientY > bottom) window.scrollBy(0, speed);
   }
 
   function syncCardsFromDOM(){
@@ -1750,7 +1729,7 @@
   }
 
   /* =========================
-     Long press menu
+     Long press context menu
   ========================== */
   const menu = $("#ctxMenu");
   let menuCardInfo = null;
@@ -1772,9 +1751,7 @@
       if (!pressStart) return;
       const dx = Math.abs(e.clientX - pressStart.x);
       const dy = Math.abs(e.clientY - pressStart.y);
-      if (dx > 12 || dy > 12){
-        clearTimeout(pressTimer);
-      }
+      if (dx > 12 || dy > 12) clearTimeout(pressTimer);
     };
 
     const onUp = () => {
@@ -1821,11 +1798,7 @@
   }
 
   document.addEventListener("click", (e) => {
-    if (menu.classList.contains("show")){
-      if (!menu.contains(e.target)){
-        closeMenu();
-      }
-    }
+    if (menu.classList.contains("show") && !menu.contains(e.target)) closeMenu();
   });
 
   $("#mDrag").addEventListener("click", () => {
@@ -1844,7 +1817,7 @@
 
     const card = list[idx];
     if (card.type==="lodging"){
-      alert("住宿卡是固定的（不能刪除）。如需改飯店名稱，請直接編輯住宿卡文字。");
+      alert("住宿卡是固定的（不能刪除）。");
       closeMenu(); return;
     }
 
@@ -1970,8 +1943,7 @@
 
     if (first.card){
       setTimeout(()=>{
-        const cardEl = sec.querySelector(`.spot-card[data-card-id="${first.card.id}"]`) ||
-                       sec.querySelector(`.spot-card[data-cardid="${first.card.id}"]`);
+        const cardEl = sec.querySelector(`.spot-card[data-card-id="${first.card.id}"]`);
         if (cardEl){
           cardEl.style.outline = "3px solid rgba(255,184,92,0.9)";
           cardEl.style.outlineOffset = "3px";
@@ -2007,128 +1979,162 @@
   $("#btnRemoveDay").addEventListener("click", removeLastDay);
 
   /* =========================
-     Escaping
+     Cloud sync: login後自動載入 + 訂閱
   ========================== */
-  function escapeHTML(s){
-    return String(s||"")
-      .replaceAll("&","&amp;")
-      .replaceAll("<","&lt;")
-      .replaceAll(">","&gt;")
-      .replaceAll('"',"&quot;")
-      .replaceAll("'","&#39;");
+  async function cloudLoadThenApply(){
+    if (!window.CloudSync) return;
+    try{
+      setStatus("雲端載入中…");
+      const remote = await window.CloudSync.load();
+      if (remote && typeof remote === "object"){
+        state = remote;
+        if (!state.settings) state.settings = {};
+        if (!state.settings.rate) state.settings.rate = 0.22;
+        if (!state.settings.year) state.settings.year = 2026;
+        if (!state.settings.hotelName) state.settings.hotelName = "VESSEL INN 上野入谷站 飯店";
+        if (!state.settings.hotelNameJP) state.settings.hotelNameJP = "ベッセルイン上野入谷駅前";
+        if (!Array.isArray(state.days)) state.days = [];
+        if (state.days.length === 0) state.days = makeDefaultDays();
+        ensureDatesFromDay1();
+        saveNow(false); // 只存本機，避免立刻回寫造成循環
+        render();
+        setStatus("已從雲端載入 ✅（離線也會自動保存）");
+      }else{
+        setStatus("雲端尚無資料（維持本機）");
+      }
+    }catch(e){
+      console.warn("cloudLoad failed", e);
+      const msg = (e && (e.code || e.message)) ? (e.code || e.message) : String(e);
+      setStatus("雲端載入失敗 ❌ " + msg + "（先用本機）");
+    }
   }
 
-  /* =========================
-     ✅ scheduleSave（你原本程式裡漏了，我補上）
-  ========================== */
-  let saveTimer = null;
-  function scheduleSave(){
-    clearTimeout(saveTimer);
-    saveTimer = setTimeout(() => {
-      // 每次修改：本機一定存；若 CloudSync ready 則順便同步
-      saveNow(true);
-      // undo snapshot
-      pushUndo();
-      recalcTotals();
-    }, 250);
+  function subscribeCloud(){
+    if (!window.CloudSync) return;
+    if (cloudUnsub) { try{ cloudUnsub(); }catch(e){} cloudUnsub = null; }
+    cloudUnsub = window.CloudSync.subscribe((remoteState) => {
+      const localStr = JSON.stringify(state);
+      const remoteStr = JSON.stringify(remoteState);
+      if (localStr === remoteStr) return;
+      state = remoteState;
+      ensureDatesFromDay1();
+      saveNow(false);
+      render();
+      setStatus("雲端同步更新 ✅");
+    });
   }
 
+  async function onUserLogin(user){
+    cloudEnabled = true;
+    $("#btnLogout").disabled = false;
+    $("#btnCloudReload").disabled = false;
+    setLoginStatus("已登入：" + (user?.email || "（無 email）"));
+
+    await cloudLoadThenApply();
+    subscribeCloud();
+  }
+
+  function onUserLogout(){
+    cloudEnabled = false;
+    $("#btnLogout").disabled = true;
+    $("#btnCloudReload").disabled = true;
+    setLoginStatus("尚未登入（目前只使用本機資料）");
+    if (cloudUnsub) { try{ cloudUnsub(); }catch(e){} cloudUnsub = null; }
+    // 不清除本機資料，仍可離線用
+    setStatus("離線可用：已自動保存（登入後可雲端同步）");
+    recalcTotals();
+  }
+
+  // 讓 module 端（Firebase Auth）可以呼叫回來
+  window.__onAuthChanged = (user) => {
+    if (user) onUserLogin(user);
+    else onUserLogout();
+  };
+
   /* =========================
-     Init
+     Login UI bindings
+  ========================== */
+  function getEmailPass(){
+    const email = $("#loginEmail").value.trim();
+    const pass = $("#loginPassword").value;
+    return { email, pass };
+  }
+
+  $("#btnRegister").addEventListener("click", async () => {
+    const { email, pass } = getEmailPass();
+    if (!email) return alert("請輸入 Email");
+    if (!pass || pass.length < 6) return alert("密碼至少 6 碼");
+    if (!window.Auth) return alert("Firebase 還在初始化，請稍等再試一次");
+    try{
+      setLoginStatus("註冊中…");
+      await window.Auth.register(email, pass);
+      // onAuthChanged 會自動觸發後續流程
+    }catch(e){
+      console.warn(e);
+      alert("註冊失敗：" + (e?.message || e));
+      setLoginStatus("尚未登入（目前只使用本機資料）");
+    }
+  });
+
+  $("#btnLogin").addEventListener("click", async () => {
+    const { email, pass } = getEmailPass();
+    if (!email) return alert("請輸入 Email");
+    if (!pass) return alert("請輸入密碼");
+    if (!window.Auth) return alert("Firebase 還在初始化，請稍等再試一次");
+    try{
+      setLoginStatus("登入中…");
+      await window.Auth.login(email, pass);
+    }catch(e){
+      console.warn(e);
+      alert("登入失敗：" + (e?.message || e));
+      setLoginStatus("尚未登入（目前只使用本機資料）");
+    }
+  });
+
+  $("#btnLogout").addEventListener("click", async () => {
+    if (!window.Auth) return;
+    try{
+      await window.Auth.logout();
+    }catch(e){
+      console.warn(e);
+      alert("登出失敗：" + (e?.message || e));
+    }
+  });
+
+  $("#btnCloudReload").addEventListener("click", async () => {
+    if (!cloudEnabled) return alert("請先登入");
+    await cloudLoadThenApply();
+  });
+
+  /* =========================
+     Init (先本機，後登入自動雲端)
   ========================== */
   initState();
   render();
-
-  // initial undo snapshot already pushed in init for new state; for loaded state, make initial snapshot:
   if (undoStack.length === 0){
     pushUndo();
     $("#btnUndo").disabled = true;
   }
-
-  // ====== ✅ 雲端：開啟就自動載入（等 CloudSync 準備好）======
-  function setStatus(text){
-    const b = $("#syncBadge");
-    if (b) b.textContent = text;
-  }
-
-  function sleep(ms){ return new Promise(r => setTimeout(r, ms)); }
-
-  async function waitCloudSyncReady(timeoutMs = 8000){
-    const start = Date.now();
-    while (!window.CloudSync){
-      if (Date.now() - start > timeoutMs) return false;
-      await sleep(120);
-    }
-    return true;
-  }
-
-  (async () => {
-    const ok = await waitCloudSyncReady();// ===== ✅ 開啟就自動載入：補上 autoLoadFromCloudOnce =====
-let _autoLoaded = false;
-
-function subscribeCloud(){
-  if (!window.CloudSync) return;
-
-  window.CloudSync.subscribe((remoteState) => {
-    try{
-      const localStr = JSON.stringify(state);
-      const remoteStr = JSON.stringify(remoteState);
-      if (localStr === remoteStr) return;
-
-      state = remoteState;
-      if (typeof ensureDatesFromDay1 === "function") ensureDatesFromDay1();
-      saveNow(false); // 只存本機
-      render();
-      setStatus("雲端已更新 ✅");
-    }catch(e){
-      console.warn("subscribe apply failed", e);
-    }
-  });
-}
-
-async function autoLoadFromCloudOnce(){
-  if (_autoLoaded) return;
-  if (!window.CloudSync) return;
-  _autoLoaded = true;
-
-  try{
-    setStatus("雲端載入中…");
-    const remote = await window.CloudSync.load();
-
-    if (remote && typeof remote === "object"){
-      state = remote;
-      if (typeof ensureDatesFromDay1 === "function") ensureDatesFromDay1();
-      saveNow(false); // 只存本機，不立刻回寫雲端
-      render();
-      setStatus("已從雲端載入 ✅");
-    }else{
-      setStatus("雲端尚無資料（維持本機）");
-    }
-
-    subscribeCloud(); // 載入後再開始監聽
-  }catch(e){
-    console.warn("cloud auto load failed", e);
-    setStatus("雲端載入失敗（維持本機）");
-  }
-}
-    if (!ok){
-      // CloudSync module 還沒載到（或網路慢），就不阻擋本機使用
-      return;
-    }
-    // 這行就是你要的「開啟就自動載入」
-    await autoLoadFromCloudOnce();
-  })();
+  setStatus("離線可用：已自動保存（登入後可雲端同步）");
 
 })();
 </script>
 
 <script type="module">
-  // ====== Cloud Sync Adapter (Firestore version) ======
+  // ===== Firebase Auth + Firestore Cloud Sync (Email/Password) =====
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import {
+    getAuth,
+    onAuthStateChanged,
+    createUserWithEmailAndPassword,
+    signInWithEmailAndPassword,
+    signOut
+  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
   import {
     getFirestore, doc, getDoc, setDoc, onSnapshot, serverTimestamp
   } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
+  // 你的 firebaseConfig（保持你目前這組）
   const firebaseConfig = {
     apiKey: "AIzaSyAkFpjZVwRDA92YLK-JfDPeoHJ3hbgKVXM",
     authDomain: "trip-db86d.firebaseapp.com",
@@ -2139,22 +2145,41 @@ async function autoLoadFromCloudOnce(){
     measurementId: "G-FD0411E3XH"
   };
 
+  const TRIP_ID = "main"; // 同一帳號跨裝置會共享同一份
+
   const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
   const db = getFirestore(app);
 
-  const TRIP_ID = "main"; // 兩台裝置要一樣
-  const tripRef = doc(db, "trips", TRIP_ID);
+  // 對外提供 Email/Pass 登入
+  window.Auth = {
+    register: (email, pass) => createUserWithEmailAndPassword(auth, email, pass),
+    login: (email, pass) => signInWithEmailAndPassword(auth, email, pass),
+    logout: () => signOut(auth),
+  };
 
+  function getTripRef(){
+    const u = auth.currentUser;
+    if (!u) throw Object.assign(new Error("not logged in"), { code: "auth/not-logged-in" });
+    // ✅ 用 uid 當路徑，確保同一帳號 A/B 裝置一致
+    // 建議資料結構：users/{uid}/trips/{TRIP_ID}
+    return doc(db, "users", u.uid, "trips", TRIP_ID);
+  }
+
+  // 對外提供 CloudSync（需登入後才能用）
   window.CloudSync = {
-    async load() {
-      const snap = await getDoc(tripRef);
-      return snap.exists() ? snap.data()?.state ?? null : null;
+    async load(){
+      const ref = getTripRef();
+      const snap = await getDoc(ref);
+      return snap.exists() ? (snap.data()?.state ?? null) : null;
     },
-    async save(state) {
-      await setDoc(tripRef, { state, updatedAt: serverTimestamp() }, { merge: true });
+    async save(state){
+      const ref = getTripRef();
+      await setDoc(ref, { state, updatedAt: serverTimestamp() }, { merge: true });
     },
-    subscribe(onState) {
-      return onSnapshot(tripRef, (snap) => {
+    subscribe(onState){
+      const ref = getTripRef();
+      return onSnapshot(ref, (snap) => {
         if (!snap.exists()) return;
         const remote = snap.data()?.state ?? null;
         if (remote) onState(remote);
@@ -2162,10 +2187,14 @@ async function autoLoadFromCloudOnce(){
     }
   };
 
-  console.log("[CloudSync] ready: trips/" + TRIP_ID);
+  // Auth 狀態變更 → 通知主程式
+  onAuthStateChanged(auth, (user) => {
+    if (typeof window.__onAuthChanged === "function"){
+      window.__onAuthChanged(user || null);
+    }
+  });
 
-  // ✅ 通知主程式：CloudSync 已準備好 → 自動雲端載入
-  window.dispatchEvent(new Event("cloudsync-ready"));
+  console.log("[Firebase] ready (auth+firestore), trip:", TRIP_ID);
 </script>
 
 </body>
