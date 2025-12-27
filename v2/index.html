@@ -190,6 +190,10 @@
       touch-action: pan-y;
     }
     .spot-card.dragging{ opacity:0.60; }
+    .spot-card.active{
+      outline:3px solid rgba(255,184,92,0.75);
+      outline-offset:3px;
+    }
     .spot-top{
       display:flex; justify-content:space-between; align-items:flex-start; gap:8px;
     }
@@ -243,38 +247,6 @@
     }
     .loc-mini{
       font-size:12px; color:var(--brown-soft);
-    }
-
-    .inline-block{
-      border-radius:14px;
-      border:1px dashed var(--border);
-      background:#fffdf6;
-      padding:8px 9px;
-    }
-    .inline-head{
-      display:flex; align-items:center; justify-content:space-between; gap:8px;
-      font-size:12px; font-weight:1000; color:var(--brown-soft);
-      margin-bottom:6px;
-    }
-    .inline-list{ display:flex; flex-direction:column; gap:6px; }
-    .inline-item{
-      display:flex; gap:6px; align-items:center;
-    }
-    .inline-item input{
-      flex:1;
-      border:none; outline:none;
-      padding:8px 10px;
-      border-radius:999px;
-      background:#fff3da;
-      color:#5a351e;
-      font-weight:800;
-    }
-    .inline-item button{
-      border:none; border-radius:999px;
-      padding:8px 10px;
-      background:#ffb0a6; color:#7a221b;
-      font-weight:900;
-      cursor:pointer;
     }
 
     .note{
@@ -332,7 +304,45 @@
     }
     .expense .calc{ font-size:12px; font-weight:1000; color:#5c3a1c; }
 
-    /* Day note card */
+    /* Inline transport/shopping lists inside same card */
+    .mini{
+      margin-top:10px;
+      border-radius:14px;
+      border:1px dashed var(--border);
+      background:#fffdf6;
+      padding:9px 9px 8px;
+    }
+    .mini-head{
+      display:flex; justify-content:space-between; align-items:center; gap:10px;
+      font-weight:1000; font-size:12px; color:var(--brown-soft);
+      margin-bottom:6px;
+    }
+    .mini-list{ display:flex; flex-direction:column; gap:6px; }
+    .mini-item{
+      display:flex; gap:8px; align-items:center;
+    }
+    .mini-item input{
+      flex:1;
+      border:none; outline:none;
+      padding:9px 10px;
+      border-radius:999px;
+      background:#fff3da;
+      color:#5a351e;
+      font-weight:800;
+    }
+    .mini-item button{
+      border:none;
+      border-radius:999px;
+      padding:8px 10px;
+      background:#ffb0a6;
+      color:#7a221b;
+      font-weight:900;
+      cursor:pointer;
+      box-shadow:var(--shadow);
+    }
+    .mini-item button:active{ transform:translateY(1px); }
+
+    /* Day note card (kept at bottom) */
     .day-note-card{
       background:var(--bg-card);
       border-radius:var(--r-card);
@@ -484,7 +494,6 @@
     }
     .search-panel .badge{ background:#eaf6ff; }
 
-    /* Auto-scroll hint when dragging */
     .drag-hint{
       font-size:12px; color:var(--brown-soft); margin-top:6px;
       opacity:0.9;
@@ -517,6 +526,7 @@
         <button class="btn" id="btnImport" type="button">匯入備份</button>
         <button class="btn ghost" id="btnClear" type="button">清除本機資料</button>
         <span class="badge" id="syncBadge">離線可用：已自動保存</span>
+        <button class="btn small" id="btnApplyCloud" type="button" style="display:none;">☁️ 雲端有新版本：點我套用</button>
       </div>
 
       <div class="search-panel">
@@ -529,7 +539,7 @@
         ✅ Day1 日期可編輯；新增天數會自動接續日期。<br/>
         ✅ 長按卡片可刪除/複製/置頂/移動/拖拉。拖拉時會自動滾動。<br/>
         ✅ 圖片「點一下直接刪除」。票券/QR 也可放在「票券收納」。<br/>
-        ✅ 新增「交通/購物」會加在你最後正在編輯的那張卡片裡（不再跳出新卡）。
+        ✅ 「＋交通／＋購物」會加到你最後點選的那張卡裡（不再跳出新卡）。<br/>
       </div>
 
       <div class="drag-hint">
@@ -580,19 +590,18 @@
 <script>
 (() => {
   /* =========================
-     Storage + Undo + ClientId
+     Storage + Undo + Status
   ========================== */
-  const STORAGE_KEY = "niji_trip_2026_full_v2";
+  const STORAGE_KEY = "niji_trip_2026_v2_full";
   const UNDO_LIMIT = 10;
 
-  // ===== clientId: 用來辨識「是不是自己寫上去又回來」=====
-  const CLIENT_ID_KEY = STORAGE_KEY + "__clientId";
-  const CLIENT_ID = (() => {
-    let id = localStorage.getItem(CLIENT_ID_KEY);
-    if (!id){
-      id = "c_" + Math.random().toString(16).slice(2) + "_" + Date.now();
-      localStorage.setItem(CLIENT_ID_KEY, id);
-    }
+  // 用一個 deviceId 讓雲端回來的 snapshot 不要把自己正在輸入的畫面打掉
+  const DEVICE_ID_KEY = "niji_trip_device_id_v1";
+  const deviceId = (()=>{
+    const old = localStorage.getItem(DEVICE_ID_KEY);
+    if (old) return old;
+    const id = `dev_${Date.now()}_${Math.random().toString(16).slice(2)}`;
+    localStorage.setItem(DEVICE_ID_KEY, id);
     return id;
   })();
 
@@ -600,11 +609,12 @@
   let undoStack = [];
   let activeDayId = null;
 
-  // 你最後「正在編輯」的卡片 id：用來把交通/購物加進同一張卡
-  let lastActiveCardId = null;
+  // 「最後點選的卡」：用來把交通/購物加進同一張卡
+  let activeCardId = null;
 
-  // 避免雲端 onSnapshot 套用同一版反覆 render
-  let lastAppliedRemoteRev = -1;
+  // 雲端：等待套用狀態（避免打字跳掉）
+  let pendingCloudState = null;
+  let lastLocalWriteAt = 0;
 
   const $ = (sel, root=document) => root.querySelector(sel);
   const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
@@ -627,37 +637,13 @@
     $("#btnUndo").disabled = undoStack.length <= 1;
   }
 
-  function markChanged(){
-    if (!state.meta) state.meta = { clientId: CLIENT_ID, rev: 0 };
-    state.meta.clientId = CLIENT_ID;
-    state.meta.rev = (state.meta.rev || 0) + 1;
-  }
-
-  function saveNow(pushCloud=true){
-    // 本機保存
-    try{
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-    }catch(e){
-      console.warn("local save failed", e);
-    }
-
-    // 雲端保存（有網路就會寫入）
-    if (pushCloud && window.CloudSync){
-      window.CloudSync.save(state).catch(err => console.warn("cloud save failed", err));
-    }
-    toastSaved();
-  }
-
-  let saveTimer = null;
-  function scheduleSave(){
-    clearTimeout(saveTimer);
-    saveTimer = setTimeout(() => {
-      // ✅ 每次輸入只存檔 + rev++，不要 render（避免打字跳）
-      markChanged();
-      saveNow(true);
-      pushUndo();
-      recalcTotals();
-    }, 250);
+  // 判斷使用者是否正在輸入（避免雲端更新把焦點打掉）
+  function isUserTyping(){
+    const el = document.activeElement;
+    if (!el) return false;
+    if (el.tagName === "INPUT" || el.tagName === "TEXTAREA") return true;
+    if (el.isContentEditable) return true;
+    return false;
   }
 
   function loadLocal(){
@@ -670,6 +656,136 @@
 
   function clearLocal(){
     localStorage.removeItem(STORAGE_KEY);
+  }
+
+  function saveNow(pushCloud=true){
+    // 本機保存
+    try{
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }catch(e){
+      console.warn("local save failed", e);
+    }
+
+    // 雲端保存
+    if (pushCloud && window.CloudSync){
+      lastLocalWriteAt = Date.now();
+      window.CloudSync.save(state, {
+        deviceId,
+        clientUpdatedAt: lastLocalWriteAt
+      }).catch(err => {
+        console.warn("cloud save failed", err);
+        setStatus("雲端同步失敗 ❌（先用本機資料）");
+      });
+    }
+
+    toastSaved();
+  }
+
+  /* ✅ 你螢幕上看到的 scheduleSave（打字就存） */
+  let saveTimer = null;
+  function scheduleSave(){
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(() => {
+      // 每次修改：本機一定存；若 CloudSync 就緒也寫上去
+      saveNow(true);
+      // undo snapshot
+      pushUndo();
+      recalcTotals();
+    }, 250);
+  }
+
+  /* =========================
+     Cloud load on open + safe subscribe
+  ========================== */
+  async function waitCloudSyncReady(timeoutMs = 9000){
+    const start = Date.now();
+    while (!window.CloudSync){
+      if (Date.now() - start > timeoutMs) return false;
+      await new Promise(r => setTimeout(r, 120));
+    }
+    return true;
+  }
+
+  async function cloudLoadOnOpen(){
+    const ok = await waitCloudSyncReady();
+    if (!ok){
+      setStatus("雲端尚未就緒（先用本機資料）");
+      return;
+    }
+
+    try{
+      setStatus("雲端載入中…");
+      const remote = await window.CloudSync.load();
+      if (remote && typeof remote === "object"){
+        // 直接套用一次（開啟時允許）
+        state = remote;
+        patchStateDefaults();
+        ensureDatesFromDay1();
+        saveNow(false); // 只存本機，不立刻回寫
+        render();
+        setStatus("已從雲端載入 ✅");
+      }else{
+        setStatus("雲端尚無資料（維持本機）");
+      }
+      subscribeCloudSafely();
+    }catch(e){
+      console.warn(e);
+      setStatus("雲端載入失敗 ❌（先用本機資料）");
+      subscribeCloudSafely();
+    }
+  }
+
+  function showApplyCloudButton(show){
+    const btn = $("#btnApplyCloud");
+    if (!btn) return;
+    btn.style.display = show ? "" : "none";
+  }
+
+  $("#btnApplyCloud").addEventListener("click", () => {
+    if (!pendingCloudState) return;
+    state = pendingCloudState;
+    pendingCloudState = null;
+    showApplyCloudButton(false);
+    patchStateDefaults();
+    ensureDatesFromDay1();
+    saveNow(false);
+    render();
+    setStatus("已套用雲端新版本 ✅");
+  });
+
+  function subscribeCloudSafely(){
+    if (!window.CloudSync) return;
+
+    window.CloudSync.subscribe((payload) => {
+      // payload 可以是 state 或 {state, meta}
+      const remoteState = payload && payload.state ? payload.state : payload;
+      const meta = payload && payload.meta ? payload.meta : null;
+
+      if (!remoteState || typeof remoteState !== "object") return;
+
+      // 如果這次更新是自己剛寫上去的，就忽略（避免循環與打字跳）
+      if (meta && meta.deviceId === deviceId){
+        if (meta.clientUpdatedAt && (Date.now() - meta.clientUpdatedAt) < 4000){
+          return;
+        }
+      }
+
+      // 如果使用者正在輸入：不要立刻 render 覆蓋，改成等你點「套用」
+      if (isUserTyping()){
+        pendingCloudState = remoteState;
+        showApplyCloudButton(true);
+        setStatus("☁️ 雲端有新版本（為避免打字跳掉，請點『套用』）");
+        return;
+      }
+
+      // 沒在輸入：就直接套用
+      state = remoteState;
+      patchStateDefaults();
+      ensureDatesFromDay1();
+      saveNow(false);
+      render();
+      setStatus("已同步到雲端 ✅");
+    });
   }
 
   /* =========================
@@ -688,7 +804,7 @@
     return `${mm}/${dd}`;
   }
   function ensureDatesFromDay1(){
-    if (!state?.days?.length) return;
+    if (!state || !Array.isArray(state.days) || !state.days.length) return;
     const first = state.days[0];
     const md = parseMD(first.dateText);
     let base = md ? new Date(state.settings.year, md.mm-1, md.dd) : new Date(state.settings.year, 4, 8);
@@ -701,79 +817,59 @@
   }
 
   /* =========================
-     Default state
+     Default state + patch
   ========================== */
+  function patchStateDefaults(){
+    if (!state.settings) state.settings = {};
+    if (!state.settings.rate) state.settings.rate = 0.22;
+    if (!state.settings.year) state.settings.year = 2026;
+    if (!state.settings.hotelName) state.settings.hotelName = "VESSEL INN 上野入谷站 飯店";
+    if (!state.settings.hotelNameJP) state.settings.hotelNameJP = "ベッセルイン上野入谷駅前";
+    if (!state.settings.currencyLabel) state.settings.currencyLabel = "JPY→TWD";
+    if (!Array.isArray(state.days)) state.days = [];
+
+    // 讓舊資料也擁有 card.transportList / card.shoppingList
+    state.days.forEach(d=>{
+      d.sections = d.sections || { morning:[], noon:[], night:[], transport:[], shopping:[] };
+      Object.values(d.sections).forEach(list=>{
+        (list||[]).forEach(c=>{
+          if (!c) return;
+          if (!Array.isArray(c.transportList)) c.transportList = [];
+          if (!Array.isArray(c.shoppingList)) c.shoppingList = [];
+        });
+      });
+      if (!d.tickets) d.tickets = { text:"", photos:[] };
+      if (!d.dayNote) d.dayNote = { text:"", photos:[] };
+      if (!d.budgetJPY) d.budgetJPY = d.budgetJPY || "";
+    });
+  }
+
   function newCardTemplate(type="spot"){
     const id = `c_${Date.now()}_${Math.random().toString(16).slice(2)}`;
     return {
       id,
-      type, // restaurant/spot/lodging
+      type,
       title: type==="lodging" ? "住宿" :
-             type==="restaurant" ? "餐廳" : "景點",
+             type==="restaurant" ? "餐廳" :
+             "景點",
       tag: type==="lodging" ? "住宿" :
-           type==="restaurant" ? "餐廳" : "景點",
+           type==="restaurant" ? "餐廳" :
+           "景點",
       ja: "",
       meta: "",
-
-      // multi-location
       origin: "",
       destination: "",
       vias: [],
-
-      // ✅ 交通/購物內嵌（不再新增新卡）
-      transportItems: [], // [{text:""}]
-      shoppingItems: [],  // [{text:""}]
-
       note: "",
       photos: [],
-
       jpy: "",
       twd: "",
-      pinned: false
+      pinned: false,
+
+      // ✅ 新增：同一卡片內的交通/購物清單
+      transportList: [],
+      shoppingList: []
     };
-  }
-
-  function initState(){
-    const s = loadLocal();
-    if (s){
-      state = s;
-
-      if (!state.meta) state.meta = {};
-      if (!state.meta.clientId) state.meta.clientId = CLIENT_ID;
-      if (typeof state.meta.rev !== "number") state.meta.rev = 0;
-
-      if (!state.settings) state.settings = {};
-      if (!state.settings.rate) state.settings.rate = 0.22;
-      if (!state.settings.year) state.settings.year = 2026;
-      if (!state.settings.hotelName) state.settings.hotelName = "VESSEL INN 上野入谷站 飯店";
-      if (!state.settings.hotelNameJP) state.settings.hotelNameJP = "ベッセルイン上野入谷駅前";
-      if (!state.settings.currencyLabel) state.settings.currencyLabel = "JPY→TWD";
-      if (!Array.isArray(state.days)) state.days = [];
-      if (state.days.length === 0){
-        state.days = makeDefaultDays();
-      }
-      ensureDatesFromDay1();
-      return;
-    }
-
-    state = {
-      meta: { clientId: CLIENT_ID, rev: 0 },
-      settings:{
-        year: 2026,
-        rate: 0.22,
-        hotelName: "VESSEL INN 上野入谷站 飯店",
-        hotelNameJP: "ベッセルイン上野入谷駅前",
-        currencyLabel: "JPY→TWD"
-      },
-      appTitle: "Niji Trip 2026",
-      appDesc: "東京行程・暖色主題。支援拖拉排序、卡片模板、多地點路線、一鍵導航、圖片/票券收納、日幣換算、預算提醒、搜尋、Undo（10步）。",
-      days: []
-    };
-
-    state.days = makeDefaultDays();
-    ensureDatesFromDay1();
-    pushUndo();
-    saveNow(false);
   }
 
   function makeDefaultDays(){
@@ -792,8 +888,8 @@
           morning: [],
           noon: [],
           night: [],
-          transport: [],
-          shopping: []
+          transport: [], // 保留欄位但不再用來加卡
+          shopping: []   // 保留欄位但不再用來加卡
         },
         dayNote: { text:"例：餐飲 xxx、交通 xxx、購物 xxx、心得…", photos:[] }
       });
@@ -807,6 +903,7 @@
     c1.destination="日文名稱或地址";
     days[0].sections.morning.push(c1);
 
+    // lodging for each day (固定在晚上分區最底)
     days.forEach(d=>{
       const lod = newCardTemplate("lodging");
       lod.title = `住宿：${state?.settings?.hotelName || "住宿"}`;
@@ -817,6 +914,34 @@
     });
 
     return days;
+  }
+
+  function initState(){
+    const s = loadLocal();
+    if (s){
+      state = s;
+      patchStateDefaults();
+      if (state.days.length === 0) state.days = makeDefaultDays();
+      ensureDatesFromDay1();
+      return;
+    }
+
+    state = {
+      settings:{
+        year: 2026,
+        rate: 0.22,
+        hotelName: "VESSEL INN 上野入谷站 飯店",
+        hotelNameJP: "ベッセルイン上野入谷駅前",
+        currencyLabel: "JPY→TWD"
+      },
+      appTitle: "Niji Trip 2026",
+      appDesc: "東京行程・暖色主題。支援拖拉排序、卡片模板、多地點路線、一鍵導航、圖片/票券收納、日幣換算、預算提醒、搜尋、Undo（10步）。",
+      days: []
+    };
+    state.days = makeDefaultDays();
+    ensureDatesFromDay1();
+    pushUndo();
+    saveNow(false);
   }
 
   /* =========================
@@ -832,7 +957,16 @@
     if (!activeDayId && state.days[0]) activeDayId = state.days[0].id;
     setActiveChip(activeDayId);
 
+    // highlight active card if exists
+    markActiveCard();
+
     recalcTotals();
+  }
+
+  function markActiveCard(){
+    $$(".spot-card").forEach(el=>{
+      el.classList.toggle("active", el.dataset.cardId === activeCardId);
+    });
   }
 
   function renderDayNav(){
@@ -868,7 +1002,6 @@
         if (idx === 0){
           ensureDatesFromDay1();
           scheduleSave();
-          // ✅ 這裡需要刷新所有日期顯示（不是每個字都跑，只有改 Day1 日期才跑）
           render();
         }else{
           scheduleSave();
@@ -936,11 +1069,11 @@
           </div>
 
           <div class="sections">
-            ${renderSectionHTML("morning","☀️ 早上")}
-            ${renderSectionHTML("noon","🌤️ 下午")}
-            ${renderSectionHTML("night","🌙 晚上")}
-            ${renderSectionHTML("transport","🚇 交通")}
-            ${renderSectionHTML("shopping","🛍️ 購物")}
+            ${renderSectionHTML("morning","☀️ 早上", true)}
+            ${renderSectionHTML("noon","🌤️ 下午", true)}
+            ${renderSectionHTML("night","🌙 晚上", true)}
+            ${renderSectionHTML("transport","🚇 交通（加到卡片內）", false)}
+            ${renderSectionHTML("shopping","🛍️ 購物（加到卡片內）", false)}
           </div>
 
           <div class="day-note-card" data-fixed="dayNote">
@@ -985,6 +1118,7 @@
         }
       });
 
+      // budget
       const budgetInput = sec.querySelector(".budgetInput");
       budgetInput.value = d.budgetJPY || "";
       budgetInput.addEventListener("input", () => {
@@ -993,6 +1127,7 @@
         recalcTotals();
       });
 
+      // rate
       const rateInput = sec.querySelector(".rateInput");
       rateInput.value = String(state.settings.rate ?? 0.22);
       rateInput.addEventListener("input", () => {
@@ -1047,15 +1182,29 @@
 
       wrap.appendChild(sec);
 
+      // after appended: render cards per section
       renderCardsForDay(sec, d);
     });
   }
 
-  function renderSectionHTML(key, title){
+  function renderSectionHTML(key, title, showNormalButtons){
     const dotColor = key==="morning" ? "#ffb85c" :
                      key==="noon" ? "#ffd59a" :
                      key==="night" ? "#a9e2ff" :
                      key==="transport" ? "#b7f2d4" : "#ffb0a6";
+
+    // 交通/購物：不再建立新卡，而是加到「已選取的卡」內
+    const actions = showNormalButtons
+      ? `
+        <button class="btn small" data-add="${key}" data-tpl="spot" type="button">＋ 景點</button>
+        <button class="btn small" data-add="${key}" data-tpl="restaurant" type="button">＋ 餐廳</button>
+        <button class="btn small" data-addinline="transport" type="button">＋ 交通</button>
+        <button class="btn small" data-addinline="shopping" type="button">＋ 購物</button>
+      `
+      : `
+        <button class="btn small" data-addinline="${key}" type="button">＋ 加到卡片內</button>
+      `;
+
     return `
       <div class="sec" data-sec="${key}">
         <div class="sec-head">
@@ -1064,10 +1213,7 @@
             <span>${title}</span>
           </div>
           <div class="sec-actions">
-            <button class="btn small" data-add="${key}" data-tpl="spot" type="button">＋ 景點</button>
-            <button class="btn small" data-add="${key}" data-tpl="restaurant" type="button">＋ 餐廳</button>
-            <button class="btn small" data-add="${key}" data-tpl="transport" type="button">＋ 交通</button>
-            <button class="btn small" data-add="${key}" data-tpl="shopping" type="button">＋ 購物</button>
+            ${actions}
           </div>
         </div>
         <div class="sec-body" data-dropzone="true"></div>
@@ -1076,20 +1222,20 @@
   }
 
   function renderCardsForDay(daySectionEl, dayObj){
-    // bind add template buttons
+    // bind buttons
     $$("[data-add]", daySectionEl).forEach(btn=>{
       btn.addEventListener("click", () => {
         const secKey = btn.dataset.add;
         const tpl = btn.dataset.tpl;
-
-        // ✅ 交通/購物：加進「最後編輯的卡片」(不新增新卡)
-        if (tpl==="transport" || tpl==="shopping"){
-          const ok = addInlineItemToLastCard(dayObj.id, tpl);
-          if (ok) return;
-          // 若沒有 lastActiveCardId，就退回新增一張卡（避免按了沒反應）
-        }
-
         addCard(dayObj.id, secKey, tpl);
+      });
+    });
+
+    // ✅ 交通 / 購物：加到同一張卡內（最後點選的卡）
+    $$("[data-addinline]", daySectionEl).forEach(btn=>{
+      btn.addEventListener("click", () => {
+        const kind = btn.dataset.addinline; // transport / shopping
+        addInlineItemToActiveCard(kind);
       });
     });
 
@@ -1098,8 +1244,14 @@
       const secEl = daySectionEl.querySelector(`.sec[data-sec="${secKey}"] .sec-body`);
       secEl.innerHTML = "";
 
-      // keep lodging last in night
-      if (list && list.length){
+      // transport/shopping 這兩個分區保留外觀，但裡面不顯示獨立卡（因為改成卡內清單）
+      if (secKey === "transport" || secKey === "shopping"){
+        secEl.innerHTML = `<div class="badge" style="background:#eaf6ff;">提示：交通/購物已改成「加在卡片內」。請先點一張卡，再按「＋」。</div>`;
+        return;
+      }
+
+      // lodging is always last in night
+      if (secKey === "night" && list && list.length){
         const lodIdx = list.findIndex(x => x && x.type==="lodging");
         if (lodIdx >= 0 && lodIdx !== list.length-1){
           const [lod] = list.splice(lodIdx,1);
@@ -1116,47 +1268,15 @@
     });
   }
 
-  function addInlineItemToLastCard(dayId, kind){
-    if (!lastActiveCardId) return false;
-    const card = findCardById(lastActiveCardId);
-    if (!card) return false;
-
-    // 限制：只能加在同一天的卡
-    const d = state.days.find(x=>x.id===dayId);
-    if (!d) return false;
-    const cardsInDay = flattenDayCards(d);
-    if (!cardsInDay.some(c=>c.id===card.id)) return false;
-
-    if (kind==="transport"){
-      card.transportItems = card.transportItems || [];
-      card.transportItems.push({text:""});
-    }else{
-      card.shoppingItems = card.shoppingItems || [];
-      card.shoppingItems.push({text:""});
-    }
-
-    // 只更新那張卡，不 render 全頁
-    const cardEl = document.querySelector(`.spot-card[data-card-id="${card.id}"]`);
-    if (cardEl){
-      const tList = cardEl.querySelector(".transportList");
-      const sList = cardEl.querySelector(".shoppingList");
-      if (tList) renderInlineList(tList, card.transportItems, "transport", card);
-      if (sList) renderInlineList(sList, card.shoppingItems, "shopping", card);
-    }
-
-    scheduleSave();
-    return true;
-  }
-
   function renderCard(card, dayObj){
     const el = document.createElement("article");
     el.className = "spot-card";
     el.dataset.cardId = card.id;
     el.dataset.dayId  = dayObj.id;
-    el.setAttribute("data-card-id", card.id);
     el.draggable = true;
 
     const tag = card.tag || "景點";
+
     const rate = Number(state.settings.rate||0.22);
     const jpyVal = parseFloat(card.jpy||"");
     const twdCalc = (!isNaN(jpyVal) ? (jpyVal*rate) : null);
@@ -1198,29 +1318,28 @@
           </div>
         </div>
         <div class="viasList"></div>
-
-        <!-- ✅ 交通/購物內嵌 -->
-        <div class="inline-block">
-          <div class="inline-head">
-            <span>🚇 交通（加在此卡）</span>
-            <button class="btn small btnAddTransport" type="button">＋</button>
-          </div>
-          <div class="inline-list transportList"></div>
-        </div>
-
-        <div class="inline-block">
-          <div class="inline-head">
-            <span>🛍️ 購物（加在此卡）</span>
-            <button class="btn small btnAddShopping" type="button">＋</button>
-          </div>
-          <div class="inline-list shoppingList"></div>
-        </div>
       </div>
 
       <div class="expense">
         <span class="lab">花費 JPY</span>
         <input class="inJPY" inputmode="numeric" placeholder="例如 1200" />
         <span class="calc">→ TWD：<span class="twdText">${twdCalc!==null ? Math.round(twdCalc) : 0}</span></span>
+      </div>
+
+      <div class="mini">
+        <div class="mini-head">
+          <span>🚇 交通（加在同一張卡內）</span>
+          <button class="btn small btnAddTransport" type="button">＋ 新增</button>
+        </div>
+        <div class="mini-list transportList"></div>
+      </div>
+
+      <div class="mini">
+        <div class="mini-head">
+          <span>🛍️ 購物（加在同一張卡內）</span>
+          <button class="btn small btnAddShopping" type="button">＋ 新增</button>
+        </div>
+        <div class="mini-list shoppingList"></div>
       </div>
 
       <div class="note">
@@ -1235,8 +1354,11 @@
       </div>
     `;
 
-    // 只要點到卡或在卡內輸入，就把它視為 lastActiveCardId
-    el.addEventListener("pointerdown", () => { lastActiveCardId = card.id; }, {passive:true});
+    // mark active on click
+    el.addEventListener("click", () => {
+      activeCardId = card.id;
+      markActiveCard();
+    });
 
     const titleEl = $(".spot-title", el);
     const jaEl    = $(".spot-ja", el);
@@ -1256,39 +1378,10 @@
     dest.value   = card.destination || card.ja || "";
     inJPY.value  = card.jpy || "";
 
-    // vias
     const viasList = $(".viasList", el);
     renderVias(viasList, card);
 
-    // 交通/購物 list
-    card.transportItems = card.transportItems || [];
-    card.shoppingItems  = card.shoppingItems  || [];
-    const tList = el.querySelector(".transportList");
-    const sList = el.querySelector(".shoppingList");
-    renderInlineList(tList, card.transportItems, "transport", card);
-    renderInlineList(sList, card.shoppingItems, "shopping", card);
-
-    el.querySelector(".btnAddTransport").addEventListener("click", () => {
-      lastActiveCardId = card.id;
-      card.transportItems.push({text:""});
-      renderInlineList(tList, card.transportItems, "transport", card);
-      scheduleSave();
-    });
-    el.querySelector(".btnAddShopping").addEventListener("click", () => {
-      lastActiveCardId = card.id;
-      card.shoppingItems.push({text:""});
-      renderInlineList(sList, card.shoppingItems, "shopping", card);
-      scheduleSave();
-    });
-
-    // contenteditable -> save
-    const touch = () => { lastActiveCardId = card.id; };
-
-    titleEl.addEventListener("beforeinput", touch);
-    jaEl.addEventListener("beforeinput", touch);
-    metaEl.addEventListener("beforeinput", touch);
-    noteEl.addEventListener("beforeinput", touch);
-
+    // ✅ 重要：不要在 input 事件裡做 render()（會造成跳字），只 scheduleSave()
     titleEl.addEventListener("input", () => { card.title = titleEl.textContent; scheduleSave(); });
     jaEl.addEventListener("input", () => {
       card.ja = jaEl.textContent;
@@ -1298,11 +1391,10 @@
     metaEl.addEventListener("input", () => { card.meta = metaEl.textContent; scheduleSave(); });
     noteEl.addEventListener("input", () => { card.note = noteEl.textContent; scheduleSave(); });
 
-    origin.addEventListener("input", () => { lastActiveCardId = card.id; card.origin = origin.value; scheduleSave(); });
-    dest.addEventListener("input", () => { lastActiveCardId = card.id; card.destination = dest.value; scheduleSave(); });
+    origin.addEventListener("input", () => { card.origin = origin.value; scheduleSave(); });
+    dest.addEventListener("input", () => { card.destination = dest.value; scheduleSave(); });
 
     inJPY.addEventListener("input", () => {
-      lastActiveCardId = card.id;
       card.jpy = inJPY.value;
       const rate = Number(state.settings.rate||0.22);
       const j = parseFloat(inJPY.value||"");
@@ -1316,8 +1408,9 @@
     // note photos
     const notePhotos = $(".note-photos", el);
     renderPhotoStrip(notePhotos, card.photos, () => scheduleSave());
-    $(".btnNotePhoto", el).addEventListener("click", async () => {
-      lastActiveCardId = card.id;
+
+    $(".btnNotePhoto", el).addEventListener("click", async (ev) => {
+      ev.preventDefault();
       const url = await pickPhoto();
       if (!url) return;
       card.photos.push(url);
@@ -1326,73 +1419,99 @@
     });
 
     // map buttons
-    $(".btnPreview", el).addEventListener("click", () => {
+    $(".btnPreview", el).addEventListener("click", (ev) => {
+      ev.preventDefault();
       const q = (card.destination || card.ja || card.title || "").trim();
       if (!q) return alert("請先填『目的地/地址』或『日文名稱』");
       openMapPreview(q);
     });
-    $(".btnSearch", el).addEventListener("click", () => {
+    $(".btnSearch", el).addEventListener("click", (ev) => {
+      ev.preventDefault();
       const q = (card.destination || card.ja || card.title || "").trim();
       if (!q) return alert("請先填『目的地/地址』或『日文名稱』");
       window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}`, "_blank");
     });
-    $(".btnRoute", el).addEventListener("click", () => {
+    $(".btnRoute", el).addEventListener("click", (ev) => {
+      ev.preventDefault();
       openCardRoute(card);
     });
-    $(".btnNearby", el).addEventListener("click", () => {
+    $(".btnNearby", el).addEventListener("click", (ev) => {
+      ev.preventDefault();
       const q = (card.destination || card.ja || card.title || "").trim();
       if (!q) return alert("請先填『目的地/地址』或『日文名稱』");
       openNearbyMenu(q);
     });
 
-    $(".btnAddVia", el).addEventListener("click", () => {
-      lastActiveCardId = card.id;
+    $(".btnAddVia", el).addEventListener("click", (ev) => {
+      ev.preventDefault();
       card.vias = card.vias || [];
       card.vias.push("");
       renderVias(viasList, card);
       scheduleSave();
     });
 
-    // drag
-    enableCardDrag(el);
+    // ✅ 卡片內交通/購物清單
+    if (!Array.isArray(card.transportList)) card.transportList = [];
+    if (!Array.isArray(card.shoppingList)) card.shoppingList = [];
 
-    // long press context menu
+    const transportWrap = $(".transportList", el);
+    const shoppingWrap  = $(".shoppingList", el);
+
+    function renderMiniList(container, list){
+      container.innerHTML = "";
+      list.forEach((text, idx)=>{
+        const row = document.createElement("div");
+        row.className = "mini-item";
+        row.innerHTML = `
+          <input inputmode="text" placeholder="輸入內容…" />
+          <button type="button">刪</button>
+        `;
+        const input = row.querySelector("input");
+        input.value = text || "";
+        input.addEventListener("input", ()=>{
+          list[idx] = input.value;
+          scheduleSave();
+        });
+        row.querySelector("button").addEventListener("click", ()=>{
+          list.splice(idx,1);
+          renderMiniList(container, list);
+          scheduleSave();
+        });
+        container.appendChild(row);
+      });
+    }
+
+    renderMiniList(transportWrap, card.transportList);
+    renderMiniList(shoppingWrap, card.shoppingList);
+
+    $(".btnAddTransport", el).addEventListener("click", (ev)=>{
+      ev.preventDefault();
+      card.transportList.push("");
+      renderMiniList(transportWrap, card.transportList);
+      scheduleSave();
+      // 讓新行直接可打字
+      setTimeout(()=>{
+        const last = transportWrap.querySelector(".mini-item:last-child input");
+        if (last) last.focus();
+      }, 10);
+    });
+
+    $(".btnAddShopping", el).addEventListener("click", (ev)=>{
+      ev.preventDefault();
+      card.shoppingList.push("");
+      renderMiniList(shoppingWrap, card.shoppingList);
+      scheduleSave();
+      setTimeout(()=>{
+        const last = shoppingWrap.querySelector(".mini-item:last-child input");
+        if (last) last.focus();
+      }, 10);
+    });
+
+    // drag + long press
+    enableCardDrag(el);
     attachLongPress(el);
 
     return el;
-  }
-
-  function renderInlineList(container, list, kind, card){
-    if (!container) return;
-    container.innerHTML = "";
-    (list||[]).forEach((obj, idx) => {
-      const row = document.createElement("div");
-      row.className = "inline-item";
-      row.innerHTML = `
-        <input placeholder="${kind==='transport' ? '例：地鐵、JR、計程車、路線/站名…' : '例：買什麼、店名、退稅…'}" />
-        <button type="button">刪</button>
-      `;
-      const input = row.querySelector("input");
-      input.value = obj?.text || "";
-
-      // 重要：打字不中斷
-      input.addEventListener("focus", ()=>{ lastActiveCardId = card.id; });
-      input.addEventListener("input", () => {
-        lastActiveCardId = card.id;
-        list[idx] = list[idx] || {text:""};
-        list[idx].text = input.value;
-        scheduleSave();
-      });
-
-      row.querySelector("button").addEventListener("click", () => {
-        lastActiveCardId = card.id;
-        list.splice(idx,1);
-        renderInlineList(container, list, kind, card);
-        scheduleSave();
-      });
-
-      container.appendChild(row);
-    });
   }
 
   function renderVias(container, card){
@@ -1408,14 +1527,12 @@
       `;
       const input = $(".via", line);
       input.value = v || "";
-      input.addEventListener("focus", ()=>{ lastActiveCardId = card.id; });
       input.addEventListener("input", () => {
-        lastActiveCardId = card.id;
         card.vias[idx] = input.value;
         scheduleSave();
       });
-      $(".btnDelVia", line).addEventListener("click", () => {
-        lastActiveCardId = card.id;
+      $(".btnDelVia", line).addEventListener("click", (ev) => {
+        ev.preventDefault();
         card.vias.splice(idx,1);
         renderVias(container, card);
         scheduleSave();
@@ -1430,18 +1547,11 @@
 
     pushUndo();
 
-    const c = newCardTemplate(tpl==="spot" ? "spot" : tpl);
-    c.title = tpl==="restaurant" ? "新餐廳" :
-              tpl==="transport" ? "交通（行程卡）" :
-              tpl==="shopping" ? "購物（行程卡）" : "新景點";
-    c.tag = tpl==="restaurant" ? "餐廳" :
-            tpl==="transport" ? "交通" :
-            tpl==="shopping" ? "購物" : "景點";
-
-    if (tpl==="lodging") return;
+    const c = newCardTemplate(tpl==="restaurant" ? "restaurant" : "spot");
+    c.title = tpl==="restaurant" ? "新餐廳" : "新景點";
+    c.tag = tpl==="restaurant" ? "餐廳" : "景點";
 
     d.sections[secKey] = d.sections[secKey] || [];
-
     if (secKey==="night"){
       const lodIdx = d.sections.night.findIndex(x=>x.type==="lodging");
       if (lodIdx >= 0){
@@ -1453,8 +1563,48 @@
       d.sections[secKey].push(c);
     }
 
+    activeCardId = c.id; // 新增後直接選到這張
     scheduleSave();
     render();
+  }
+
+  function addInlineItemToActiveCard(kind){
+    if (!activeCardId){
+      alert("請先點一下你要加內容的『那張卡』，再按＋交通／＋購物。");
+      return;
+    }
+    const card = findCardById(activeCardId);
+    if (!card){
+      alert("找不到已選取的卡，請重新點一下卡片。");
+      return;
+    }
+    if (card.type==="lodging"){
+      alert("住宿卡不建議加交通/購物，請點選一般行程卡。");
+      return;
+    }
+
+    if (!Array.isArray(card.transportList)) card.transportList = [];
+    if (!Array.isArray(card.shoppingList)) card.shoppingList = [];
+
+    if (kind === "transport"){
+      card.transportList.push("");
+    }else{
+      card.shoppingList.push("");
+    }
+
+    scheduleSave();
+    // 為了讓新行立刻出現，這裡只針對 render 不大範圍刷新：最簡單是整體 render（但不會跳字，因為你是按按鈕）
+    render();
+
+    // focus 到新行
+    setTimeout(()=>{
+      const el = document.querySelector(`.spot-card[data-card-id="${card.id}"]`);
+      if (!el) return;
+      const target = kind === "transport"
+        ? el.querySelector(".transportList .mini-item:last-child input")
+        : el.querySelector(".shoppingList .mini-item:last-child input");
+      if (target) target.focus();
+    }, 60);
   }
 
   /* =========================
@@ -1551,7 +1701,6 @@
     const destination = points[points.length-1];
     const mids = points.slice(0, points.length-1);
     const way = mids.slice(0, 9);
-
     let url = `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(destination)}`;
     if (way.length){
       url += `&waypoints=${encodeURIComponent(way.join("|"))}`;
@@ -1577,7 +1726,7 @@
   /* =========================
      Flatten day cards (visual order)
   ========================== */
-  const SEC_ORDER = ["morning","noon","night","transport","shopping"];
+  const SEC_ORDER = ["morning","noon","night"];
   function flattenDayCards(dayObj){
     const arr = [];
     SEC_ORDER.forEach(k=>{
@@ -1591,7 +1740,6 @@
   ========================== */
   function recalcTotals(){
     const rate = Number(state.settings.rate||0.22);
-
     let tripJPY = 0, tripTWD = 0;
 
     state.days.forEach(d=>{
@@ -1628,10 +1776,10 @@
       }
     });
 
-    const base = `全旅程合計：${Math.round(tripJPY)} JPY / ${Math.round(tripTWD)} TWD（離線可用：已自動保存）`;
-    // 不覆蓋雲端狀態文字時，就用 base
-    const b = $("#syncBadge");
-    if (b && !String(b.textContent||"").includes("雲端")) b.textContent = base;
+    // header
+    if (!pendingCloudState){
+      $("#syncBadge").textContent = `全旅程合計：${Math.round(tripJPY)} JPY / ${Math.round(tripTWD)} TWD（離線可用：已自動保存）`;
+    }
   }
 
   /* =========================
@@ -1706,11 +1854,7 @@
         if (data && data.state){
           pushUndo();
           state = data.state;
-
-          if (!state.meta) state.meta = { clientId: CLIENT_ID, rev: 0 };
-          if (!state.meta.clientId) state.meta.clientId = CLIENT_ID;
-          if (typeof state.meta.rev !== "number") state.meta.rev = 0;
-
+          patchStateDefaults();
           ensureDatesFromDay1();
           saveNow(true);
           render();
@@ -1743,6 +1887,7 @@
     if (!prev) return;
     try{
       state = JSON.parse(prev);
+      patchStateDefaults();
       saveNow(true);
       render();
       $("#btnUndo").disabled = undoStack.length <= 1;
@@ -1873,20 +2018,25 @@
 
   function syncCardsFromDOM(){
     state.days.forEach(d=>{
+      // reset lists
       Object.keys(d.sections).forEach(k=>d.sections[k]=[]);
       const daySec = document.querySelector(`.day-section[data-id="${d.id}"]`);
       if (!daySec) return;
       const secEls = daySec.querySelectorAll(".sec");
       secEls.forEach(secEl=>{
         const secKey = secEl.dataset.sec;
+        // transport/shopping 不用獨立卡
+        if (secKey === "transport" || secKey === "shopping") return;
+
         const cards = [...secEl.querySelectorAll(".spot-card")];
         cards.forEach(cardEl=>{
-          const cid = cardEl.getAttribute("data-card-id");
+          const cid = cardEl.dataset.cardId;
           const card = findCardById(cid);
           if (card) d.sections[secKey].push(card);
         });
       });
 
+      // keep lodging at end of night
       const night = d.sections.night || [];
       const lodIdx = night.findIndex(x=>x.type==="lodging");
       if (lodIdx>=0 && lodIdx !== night.length-1){
@@ -1900,7 +2050,7 @@
     for (const d of state.days){
       for (const k of Object.keys(d.sections)){
         for (const c of (d.sections[k]||[])){
-          if (c.id===cid) return c;
+          if (c && c.id===cid) return c;
         }
       }
     }
@@ -1908,7 +2058,7 @@
   }
 
   /* =========================
-     Long press menu
+     Long press context menu
   ========================== */
   const menu = $("#ctxMenu");
   let menuCardInfo = null;
@@ -1942,7 +2092,6 @@
 
     cardEl.addEventListener("touchstart", (e) => {
       const t = e.touches[0];
-      lastActiveCardId = cardEl.getAttribute("data-card-id");
       onDown({type:"touchstart", clientX:t.clientX, clientY:t.clientY});
     }, {passive:true});
     cardEl.addEventListener("touchmove", (e) => {
@@ -1951,7 +2100,7 @@
     }, {passive:true});
     cardEl.addEventListener("touchend", onUp);
 
-    cardEl.addEventListener("mousedown", (e)=>{ lastActiveCardId = cardEl.getAttribute("data-card-id"); onDown(e); });
+    cardEl.addEventListener("mousedown", onDown);
     cardEl.addEventListener("mousemove", onMove);
     cardEl.addEventListener("mouseup", onUp);
     cardEl.addEventListener("mouseleave", onUp);
@@ -1959,14 +2108,12 @@
 
   function openMenuForCard(cardEl, x, y){
     const dayId = cardEl.dataset.dayId;
-    const cardId = cardEl.getAttribute("data-card-id");
+    const cardId = cardEl.dataset.cardId;
     const secEl = cardEl.closest(".sec");
     const secKey = secEl ? secEl.dataset.sec : "morning";
 
     const card = findCardById(cardId);
     if (!card) return;
-
-    lastActiveCardId = cardId;
 
     menuCardInfo = { dayId, secKey, cardId };
     $("#ctxTitle").textContent = `卡片：${(card.title||"")}`.slice(0, 28);
@@ -2071,8 +2218,9 @@
     const toDay = state.days[n-1];
     if (!toDay){ closeMenu(); return; }
 
-    const secPick = prompt("移到哪個分區？輸入：morning / noon / night / transport / shopping", "morning");
-    const targetSec = ["morning","noon","night","transport","shopping"].includes(secPick) ? secPick : "morning";
+    const targetSec = prompt("移到哪個分區？輸入：morning / noon / night", "morning");
+    const allowed = ["morning","noon","night"];
+    const sec = allowed.includes(targetSec) ? targetSec : "morning";
 
     const list = fromDay.sections[secKey]||[];
     const idx = list.findIndex(c=>c.id===cardId);
@@ -2085,13 +2233,13 @@
 
     pushUndo();
     list.splice(idx,1);
-    toDay.sections[targetSec] = toDay.sections[targetSec] || [];
-    if (targetSec==="night"){
+    toDay.sections[sec] = toDay.sections[sec] || [];
+    if (sec==="night"){
       const lodIdx = toDay.sections.night.findIndex(x=>x.type==="lodging");
       if (lodIdx>=0) toDay.sections.night.splice(lodIdx,0,card);
       else toDay.sections.night.push(card);
     }else{
-      toDay.sections[targetSec].push(card);
+      toDay.sections[sec].push(card);
     }
 
     scheduleSave();
@@ -2113,9 +2261,7 @@
       if ((d.tickets?.text||"").includes(q)) hits.push({day:d, where:"票券文字"});
       if ((d.dayNote?.text||"").includes(q)) hits.push({day:d, where:"當日備註"});
       flattenDayCards(d).forEach(c=>{
-        const inlineT = (c.transportItems||[]).map(x=>x.text).join(" ");
-        const inlineS = (c.shoppingItems||[]).map(x=>x.text).join(" ");
-        const blob = `${c.title||""} ${c.ja||""} ${c.meta||""} ${c.note||""} ${c.origin||""} ${c.destination||""} ${(c.vias||[]).join(" ")} ${inlineT} ${inlineS}`;
+        const blob = `${c.title||""} ${c.ja||""} ${c.meta||""} ${c.note||""} ${c.origin||""} ${c.destination||""} ${(c.vias||[]).join(" ")} ${(c.transportList||[]).join(" ")} ${(c.shoppingList||[]).join(" ")}`;
         if (blob.includes(q)){
           hits.push({day:d, card:c, where:"行程卡"});
         }
@@ -2132,6 +2278,8 @@
     if (sec) sec.scrollIntoView({behavior:"smooth", block:"start"});
 
     if (first.card){
+      activeCardId = first.card.id;
+      markActiveCard();
       setTimeout(()=>{
         const cardEl = sec.querySelector(`.spot-card[data-card-id="${first.card.id}"]`);
         if (cardEl){
@@ -2181,93 +2329,6 @@
   }
 
   /* =========================
-     Cloud Sync (Auto load + Subscribe)  ✅ 修打字跳
-  ========================== */
-  function sleep(ms){ return new Promise(r => setTimeout(r, ms)); }
-
-  async function waitCloudSyncReady(timeoutMs=8000){
-    const start = Date.now();
-    while (!window.CloudSync){
-      if (Date.now() - start > timeoutMs) return false;
-      await sleep(120);
-    }
-    return true;
-  }
-
-  async function cloudLoadThenApply(){
-    if (!window.CloudSync) return;
-    try{
-      setStatus("雲端載入中…");
-      const remote = await window.CloudSync.load();
-      if (!remote){
-        setStatus("雲端尚無資料（維持本機）");
-        return;
-      }
-
-      const rmeta = remote.meta || {};
-      const rClient = rmeta.clientId || "";
-      const rRev = (typeof rmeta.rev === "number") ? rmeta.rev : -1;
-
-      const lmeta = state.meta || {};
-      const lClient = lmeta.clientId || CLIENT_ID;
-      const lRev = (typeof lmeta.rev === "number") ? lmeta.rev : -1;
-
-      // ✅ 若雲端是別台更新且版本更高 → 套用
-      const shouldApply =
-        (rClient !== lClient && rRev > lRev) ||
-        (rRev === -1 && JSON.stringify(remote) !== JSON.stringify(state));
-
-      if (shouldApply){
-        state = remote;
-        if (!state.meta) state.meta = { clientId: CLIENT_ID, rev: 0 };
-        ensureDatesFromDay1();
-        saveNow(false);
-        lastAppliedRemoteRev = rRev;
-        render(); // 只在「開啟時載入」這次 render
-        setStatus("已從雲端載入 ✅");
-      }else{
-        setStatus("已連線雲端 ✅（維持本機）");
-      }
-    }catch(e){
-      console.warn("cloudLoad failed", e);
-      setStatus("雲端載入失敗 ❌（先用本機資料）");
-    }
-  }
-
-  function subscribeCloud(){
-    if (!window.CloudSync) return;
-
-    window.CloudSync.subscribe((remoteState) => {
-      if (!remoteState || typeof remoteState !== "object") return;
-
-      const rmeta = remoteState.meta || {};
-      const rClient = rmeta.clientId || "";
-      const rRev = (typeof rmeta.rev === "number") ? rmeta.rev : -1;
-
-      const lmeta = state?.meta || {};
-      const lClient = lmeta.clientId || CLIENT_ID;
-      const lRev = (typeof lmeta.rev === "number") ? lmeta.rev : -1;
-
-      // ✅ 1) 自己寫上去的回彈 → 忽略（不 render，不掉游標）
-      if (rClient === lClient && rRev <= lRev) return;
-
-      // ✅ 2) 已經套用過的 remote rev → 忽略
-      if (rRev !== -1 && rRev <= lastAppliedRemoteRev) return;
-
-      // ✅ 3) 真的外部更新才套用 + render
-      state = remoteState;
-      if (!state.meta) state.meta = { clientId: CLIENT_ID, rev: 0 };
-
-      ensureDatesFromDay1();
-      saveNow(false);
-      lastAppliedRemoteRev = rRev;
-
-      render();
-      setStatus("雲端有更新，已同步 ✅");
-    });
-  }
-
-  /* =========================
      Init
   ========================== */
   initState();
@@ -2278,25 +2339,19 @@
     $("#btnUndo").disabled = true;
   }
 
-  // ✅ 開啟就自動載入（等 CloudSync 準備好）
-  (async () => {
-    const ok = await waitCloudSyncReady();
-    if (!ok) return;
-    await cloudLoadThenApply();
-    subscribeCloud();
-  })();
+  // ✅ 開啟就自動從雲端載入
+  cloudLoadOnOpen();
 
 })();
 </script>
 
-<script type="module">
+  <script type="module">
   // ====== Cloud Sync Adapter (Firestore version) ======
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
   import {
     getFirestore, doc, getDoc, setDoc, onSnapshot, serverTimestamp
   } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-  // 你的 firebaseConfig（用你提供的）
   const firebaseConfig = {
     apiKey: "AIzaSyAkFpjZVwRDA92YLK-JfDPeoHJ3hbgKVXM",
     authDomain: "trip-db86d.firebaseapp.com",
@@ -2310,7 +2365,8 @@
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
 
-  const TRIP_ID = "main"; // 兩台裝置要一樣，才會同步
+  // ✅ 兩台裝置要一樣才會同步
+  const TRIP_ID = "main";
   const tripRef = doc(db, "trips", TRIP_ID);
 
   window.CloudSync = {
@@ -2318,20 +2374,32 @@
       const snap = await getDoc(tripRef);
       return snap.exists() ? snap.data()?.state ?? null : null;
     },
-    async save(state) {
-      await setDoc(tripRef, { state, updatedAt: serverTimestamp() }, { merge: true });
+    async save(state, meta = {}) {
+      // meta: {deviceId, clientUpdatedAt}
+      await setDoc(
+        tripRef,
+        {
+          state,
+          meta: {
+            ...meta,
+            updatedAt: Date.now()
+          },
+          updatedAt: serverTimestamp()
+        },
+        { merge: true }
+      );
     },
-    subscribe(onState) {
+    subscribe(onPayload) {
       return onSnapshot(tripRef, (snap) => {
         if (!snap.exists()) return;
-        const remote = snap.data()?.state ?? null;
-        if (remote) onState(remote);
+        const remoteState = snap.data()?.state ?? null;
+        const meta = snap.data()?.meta ?? null;
+        if (remoteState) onPayload({ state: remoteState, meta });
       });
     }
   };
 
   console.log("[CloudSync] ready: trips/" + TRIP_ID);
-</script>
-
+  </script>
 </body>
 </html>
