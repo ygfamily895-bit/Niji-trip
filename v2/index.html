@@ -8,150 +8,492 @@
 
   <style>
     :root{
-      --bg-main:#fce0b3; --bg-card:#fff7e8; --bg-soft:#e5f4ff;
-      --chip:#fff6e5; --chip-active:#ffffff;
-      --brown:#7a4a26; --brown-soft:#a26b3a;
-      --border:rgba(186,140,91,.40); --shadow:0 2px 6px rgba(0,0,0,.08);
-      --r-big:24px; --r-card:18px; --r-pill:999px;
+      --bg-main:#fce0b3;
+      --bg-card:#fff7e8;
+      --bg-soft:#e5f4ff;
+      --chip:#fff6e5;
+      --chip-active:#ffffff;
+      --brown:#7a4a26;
+      --brown-soft:#a26b3a;
+      --border:rgba(186, 140, 91, 0.40);
+      --shadow:0 2px 6px rgba(0,0,0,0.08);
+      --r-big:24px;
+      --r-card:18px;
+      --r-pill:999px;
     }
-    *{box-sizing:border-box;}
-    html,body{margin:0;padding:0;font-family:system-ui,-apple-system,"Noto Sans TC","PingFang TC",sans-serif;background:var(--bg-main);color:var(--brown);}
-    body{min-height:100vh;}
-    .page{max-width:920px;margin:0 auto;padding:14px 12px 90px;}
-    header{background:var(--bg-card);border-radius:26px;padding:18px 16px 14px;box-shadow:var(--shadow);margin-bottom:12px;}
-    .title-row{display:flex;align-items:center;gap:8px;}
-    .title-row h1{margin:0;font-size:26px;font-weight:900;letter-spacing:.03em;}
-    .title-row .emoji{font-size:24px;}
-    .desc{margin:8px 0 10px;font-size:14px;color:var(--brown-soft);line-height:1.65;}
-    .desc[contenteditable]{outline:none;border-bottom:1px dashed rgba(122,74,38,.2);}
+    *{ box-sizing:border-box; }
+    html,body{ margin:0; padding:0; font-family:system-ui,-apple-system,"Noto Sans TC","PingFang TC",sans-serif; background:var(--bg-main); color:var(--brown); }
+    body{ min-height:100vh; }
 
-    .toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px;}
-    .btn{border:none;border-radius:var(--r-pill);padding:8px 14px;font-size:14px;background:#ffd59a;color:#5a351e;box-shadow:var(--shadow);cursor:pointer;white-space:nowrap;font-weight:700;}
-    .btn.primary{background:#ffb85c;}
-    .btn.danger{background:#ffb0a6;color:#7a221b;}
-    .btn.ghost{background:#fff3da;}
-    .btn.small{padding:6px 10px;font-size:13px;}
-    .btn:active{transform:translateY(1px);box-shadow:0 1px 3px rgba(0,0,0,.16);}
-    .badge{display:inline-block;padding:7px 11px;border-radius:var(--r-pill);background:#fff3c5;color:#5c3a1c;font-weight:800;font-size:13px;border:1px solid rgba(122,74,38,.10);}
+    .page{ max-width:920px; margin:0 auto; padding:14px 12px 90px; }
 
-    .hint{margin-top:10px;font-size:13px;color:var(--brown-soft);line-height:1.55;}
-    .drag-hint{font-size:12px;color:var(--brown-soft);margin-top:6px;opacity:.9;}
-
-    .sticky-wrap{position:sticky;top:0;z-index:20;padding-top:10px;background:linear-gradient(to bottom, rgba(252,224,179,.96), rgba(252,224,179,.70), rgba(252,224,179,0));backdrop-filter:blur(6px);}
-    .day-nav{background:#e3f2ff;border-radius:24px;padding:10px 8px;overflow-x:auto;display:flex;gap:10px;box-shadow:var(--shadow);}
-    .day-chip{flex:0 0 auto;min-width:92px;background:var(--chip);border-radius:var(--r-big);padding:7px 10px 6px;text-align:center;box-shadow:var(--shadow);cursor:pointer;border:1px solid transparent;user-select:none;position:relative;}
-    .day-chip.active{background:var(--chip-active);border-color:rgba(122,74,38,.22);}
-    .day-chip.dragging{opacity:.55;}
-    .chip-main{font-weight:900;font-size:15px;display:block;}
-    .chip-sub{font-size:12px;color:var(--brown-soft);display:block;margin-top:2px;}
-    .chip-main[contenteditable], .chip-sub[contenteditable]{outline:none;}
-
-    .day-section{margin-top:12px;margin-bottom:16px;}
-    .day-card{background:var(--bg-soft);border-radius:28px;padding:12px 10px 14px;box-shadow:var(--shadow);}
-    .day-header{display:flex;flex-wrap:wrap;align-items:baseline;gap:10px;padding:2px 6px 0;margin-bottom:6px;}
-    .day-pill{background:#fff;border-radius:var(--r-pill);padding:7px 14px;box-shadow:var(--shadow);font-size:18px;font-weight:900;}
-    .day-pill span[contenteditable]{outline:none;}
-    .day-subtitle{color:var(--brown-soft);font-size:15px;}
-    .day-subtitle span[contenteditable]{outline:none;border-bottom:1px dashed rgba(122,74,38,.22);}
-
-    .day-meta{margin:6px 6px 10px;font-size:13px;color:var(--brown-soft);display:flex;flex-wrap:wrap;gap:10px;align-items:center;}
-    .day-meta .datebox{background:#fff;border-radius:var(--r-pill);padding:6px 12px;box-shadow:var(--shadow);font-weight:900;color:#5c3a1c;}
-    .day-meta .datebox span[contenteditable]{outline:none;border-bottom:1px dashed rgba(122,74,38,.22);}
-    .day-meta .budget{background:#fff;border-radius:var(--r-pill);padding:6px 10px;box-shadow:var(--shadow);border:1px solid rgba(122,74,38,.12);display:flex;gap:6px;align-items:center;}
-    .day-meta input{width:92px;border:none;outline:none;background:transparent;color:#5c3a1c;font-weight:900;font-size:13px;}
-
-    .sections{display:grid;grid-template-columns:1fr;gap:10px;padding:0 6px 6px;}
-    .sec{background:rgba(255,255,255,.55);border-radius:18px;padding:10px 10px 12px;border:1px solid rgba(122,74,38,.10);}
-    .sec-head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px;}
-    .sec-title{font-weight:1000;font-size:14px;color:#5c3a1c;display:flex;align-items:center;gap:6px;}
-    .sec-title .dot{width:9px;height:9px;border-radius:50%;background:#ffb85c;box-shadow:var(--shadow);}
-    .sec-actions{display:flex;gap:6px;flex-wrap:wrap;}
-    .sec-actions .btn{box-shadow:none;background:#ffe7bf;}
-
-    .spot-card{background:var(--bg-card);border-radius:var(--r-card);padding:12px 12px 10px;box-shadow:var(--shadow);margin:0 0 10px;user-select:none;position:relative;touch-action:pan-y;}
-    .spot-card.dragging{opacity:.60;}
-    .spot-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;}
-    .spot-title{font-weight:1000;font-size:16px;margin:0 0 4px;line-height:1.25;}
-    .spot-title[contenteditable]{outline:none;border-bottom:1px dashed rgba(122,74,38,.18);}
-    .spot-tag{font-size:12px;font-weight:900;padding:4px 10px;border-radius:var(--r-pill);background:#fff3da;border:1px solid rgba(122,74,38,.10);color:#5c3a1c;white-space:nowrap;}
-    .spot-ja{font-size:13px;color:var(--brown-soft);margin:0 0 4px;}
-    .spot-ja[contenteditable]{outline:none;border-bottom:1px dashed rgba(122,74,38,.18);}
-    .spot-meta{font-size:13px;color:var(--brown-soft);margin:0 0 8px;}
-    .spot-meta[contenteditable]{outline:none;border-bottom:1px dashed rgba(122,74,38,.18);}
-
-    .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:8px 0;}
-
-    .loc-box{display:grid;grid-template-columns:1fr;gap:8px;padding:8px 9px;border-radius:14px;border:1px dashed var(--border);background:#fffdf6;}
-    .loc-line{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
-    .loc-label{font-size:12px;font-weight:1000;color:var(--brown-soft);width:54px;}
-    .loc-input{flex:1 1 180px;border:none;outline:none;padding:8px 10px;border-radius:999px;background:#fff3da;color:#5a351e;font-weight:800;}
-    .loc-mini{font-size:12px;color:var(--brown-soft);}
-
-    .note{border-radius:14px;border:1px dashed var(--border);background:#fffdf6;padding:8px 9px;margin-top:8px;}
-    .note-head{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:12px;font-weight:1000;color:var(--brown-soft);margin-bottom:6px;}
-    .note-body{white-space:pre-wrap;min-height:18px;font-size:13px;color:#5c3a1c;outline:none;}
-    .note-photos{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
-    .thumb{width:66px;height:66px;border-radius:12px;object-fit:cover;box-shadow:var(--shadow);cursor:pointer;border:1px solid rgba(122,74,38,.10);}
-    .thumb:active{transform:scale(.98);}
-
-    .expense{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:8px;padding:8px 9px;border-radius:14px;background:#fff3da;border:1px solid rgba(122,74,38,.10);}
-    .expense .lab{font-size:12px;font-weight:1000;color:var(--brown-soft);}
-    .expense input{width:120px;border:none;outline:none;background:#fff;border-radius:999px;padding:7px 10px;font-weight:1000;color:#5c3a1c;box-shadow:var(--shadow);}
-    .expense .calc{font-size:12px;font-weight:1000;color:#5c3a1c;}
-
-    .day-note-card{background:var(--bg-card);border-radius:var(--r-card);padding:12px 12px 10px;box-shadow:var(--shadow);margin:12px 0 0;}
-    .day-note-head{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:15px;font-weight:1000;margin-bottom:8px;}
-    .day-note-box{border-radius:14px;border:1px dashed var(--border);background:#fffdf6;padding:9px 10px;font-size:13px;min-height:34px;white-space:pre-wrap;outline:none;}
-    .day-note-photos{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
-
-    .tickets{background:rgba(255,255,255,.70);border-radius:14px;padding:10px 10px 8px;border:1px solid rgba(122,74,38,.10);margin-top:10px;}
-    .tickets-head{display:flex;justify-content:space-between;align-items:center;gap:10px;font-weight:1000;color:#5c3a1c;margin-bottom:8px;}
-    .tickets-grid{display:flex;flex-wrap:wrap;gap:6px;}
-
-    .modal{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.35);display:none;align-items:center;justify-content:center;padding:16px;}
-    .modal.show{display:flex;}
-    .modal-card{width:min(860px,100%);height:min(560px,80vh);background:#fff;border-radius:18px;box-shadow:0 10px 30px rgba(0,0,0,.22);overflow:hidden;display:flex;flex-direction:column;}
-    .modal-bar{padding:10px 12px;background:#fff3da;display:flex;align-items:center;justify-content:space-between;gap:10px;}
-    .modal-bar .t{font-weight:1000;color:#5c3a1c;}
-    .modal-bar .btn{box-shadow:none;padding:7px 12px;}
-    .modal-body{flex:1;}
-    .modal-body iframe{width:100%;height:100%;border:0;}
-
-    .menu{position:fixed;z-index:120;min-width:220px;background:#fff;border-radius:16px;box-shadow:0 12px 30px rgba(0,0,0,.22);padding:8px;display:none;}
-    .menu.show{display:block;}
-    .menu .m-title{font-size:12px;color:var(--brown-soft);padding:6px 8px 4px;font-weight:1000;}
-    .menu button{width:100%;text-align:left;border:none;border-radius:12px;padding:10px 10px;background:#fff3da;font-weight:1000;color:#5c3a1c;cursor:pointer;margin:4px 0;}
-    .menu button.danger{background:#ffb0a6;color:#7a221b;}
-    .menu button.secondary{background:#eaf6ff;}
-
-    .floating{position:fixed;right:10px;bottom:12px;z-index:50;display:flex;flex-direction:column;gap:8px;align-items:flex-end;}
-    .floating .fab{border:none;border-radius:999px;padding:10px 12px;background:#ffcf8f;box-shadow:var(--shadow);font-weight:1000;cursor:pointer;}
-    .floating .fab:disabled{opacity:.55;cursor:default;}
-    .save-toast{position:fixed;left:50%;bottom:14px;transform:translateX(-50%);z-index:60;background:rgba(90,53,30,.92);color:#fff;padding:7px 12px;border-radius:999px;font-size:12px;opacity:0;transition:opacity .22s ease;pointer-events:none;}
-    .save-toast.show{opacity:1;}
-
-    .search-panel{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px;padding-top:10px;border-top:1px dashed rgba(122,74,38,.20);}
-    .search-panel input{flex:1 1 220px;border:none;outline:none;padding:10px 12px;border-radius:999px;background:#fff;box-shadow:var(--shadow);font-weight:800;color:#5c3a1c;}
-    .search-panel .badge{background:#eaf6ff;}
-
-    /* login card */
-    .login-card{
-      margin-top:10px;background:#fff; border-radius:18px; padding:12px;
-      border:1px solid rgba(122,74,38,.12); box-shadow:var(--shadow);
+    header{
+      background:var(--bg-card);
+      border-radius:26px;
+      padding:18px 16px 14px;
+      box-shadow:var(--shadow);
+      margin-bottom:12px;
     }
-    .login-title{font-weight:1000;color:#5c3a1c;margin-bottom:8px;}
-    .login-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
-    .login-row input{
-      flex:1 1 170px;border:none;outline:none;
-      padding:10px 12px;border-radius:999px;background:#fff3da;
-      font-weight:900;color:#5c3a1c;
+    .title-row{ display:flex; align-items:center; gap:8px; }
+    .title-row h1{ margin:0; font-size:26px; font-weight:900; letter-spacing:0.03em; }
+    .title-row .emoji{ font-size:24px; }
+    .desc{ margin:8px 0 10px; font-size:14px; color:var(--brown-soft); line-height:1.65; }
+    .desc[contenteditable]{ outline:none; border-bottom:1px dashed rgba(122,74,38,0.2); }
+
+    .toolbar{
+      display:flex; flex-wrap:wrap; gap:8px; align-items:center;
+      margin-top:10px;
     }
-    .login-meta{margin-top:8px;font-size:13px;color:var(--brown-soft);}
+    .btn{
+      border:none; border-radius:var(--r-pill);
+      padding:8px 14px; font-size:14px;
+      background:#ffd59a; color:#5a351e;
+      box-shadow:var(--shadow); cursor:pointer; white-space:nowrap;
+      font-weight:700;
+    }
+    .btn.primary{ background:#ffb85c; }
+    .btn.danger{ background:#ffb0a6; color:#7a221b; }
+    .btn.ghost{ background:#fff3da; }
+    .btn.small{ padding:6px 10px; font-size:13px; }
+    .btn:active{ transform:translateY(1px); box-shadow:0 1px 3px rgba(0,0,0,0.16); }
+
+    .badge{
+      display:inline-block; padding:7px 11px; border-radius:var(--r-pill);
+      background:#fff3c5; color:#5c3a1c; font-weight:800; font-size:13px;
+      border:1px solid rgba(122,74,38,0.10);
+    }
+    .hint{
+      margin-top:10px; font-size:13px; color:var(--brown-soft); line-height:1.55;
+    }
+
+    /* Sticky day nav */
+    .sticky-wrap{
+      position:sticky; top:0; z-index:20;
+      padding-top:10px;
+      background:linear-gradient(to bottom, rgba(252,224,179,0.96), rgba(252,224,179,0.70), rgba(252,224,179,0.0));
+      backdrop-filter: blur(6px);
+    }
+    .day-nav{
+      background:#e3f2ff;
+      border-radius:24px;
+      padding:10px 8px;
+      overflow-x:auto;
+      display:flex; gap:10px;
+      box-shadow:var(--shadow);
+    }
+    .day-chip{
+      flex:0 0 auto;
+      min-width:92px;
+      background:var(--chip);
+      border-radius:var(--r-big);
+      padding:7px 10px 6px;
+      text-align:center;
+      box-shadow:var(--shadow);
+      cursor:pointer;
+      border:1px solid transparent;
+      user-select:none;
+      position:relative;
+    }
+    .day-chip.active{ background:var(--chip-active); border-color:rgba(122,74,38,0.22); }
+    .day-chip.dragging{ opacity:0.55; }
+    .chip-main{ font-weight:900; font-size:15px; display:block; }
+    .chip-sub{ font-size:12px; color:var(--brown-soft); display:block; margin-top:2px; }
+    .chip-main[contenteditable], .chip-sub[contenteditable]{ outline:none; }
+
+    /* Day section */
+    .day-section{ margin-top:12px; margin-bottom:16px; }
+    .day-card{
+      background:var(--bg-soft);
+      border-radius:28px;
+      padding:12px 10px 14px;
+      box-shadow:var(--shadow);
+    }
+    .day-header{
+      display:flex; flex-wrap:wrap; align-items:baseline; gap:10px;
+      padding:2px 6px 0;
+      margin-bottom:6px;
+    }
+    .day-pill{
+      background:#fff;
+      border-radius:var(--r-pill);
+      padding:7px 14px;
+      box-shadow:var(--shadow);
+      font-size:18px; font-weight:900;
+    }
+    .day-pill span[contenteditable]{ outline:none; }
+    .day-subtitle{ color:var(--brown-soft); font-size:15px; }
+    .day-subtitle span[contenteditable]{ outline:none; border-bottom:1px dashed rgba(122,74,38,0.22); }
+
+    .day-meta{
+      margin:6px 6px 10px;
+      font-size:13px; color:var(--brown-soft);
+      display:flex; flex-wrap:wrap; gap:10px; align-items:center;
+    }
+    .day-meta .datebox{
+      background:#fff; border-radius:var(--r-pill);
+      padding:6px 12px; box-shadow:var(--shadow);
+      font-weight:900; color:#5c3a1c;
+    }
+    .day-meta .datebox span[contenteditable]{ outline:none; border-bottom:1px dashed rgba(122,74,38,0.22); }
+    .day-meta .budget{
+      background:#fff; border-radius:var(--r-pill);
+      padding:6px 10px; box-shadow:var(--shadow);
+      border:1px solid rgba(122,74,38,0.12);
+      display:flex; gap:6px; align-items:center;
+    }
+    .day-meta input{
+      width:92px; border:none; outline:none;
+      background:transparent; color:#5c3a1c; font-weight:900;
+      font-size:13px;
+    }
+
+    /* Sections */
+    .sections{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:10px;
+      padding:0 6px 6px;
+    }
+    .sec{
+      background:rgba(255,255,255,0.55);
+      border-radius:18px;
+      padding:10px 10px 12px;
+      border:1px solid rgba(122,74,38,0.10);
+    }
+    .sec-head{
+      display:flex; justify-content:space-between; align-items:center; gap:8px;
+      margin-bottom:8px;
+    }
+    .sec-title{
+      font-weight:1000;
+      font-size:14px;
+      color:#5c3a1c;
+      display:flex; align-items:center; gap:6px;
+    }
+    .sec-title .dot{
+      width:9px; height:9px; border-radius:50%;
+      background:#ffb85c;
+      box-shadow:var(--shadow);
+    }
+    .sec-actions{ display:flex; gap:6px; flex-wrap:wrap; }
+    .sec-actions .btn{ box-shadow:none; background:#ffe7bf; }
+
+    /* Spot card */
+    .spot-card{
+      background:var(--bg-card);
+      border-radius:var(--r-card);
+      padding:12px 12px 10px;
+      box-shadow:var(--shadow);
+      margin:0 0 10px;
+      user-select:none;
+      position:relative;
+      touch-action: pan-y;
+    }
+    .spot-card.dragging{ opacity:0.60; }
+    .spot-top{
+      display:flex; justify-content:space-between; align-items:flex-start; gap:8px;
+    }
+    .spot-title{
+      font-weight:1000; font-size:16px; margin:0 0 4px;
+      line-height:1.25;
+    }
+    .spot-title[contenteditable]{ outline:none; border-bottom:1px dashed rgba(122,74,38,0.18); }
+    .spot-tag{
+      font-size:12px; font-weight:900;
+      padding:4px 10px; border-radius:var(--r-pill);
+      background:#fff3da;
+      border:1px solid rgba(122,74,38,0.10);
+      color:#5c3a1c;
+      white-space:nowrap;
+    }
+    .spot-ja{ font-size:13px; color:var(--brown-soft); margin:0 0 4px; }
+    .spot-ja[contenteditable]{ outline:none; border-bottom:1px dashed rgba(122,74,38,0.18); }
+    .spot-meta{ font-size:13px; color:var(--brown-soft); margin:0 0 8px; }
+    .spot-meta[contenteditable]{ outline:none; border-bottom:1px dashed rgba(122,74,38,0.18); }
+
+    .row{
+      display:flex; flex-wrap:wrap; gap:8px; align-items:center;
+      margin:8px 0;
+    }
+
+    .loc-box{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:8px;
+      padding:8px 9px;
+      border-radius:14px;
+      border:1px dashed var(--border);
+      background:#fffdf6;
+    }
+    .loc-line{
+      display:flex; gap:8px; align-items:center; flex-wrap:wrap;
+    }
+    .loc-label{
+      font-size:12px; font-weight:1000; color:var(--brown-soft);
+      width:54px;
+    }
+    .loc-input{
+      flex:1 1 180px;
+      border:none; outline:none;
+      padding:8px 10px;
+      border-radius:999px;
+      background:#fff3da;
+      color:#5a351e;
+      font-weight:800;
+    }
+    .loc-mini{
+      font-size:12px; color:var(--brown-soft);
+    }
+
+    .inline-block{
+      border-radius:14px;
+      border:1px dashed var(--border);
+      background:#fffdf6;
+      padding:8px 9px;
+    }
+    .inline-head{
+      display:flex; align-items:center; justify-content:space-between; gap:8px;
+      font-size:12px; font-weight:1000; color:var(--brown-soft);
+      margin-bottom:6px;
+    }
+    .inline-list{ display:flex; flex-direction:column; gap:6px; }
+    .inline-item{
+      display:flex; gap:6px; align-items:center;
+    }
+    .inline-item input{
+      flex:1;
+      border:none; outline:none;
+      padding:8px 10px;
+      border-radius:999px;
+      background:#fff3da;
+      color:#5a351e;
+      font-weight:800;
+    }
+    .inline-item button{
+      border:none; border-radius:999px;
+      padding:8px 10px;
+      background:#ffb0a6; color:#7a221b;
+      font-weight:900;
+      cursor:pointer;
+    }
+
+    .note{
+      border-radius:14px;
+      border:1px dashed var(--border);
+      background:#fffdf6;
+      padding:8px 9px;
+      margin-top:8px;
+    }
+    .note-head{
+      display:flex; justify-content:space-between; align-items:center; gap:10px;
+      font-size:12px; font-weight:1000; color:var(--brown-soft);
+      margin-bottom:6px;
+    }
+    .note-body{
+      white-space:pre-wrap;
+      min-height:18px;
+      font-size:13px;
+      color:#5c3a1c;
+      outline:none;
+    }
+    .note-photos{
+      display:flex; flex-wrap:wrap; gap:6px;
+      margin-top:8px;
+    }
+    .thumb{
+      width:66px; height:66px;
+      border-radius:12px;
+      object-fit:cover;
+      box-shadow:var(--shadow);
+      cursor:pointer;
+      border:1px solid rgba(122,74,38,0.10);
+    }
+    .thumb:active{ transform:scale(0.98); }
+
+    /* Expense */
+    .expense{
+      display:flex; gap:10px; flex-wrap:wrap; align-items:center;
+      margin-top:8px;
+      padding:8px 9px;
+      border-radius:14px;
+      background:#fff3da;
+      border:1px solid rgba(122,74,38,0.10);
+    }
+    .expense .lab{ font-size:12px; font-weight:1000; color:var(--brown-soft); }
+    .expense input{
+      width:120px;
+      border:none; outline:none;
+      background:#fff;
+      border-radius:999px;
+      padding:7px 10px;
+      font-weight:1000;
+      color:#5c3a1c;
+      box-shadow:var(--shadow);
+    }
+    .expense .calc{ font-size:12px; font-weight:1000; color:#5c3a1c; }
+
+    /* Day note card */
+    .day-note-card{
+      background:var(--bg-card);
+      border-radius:var(--r-card);
+      padding:12px 12px 10px;
+      box-shadow:var(--shadow);
+      margin:12px 0 0;
+    }
+    .day-note-head{
+      display:flex; justify-content:space-between; align-items:center; gap:10px;
+      font-size:15px; font-weight:1000;
+      margin-bottom:8px;
+    }
+    .day-note-box{
+      border-radius:14px;
+      border:1px dashed var(--border);
+      background:#fffdf6;
+      padding:9px 10px;
+      font-size:13px;
+      min-height:34px;
+      white-space:pre-wrap;
+      outline:none;
+    }
+    .day-note-photos{
+      display:flex; flex-wrap:wrap; gap:6px; margin-top:8px;
+    }
+
+    /* Tickets */
+    .tickets{
+      background:rgba(255,255,255,0.70);
+      border-radius:14px;
+      padding:10px 10px 8px;
+      border:1px solid rgba(122,74,38,0.10);
+      margin-top:10px;
+    }
+    .tickets-head{
+      display:flex; justify-content:space-between; align-items:center; gap:10px;
+      font-weight:1000; color:#5c3a1c; margin-bottom:8px;
+    }
+    .tickets-grid{
+      display:flex; flex-wrap:wrap; gap:6px;
+    }
+
+    /* Modal map preview */
+    .modal{
+      position:fixed; inset:0; z-index:100;
+      background:rgba(0,0,0,0.35);
+      display:none; align-items:center; justify-content:center;
+      padding:16px;
+    }
+    .modal.show{ display:flex; }
+    .modal-card{
+      width:min(860px, 100%);
+      height:min(560px, 80vh);
+      background:#fff;
+      border-radius:18px;
+      box-shadow:0 10px 30px rgba(0,0,0,0.22);
+      overflow:hidden;
+      display:flex; flex-direction:column;
+    }
+    .modal-bar{
+      padding:10px 12px;
+      background:#fff3da;
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+    }
+    .modal-bar .t{ font-weight:1000; color:#5c3a1c; }
+    .modal-bar .btn{ box-shadow:none; padding:7px 12px; }
+    .modal-body{ flex:1; }
+    .modal-body iframe{ width:100%; height:100%; border:0; }
+
+    /* Long-press menu */
+    .menu{
+      position:fixed; z-index:120;
+      min-width:220px;
+      background:#fff;
+      border-radius:16px;
+      box-shadow:0 12px 30px rgba(0,0,0,0.22);
+      padding:8px;
+      display:none;
+    }
+    .menu.show{ display:block; }
+    .menu .m-title{
+      font-size:12px; color:var(--brown-soft);
+      padding:6px 8px 4px;
+      font-weight:1000;
+    }
+    .menu button{
+      width:100%;
+      text-align:left;
+      border:none;
+      border-radius:12px;
+      padding:10px 10px;
+      background:#fff3da;
+      font-weight:1000;
+      color:#5c3a1c;
+      cursor:pointer;
+      margin:4px 0;
+    }
+    .menu button.danger{ background:#ffb0a6; color:#7a221b; }
+    .menu button.secondary{ background:#eaf6ff; }
+
+    /* Floating actions */
+    .floating{
+      position:fixed; right:10px; bottom:12px;
+      z-index:50;
+      display:flex; flex-direction:column; gap:8px;
+      align-items:flex-end;
+    }
+    .floating .fab{
+      border:none;
+      border-radius:999px;
+      padding:10px 12px;
+      background:#ffcf8f;
+      box-shadow:var(--shadow);
+      font-weight:1000;
+      cursor:pointer;
+    }
+    .floating .fab:disabled{ opacity:0.55; cursor:default; }
+
+    .save-toast{
+      position:fixed; left:50%; bottom:14px; transform:translateX(-50%);
+      z-index:60;
+      background:rgba(90,53,30,0.92);
+      color:#fff;
+      padding:7px 12px;
+      border-radius:999px;
+      font-size:12px;
+      opacity:0;
+      transition:opacity .22s ease;
+      pointer-events:none;
+    }
+    .save-toast.show{ opacity:1; }
+
+    /* Search panel */
+    .search-panel{
+      display:flex; gap:8px; flex-wrap:wrap; align-items:center;
+      margin-top:10px;
+      padding-top:10px;
+      border-top:1px dashed rgba(122,74,38,0.20);
+    }
+    .search-panel input{
+      flex:1 1 220px;
+      border:none; outline:none;
+      padding:10px 12px;
+      border-radius:999px;
+      background:#fff;
+      box-shadow:var(--shadow);
+      font-weight:800;
+      color:#5c3a1c;
+    }
+    .search-panel .badge{ background:#eaf6ff; }
+
+    /* Auto-scroll hint when dragging */
+    .drag-hint{
+      font-size:12px; color:var(--brown-soft); margin-top:6px;
+      opacity:0.9;
+    }
 
     @media (max-width:600px){
-      .title-row h1{font-size:22px;}
-      .day-card{border-radius:24px;}
-      .day-chip{min-width:84px;}
+      .title-row h1{ font-size:22px; }
+      .day-card{ border-radius:24px; }
+      .day-chip{ min-width:84px; }
     }
   </style>
 </head>
@@ -177,19 +519,6 @@
         <span class="badge" id="syncBadge">離線可用：已自動保存</span>
       </div>
 
-      <!-- ✅ Email/Password Login -->
-      <div class="login-card">
-        <div class="login-title">網站帳號登入（Email / 密碼）</div>
-        <div class="login-row">
-          <input id="loginEmail" type="email" placeholder="Email" autocomplete="email" />
-          <input id="loginPass" type="password" placeholder="密碼（至少 6 碼）" autocomplete="current-password" />
-          <button class="btn" id="btnSignUp" type="button">註冊</button>
-          <button class="btn primary" id="btnSignIn" type="button">登入</button>
-          <button class="btn danger" id="btnSignOut" type="button" style="display:none;">登出</button>
-        </div>
-        <div class="login-meta" id="loginInfo">未登入（可離線使用；登入後自動從雲端載入/同步）</div>
-      </div>
-
       <div class="search-panel">
         <input id="searchInput" placeholder="🔎 搜尋：景點/備註/票券文字（輸入後按 Enter）" />
         <button class="btn" id="btnSearch" type="button">搜尋</button>
@@ -200,6 +529,7 @@
         ✅ Day1 日期可編輯；新增天數會自動接續日期。<br/>
         ✅ 長按卡片可刪除/複製/置頂/移動/拖拉。拖拉時會自動滾動。<br/>
         ✅ 圖片「點一下直接刪除」。票券/QR 也可放在「票券收納」。<br/>
+        ✅ 新增「交通/購物」會加在你最後正在編輯的那張卡片裡（不再跳出新卡）。
       </div>
 
       <div class="drag-hint">
@@ -249,16 +579,32 @@
 
 <script>
 (() => {
+  /* =========================
+     Storage + Undo + ClientId
+  ========================== */
   const STORAGE_KEY = "niji_trip_2026_full_v2";
   const UNDO_LIMIT = 10;
+
+  // ===== clientId: 用來辨識「是不是自己寫上去又回來」=====
+  const CLIENT_ID_KEY = STORAGE_KEY + "__clientId";
+  const CLIENT_ID = (() => {
+    let id = localStorage.getItem(CLIENT_ID_KEY);
+    if (!id){
+      id = "c_" + Math.random().toString(16).slice(2) + "_" + Date.now();
+      localStorage.setItem(CLIENT_ID_KEY, id);
+    }
+    return id;
+  })();
 
   let state = null;
   let undoStack = [];
   let activeDayId = null;
 
-  // Cloud state
-  let cloudUnsub = null;
-  let _autoLoaded = false;
+  // 你最後「正在編輯」的卡片 id：用來把交通/購物加進同一張卡
+  let lastActiveCardId = null;
+
+  // 避免雲端 onSnapshot 套用同一版反覆 render
+  let lastAppliedRemoteRev = -1;
 
   const $ = (sel, root=document) => root.querySelector(sel);
   const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
@@ -281,20 +627,37 @@
     $("#btnUndo").disabled = undoStack.length <= 1;
   }
 
-  // ✅ 單一版本 saveNow（支援 pushCloud）
+  function markChanged(){
+    if (!state.meta) state.meta = { clientId: CLIENT_ID, rev: 0 };
+    state.meta.clientId = CLIENT_ID;
+    state.meta.rev = (state.meta.rev || 0) + 1;
+  }
+
   function saveNow(pushCloud=true){
+    // 本機保存
     try{
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     }catch(e){
       console.warn("local save failed", e);
     }
 
+    // 雲端保存（有網路就會寫入）
     if (pushCloud && window.CloudSync){
-      window.CloudSync.save(state)
-        .then(()=> setStatus("已同步到雲端 ✅"))
-        .catch(err => { console.warn("cloud save failed", err); setStatus("雲端同步失敗（先用本機資料）"); });
+      window.CloudSync.save(state).catch(err => console.warn("cloud save failed", err));
     }
     toastSaved();
+  }
+
+  let saveTimer = null;
+  function scheduleSave(){
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(() => {
+      // ✅ 每次輸入只存檔 + rev++，不要 render（避免打字跳）
+      markChanged();
+      saveNow(true);
+      pushUndo();
+      recalcTotals();
+    }, 250);
   }
 
   function loadLocal(){
@@ -309,6 +672,9 @@
     localStorage.removeItem(STORAGE_KEY);
   }
 
+  /* =========================
+     Date helpers
+  ========================== */
   function parseMD(s){
     const m = String(s||"").match(/(\d{1,2})\s*\/\s*(\d{1,2})/);
     if (!m) return null;
@@ -322,6 +688,7 @@
     return `${mm}/${dd}`;
   }
   function ensureDatesFromDay1(){
+    if (!state?.days?.length) return;
     const first = state.days[0];
     const md = parseMD(first.dateText);
     let base = md ? new Date(state.settings.year, md.mm-1, md.dd) : new Date(state.settings.year, 4, 8);
@@ -333,18 +700,80 @@
     });
   }
 
+  /* =========================
+     Default state
+  ========================== */
   function newCardTemplate(type="spot"){
     const id = `c_${Date.now()}_${Math.random().toString(16).slice(2)}`;
     return {
-      id, type,
-      title: type==="lodging" ? "住宿" : type==="restaurant" ? "餐廳" : type==="transport" ? "交通" : type==="shopping" ? "購物" : "景點",
-      tag:   type==="lodging" ? "住宿" : type==="restaurant" ? "餐廳" : type==="transport" ? "交通" : type==="shopping" ? "購物" : "景點",
-      ja:"", meta:"",
-      origin:"", destination:"", vias:[],
-      note:"", photos:[],
-      jpy:"", twd:"",
-      pinned:false
+      id,
+      type, // restaurant/spot/lodging
+      title: type==="lodging" ? "住宿" :
+             type==="restaurant" ? "餐廳" : "景點",
+      tag: type==="lodging" ? "住宿" :
+           type==="restaurant" ? "餐廳" : "景點",
+      ja: "",
+      meta: "",
+
+      // multi-location
+      origin: "",
+      destination: "",
+      vias: [],
+
+      // ✅ 交通/購物內嵌（不再新增新卡）
+      transportItems: [], // [{text:""}]
+      shoppingItems: [],  // [{text:""}]
+
+      note: "",
+      photos: [],
+
+      jpy: "",
+      twd: "",
+      pinned: false
     };
+  }
+
+  function initState(){
+    const s = loadLocal();
+    if (s){
+      state = s;
+
+      if (!state.meta) state.meta = {};
+      if (!state.meta.clientId) state.meta.clientId = CLIENT_ID;
+      if (typeof state.meta.rev !== "number") state.meta.rev = 0;
+
+      if (!state.settings) state.settings = {};
+      if (!state.settings.rate) state.settings.rate = 0.22;
+      if (!state.settings.year) state.settings.year = 2026;
+      if (!state.settings.hotelName) state.settings.hotelName = "VESSEL INN 上野入谷站 飯店";
+      if (!state.settings.hotelNameJP) state.settings.hotelNameJP = "ベッセルイン上野入谷駅前";
+      if (!state.settings.currencyLabel) state.settings.currencyLabel = "JPY→TWD";
+      if (!Array.isArray(state.days)) state.days = [];
+      if (state.days.length === 0){
+        state.days = makeDefaultDays();
+      }
+      ensureDatesFromDay1();
+      return;
+    }
+
+    state = {
+      meta: { clientId: CLIENT_ID, rev: 0 },
+      settings:{
+        year: 2026,
+        rate: 0.22,
+        hotelName: "VESSEL INN 上野入谷站 飯店",
+        hotelNameJP: "ベッセルイン上野入谷駅前",
+        currencyLabel: "JPY→TWD"
+      },
+      appTitle: "Niji Trip 2026",
+      appDesc: "東京行程・暖色主題。支援拖拉排序、卡片模板、多地點路線、一鍵導航、圖片/票券收納、日幣換算、預算提醒、搜尋、Undo（10步）。",
+      days: []
+    };
+
+    state.days = makeDefaultDays();
+    ensureDatesFromDay1();
+    pushUndo();
+    saveNow(false);
   }
 
   function makeDefaultDays(){
@@ -353,16 +782,23 @@
       const id = `d_${Date.now()}_${i}_${Math.random().toString(16).slice(2)}`;
       days.push({
         id,
-        autoDayLabel:true,
-        dayLabel:`Day ${i}`,
-        subtitle:i===1?"（範例）成田機場・入住上野":i===2?"（範例）上野・淺草散步":"（範例）自由活動日",
-        dateText:i===1?"5/8":i===2?"5/9":"5/10",
-        budgetJPY:"",
-        tickets:{ text:"（可放票券/QR/訂位資訊）", photos:[] },
-        sections:{ morning:[], noon:[], night:[], transport:[], shopping:[] },
-        dayNote:{ text:"例：餐飲 xxx、交通 xxx、購物 xxx、心得…", photos:[] }
+        autoDayLabel: true,
+        dayLabel: `Day ${i}`,
+        subtitle: i===1 ? "（範例）成田機場・入住上野" : i===2 ? "（範例）上野・淺草散步" : "（範例）自由活動日",
+        dateText: i===1 ? "5/8" : i===2 ? "5/9" : "5/10",
+        budgetJPY: "",
+        tickets: { text:"（可放票券/QR/訂位資訊）", photos:[] },
+        sections: {
+          morning: [],
+          noon: [],
+          night: [],
+          transport: [],
+          shopping: []
+        },
+        dayNote: { text:"例：餐飲 xxx、交通 xxx、購物 xxx、心得…", photos:[] }
       });
     }
+
     const c1 = newCardTemplate("spot");
     c1.title="範例景點";
     c1.ja="日文名稱或地址";
@@ -371,7 +807,6 @@
     c1.destination="日文名稱或地址";
     days[0].sections.morning.push(c1);
 
-    // lodging
     days.forEach(d=>{
       const lod = newCardTemplate("lodging");
       lod.title = `住宿：${state?.settings?.hotelName || "住宿"}`;
@@ -380,47 +815,16 @@
       lod.pinned = true;
       d.sections.night.push(lod);
     });
+
     return days;
   }
 
-  function initState(){
-    const s = loadLocal();
-    if (s){
-      state = s;
-      state._rev = state._rev || 0; // ✅ 版本號（防止打字跳掉）
-      if (!state.settings) state.settings = {};
-      if (!state.settings.rate) state.settings.rate = 0.22;
-      if (!state.settings.year) state.settings.year = 2026;
-      if (!state.settings.hotelName) state.settings.hotelName = "VESSEL INN 上野入谷站 飯店";
-      if (!state.settings.hotelNameJP) state.settings.hotelNameJP = "ベッセルイン上野入谷駅前";
-      if (!Array.isArray(state.days)) state.days = [];
-      if (state.days.length === 0) state.days = makeDefaultDays();
-      ensureDatesFromDay1();
-      return;
-    }
-
-    state = {
-      _rev: 0,
-      settings:{
-        year:2026,
-        rate:0.22,
-        hotelName:"VESSEL INN 上野入谷站 飯店",
-        hotelNameJP:"ベッセルイン上野入谷駅前"
-      },
-      appTitle:"Niji Trip 2026",
-      appDesc:"東京行程・暖色主題。支援拖拉排序、卡片模板、多地點路線、一鍵導航、圖片/票券收納、日幣換算、預算提醒、搜尋、Undo（10步）。",
-      days:[]
-    };
-    state.days = makeDefaultDays();
-    ensureDatesFromDay1();
-    pushUndo();
-    saveNow(false);
-  }
-
-  /* ========= Render ========= */
+  /* =========================
+     Render
+  ========================== */
   function render(){
     $("#appTitle").textContent = state.appTitle || "Niji Trip 2026";
-    $("#appDesc").textContent  = state.appDesc || "";
+    $("#appDesc").textContent = state.appDesc || "";
 
     renderDayNav();
     renderDays();
@@ -464,6 +868,7 @@
         if (idx === 0){
           ensureDatesFromDay1();
           scheduleSave();
+          // ✅ 這裡需要刷新所有日期顯示（不是每個字都跑，只有改 Day1 日期才跑）
           render();
         }else{
           scheduleSave();
@@ -486,34 +891,9 @@
     $$(".day-chip").forEach(c=>c.classList.toggle("active", c.dataset.id===id));
   }
 
-  function renderSectionHTML(key, title){
-    const dotColor = key==="morning" ? "#ffb85c" :
-                     key==="noon" ? "#ffd59a" :
-                     key==="night" ? "#a9e2ff" :
-                     key==="transport" ? "#b7f2d4" : "#ffb0a6";
-    return `
-      <div class="sec" data-sec="${key}">
-        <div class="sec-head">
-          <div class="sec-title">
-            <span class="dot" style="background:${dotColor}"></span>
-            <span>${title}</span>
-          </div>
-          <div class="sec-actions">
-            <button class="btn small" data-add="${key}" data-tpl="spot" type="button">＋ 景點</button>
-            <button class="btn small" data-add="${key}" data-tpl="restaurant" type="button">＋ 餐廳</button>
-            <button class="btn small" data-add="${key}" data-tpl="transport" type="button">＋ 交通</button>
-            <button class="btn small" data-add="${key}" data-tpl="shopping" type="button">＋ 購物</button>
-          </div>
-        </div>
-        <div class="sec-body" data-dropzone="true"></div>
-      </div>
-    `;
-  }
-
   function renderDays(){
     const wrap = $("#daysContainer");
     wrap.innerHTML = "";
-
     state.days.forEach((d, idx) => {
       const sec = document.createElement("section");
       sec.className = "day-section";
@@ -563,7 +943,7 @@
             ${renderSectionHTML("shopping","🛍️ 購物")}
           </div>
 
-          <div class="day-note-card">
+          <div class="day-note-card" data-fixed="dayNote">
             <div class="day-note-head">
               <div>當日備註／花費（固定在最下方）</div>
               <button class="btn small btnDayNotePhoto" type="button">📷 新增圖片</button>
@@ -574,7 +954,7 @@
         </div>
       `;
 
-      // bind header
+      // bind header fields
       const dayLabelEl = sec.querySelector(".day-pill span");
       dayLabelEl.textContent = d.dayLabel || `Day ${idx+1}`;
       dayLabelEl.addEventListener("input", () => {
@@ -587,32 +967,50 @@
 
       const subEl = sec.querySelector(".day-subtitle span");
       subEl.textContent = d.subtitle || "";
-      subEl.addEventListener("input", () => { d.subtitle = subEl.textContent; scheduleSave(); });
+      subEl.addEventListener("input", () => {
+        d.subtitle = subEl.textContent;
+        scheduleSave();
+      });
 
       const dateEl = sec.querySelector(".datebox span");
       dateEl.textContent = d.dateText || "";
       dateEl.addEventListener("input", () => {
         d.dateText = dateEl.textContent.trim() || d.dateText;
-        if (idx === 0){ ensureDatesFromDay1(); scheduleSave(); render(); }
-        else scheduleSave();
+        if (idx === 0){
+          ensureDatesFromDay1();
+          scheduleSave();
+          render();
+        }else{
+          scheduleSave();
+        }
       });
 
       const budgetInput = sec.querySelector(".budgetInput");
       budgetInput.value = d.budgetJPY || "";
-      budgetInput.addEventListener("input", () => { d.budgetJPY = budgetInput.value; scheduleSave(); recalcTotals(); });
+      budgetInput.addEventListener("input", () => {
+        d.budgetJPY = budgetInput.value;
+        scheduleSave();
+        recalcTotals();
+      });
 
       const rateInput = sec.querySelector(".rateInput");
       rateInput.value = String(state.settings.rate ?? 0.22);
       rateInput.addEventListener("input", () => {
         const v = parseFloat(rateInput.value);
-        if (!isNaN(v) && v > 0){ state.settings.rate = v; scheduleSave(); recalcTotals(); }
+        if (!isNaN(v) && v > 0){
+          state.settings.rate = v;
+          scheduleSave();
+          recalcTotals();
+        }
       });
 
       // tickets
       const ticketText = sec.querySelector(".ticketText");
       ticketText.textContent = d.tickets?.text || "";
-      ticketText.addEventListener("input", () => { d.tickets.text = ticketText.textContent; scheduleSave(); });
-
+      ticketText.addEventListener("input", () => {
+        d.tickets.text = ticketText.textContent;
+        scheduleSave();
+      });
       const ticketPhotos = sec.querySelector(".ticketPhotos");
       renderPhotoStrip(ticketPhotos, d.tickets.photos, () => scheduleSave());
 
@@ -624,11 +1022,13 @@
         scheduleSave();
       });
 
-      // day note
+      // day note bottom
       const dayNoteText = sec.querySelector(".dayNoteText");
       dayNoteText.textContent = d.dayNote?.text || "";
-      dayNoteText.addEventListener("input", () => { d.dayNote.text = dayNoteText.textContent; scheduleSave(); });
-
+      dayNoteText.addEventListener("input", () => {
+        d.dayNote.text = dayNoteText.textContent;
+        scheduleSave();
+      });
       const dayNotePhotos = sec.querySelector(".dayNotePhotos");
       renderPhotoStrip(dayNotePhotos, d.dayNote.photos, () => scheduleSave());
 
@@ -641,33 +1041,64 @@
       });
 
       // day route
-      sec.querySelector(".btnDayRoute").addEventListener("click", () => openDayRoute(d));
+      sec.querySelector(".btnDayRoute").addEventListener("click", () => {
+        openDayRoute(d);
+      });
 
       wrap.appendChild(sec);
+
       renderCardsForDay(sec, d);
     });
   }
 
-  function escapeHTML(s){
-    return String(s||"")
-      .replaceAll("&","&amp;")
-      .replaceAll("<","&lt;")
-      .replaceAll(">","&gt;")
-      .replaceAll('"',"&quot;")
-      .replaceAll("'","&#39;");
+  function renderSectionHTML(key, title){
+    const dotColor = key==="morning" ? "#ffb85c" :
+                     key==="noon" ? "#ffd59a" :
+                     key==="night" ? "#a9e2ff" :
+                     key==="transport" ? "#b7f2d4" : "#ffb0a6";
+    return `
+      <div class="sec" data-sec="${key}">
+        <div class="sec-head">
+          <div class="sec-title">
+            <span class="dot" style="background:${dotColor}"></span>
+            <span>${title}</span>
+          </div>
+          <div class="sec-actions">
+            <button class="btn small" data-add="${key}" data-tpl="spot" type="button">＋ 景點</button>
+            <button class="btn small" data-add="${key}" data-tpl="restaurant" type="button">＋ 餐廳</button>
+            <button class="btn small" data-add="${key}" data-tpl="transport" type="button">＋ 交通</button>
+            <button class="btn small" data-add="${key}" data-tpl="shopping" type="button">＋ 購物</button>
+          </div>
+        </div>
+        <div class="sec-body" data-dropzone="true"></div>
+      </div>
+    `;
   }
 
-  /* ===== Cards ===== */
   function renderCardsForDay(daySectionEl, dayObj){
+    // bind add template buttons
     $$("[data-add]", daySectionEl).forEach(btn=>{
-      btn.addEventListener("click", () => addCard(dayObj.id, btn.dataset.add, btn.dataset.tpl));
+      btn.addEventListener("click", () => {
+        const secKey = btn.dataset.add;
+        const tpl = btn.dataset.tpl;
+
+        // ✅ 交通/購物：加進「最後編輯的卡片」(不新增新卡)
+        if (tpl==="transport" || tpl==="shopping"){
+          const ok = addInlineItemToLastCard(dayObj.id, tpl);
+          if (ok) return;
+          // 若沒有 lastActiveCardId，就退回新增一張卡（避免按了沒反應）
+        }
+
+        addCard(dayObj.id, secKey, tpl);
+      });
     });
 
+    // render each section cards
     Object.entries(dayObj.sections).forEach(([secKey, list])=>{
       const secEl = daySectionEl.querySelector(`.sec[data-sec="${secKey}"] .sec-body`);
       secEl.innerHTML = "";
 
-      // keep lodging at end of night
+      // keep lodging last in night
       if (list && list.length){
         const lodIdx = list.findIndex(x => x && x.type==="lodging");
         if (lodIdx >= 0 && lodIdx !== list.length-1){
@@ -685,11 +1116,44 @@
     });
   }
 
+  function addInlineItemToLastCard(dayId, kind){
+    if (!lastActiveCardId) return false;
+    const card = findCardById(lastActiveCardId);
+    if (!card) return false;
+
+    // 限制：只能加在同一天的卡
+    const d = state.days.find(x=>x.id===dayId);
+    if (!d) return false;
+    const cardsInDay = flattenDayCards(d);
+    if (!cardsInDay.some(c=>c.id===card.id)) return false;
+
+    if (kind==="transport"){
+      card.transportItems = card.transportItems || [];
+      card.transportItems.push({text:""});
+    }else{
+      card.shoppingItems = card.shoppingItems || [];
+      card.shoppingItems.push({text:""});
+    }
+
+    // 只更新那張卡，不 render 全頁
+    const cardEl = document.querySelector(`.spot-card[data-card-id="${card.id}"]`);
+    if (cardEl){
+      const tList = cardEl.querySelector(".transportList");
+      const sList = cardEl.querySelector(".shoppingList");
+      if (tList) renderInlineList(tList, card.transportItems, "transport", card);
+      if (sList) renderInlineList(sList, card.shoppingItems, "shopping", card);
+    }
+
+    scheduleSave();
+    return true;
+  }
+
   function renderCard(card, dayObj){
     const el = document.createElement("article");
     el.className = "spot-card";
     el.dataset.cardId = card.id;
     el.dataset.dayId  = dayObj.id;
+    el.setAttribute("data-card-id", card.id);
     el.draggable = true;
 
     const tag = card.tag || "景點";
@@ -734,6 +1198,23 @@
           </div>
         </div>
         <div class="viasList"></div>
+
+        <!-- ✅ 交通/購物內嵌 -->
+        <div class="inline-block">
+          <div class="inline-head">
+            <span>🚇 交通（加在此卡）</span>
+            <button class="btn small btnAddTransport" type="button">＋</button>
+          </div>
+          <div class="inline-list transportList"></div>
+        </div>
+
+        <div class="inline-block">
+          <div class="inline-head">
+            <span>🛍️ 購物（加在此卡）</span>
+            <button class="btn small btnAddShopping" type="button">＋</button>
+          </div>
+          <div class="inline-list shoppingList"></div>
+        </div>
       </div>
 
       <div class="expense">
@@ -754,15 +1235,18 @@
       </div>
     `;
 
+    // 只要點到卡或在卡內輸入，就把它視為 lastActiveCardId
+    el.addEventListener("pointerdown", () => { lastActiveCardId = card.id; }, {passive:true});
+
     const titleEl = $(".spot-title", el);
     const jaEl    = $(".spot-ja", el);
     const metaEl  = $(".spot-meta", el);
     const noteEl  = $(".note-body", el);
 
     titleEl.textContent = card.title || "";
-    jaEl.textContent    = card.ja || "";
-    metaEl.textContent  = card.meta || "";
-    noteEl.textContent  = card.note || "";
+    jaEl.textContent = card.ja || "";
+    metaEl.textContent = card.meta || "";
+    noteEl.textContent = card.note || "";
 
     const origin = $(".origin", el);
     const dest   = $(".dest", el);
@@ -772,23 +1256,53 @@
     dest.value   = card.destination || card.ja || "";
     inJPY.value  = card.jpy || "";
 
+    // vias
     const viasList = $(".viasList", el);
     renderVias(viasList, card);
 
-    // edits
+    // 交通/購物 list
+    card.transportItems = card.transportItems || [];
+    card.shoppingItems  = card.shoppingItems  || [];
+    const tList = el.querySelector(".transportList");
+    const sList = el.querySelector(".shoppingList");
+    renderInlineList(tList, card.transportItems, "transport", card);
+    renderInlineList(sList, card.shoppingItems, "shopping", card);
+
+    el.querySelector(".btnAddTransport").addEventListener("click", () => {
+      lastActiveCardId = card.id;
+      card.transportItems.push({text:""});
+      renderInlineList(tList, card.transportItems, "transport", card);
+      scheduleSave();
+    });
+    el.querySelector(".btnAddShopping").addEventListener("click", () => {
+      lastActiveCardId = card.id;
+      card.shoppingItems.push({text:""});
+      renderInlineList(sList, card.shoppingItems, "shopping", card);
+      scheduleSave();
+    });
+
+    // contenteditable -> save
+    const touch = () => { lastActiveCardId = card.id; };
+
+    titleEl.addEventListener("beforeinput", touch);
+    jaEl.addEventListener("beforeinput", touch);
+    metaEl.addEventListener("beforeinput", touch);
+    noteEl.addEventListener("beforeinput", touch);
+
     titleEl.addEventListener("input", () => { card.title = titleEl.textContent; scheduleSave(); });
     jaEl.addEventListener("input", () => {
       card.ja = jaEl.textContent;
-      if (!card.destination){ card.destination = jaEl.textContent; dest.value = card.destination; }
+      if (!card.destination) { card.destination = jaEl.textContent; dest.value = card.destination; }
       scheduleSave();
     });
     metaEl.addEventListener("input", () => { card.meta = metaEl.textContent; scheduleSave(); });
     noteEl.addEventListener("input", () => { card.note = noteEl.textContent; scheduleSave(); });
 
-    origin.addEventListener("input", () => { card.origin = origin.value; scheduleSave(); });
-    dest.addEventListener("input", () => { card.destination = dest.value; scheduleSave(); });
+    origin.addEventListener("input", () => { lastActiveCardId = card.id; card.origin = origin.value; scheduleSave(); });
+    dest.addEventListener("input", () => { lastActiveCardId = card.id; card.destination = dest.value; scheduleSave(); });
 
     inJPY.addEventListener("input", () => {
+      lastActiveCardId = card.id;
       card.jpy = inJPY.value;
       const rate = Number(state.settings.rate||0.22);
       const j = parseFloat(inJPY.value||"");
@@ -799,10 +1313,11 @@
       recalcTotals();
     });
 
-    // photos
+    // note photos
     const notePhotos = $(".note-photos", el);
     renderPhotoStrip(notePhotos, card.photos, () => scheduleSave());
     $(".btnNotePhoto", el).addEventListener("click", async () => {
+      lastActiveCardId = card.id;
       const url = await pickPhoto();
       if (!url) return;
       card.photos.push(url);
@@ -821,7 +1336,9 @@
       if (!q) return alert("請先填『目的地/地址』或『日文名稱』");
       window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}`, "_blank");
     });
-    $(".btnRoute", el).addEventListener("click", () => openCardRoute(card));
+    $(".btnRoute", el).addEventListener("click", () => {
+      openCardRoute(card);
+    });
     $(".btnNearby", el).addEventListener("click", () => {
       const q = (card.destination || card.ja || card.title || "").trim();
       if (!q) return alert("請先填『目的地/地址』或『日文名稱』");
@@ -829,15 +1346,53 @@
     });
 
     $(".btnAddVia", el).addEventListener("click", () => {
+      lastActiveCardId = card.id;
       card.vias = card.vias || [];
       card.vias.push("");
       renderVias(viasList, card);
       scheduleSave();
     });
 
+    // drag
     enableCardDrag(el);
+
+    // long press context menu
     attachLongPress(el);
+
     return el;
+  }
+
+  function renderInlineList(container, list, kind, card){
+    if (!container) return;
+    container.innerHTML = "";
+    (list||[]).forEach((obj, idx) => {
+      const row = document.createElement("div");
+      row.className = "inline-item";
+      row.innerHTML = `
+        <input placeholder="${kind==='transport' ? '例：地鐵、JR、計程車、路線/站名…' : '例：買什麼、店名、退稅…'}" />
+        <button type="button">刪</button>
+      `;
+      const input = row.querySelector("input");
+      input.value = obj?.text || "";
+
+      // 重要：打字不中斷
+      input.addEventListener("focus", ()=>{ lastActiveCardId = card.id; });
+      input.addEventListener("input", () => {
+        lastActiveCardId = card.id;
+        list[idx] = list[idx] || {text:""};
+        list[idx].text = input.value;
+        scheduleSave();
+      });
+
+      row.querySelector("button").addEventListener("click", () => {
+        lastActiveCardId = card.id;
+        list.splice(idx,1);
+        renderInlineList(container, list, kind, card);
+        scheduleSave();
+      });
+
+      container.appendChild(row);
+    });
   }
 
   function renderVias(container, card){
@@ -853,8 +1408,14 @@
       `;
       const input = $(".via", line);
       input.value = v || "";
-      input.addEventListener("input", () => { card.vias[idx] = input.value; scheduleSave(); });
+      input.addEventListener("focus", ()=>{ lastActiveCardId = card.id; });
+      input.addEventListener("input", () => {
+        lastActiveCardId = card.id;
+        card.vias[idx] = input.value;
+        scheduleSave();
+      });
       $(".btnDelVia", line).addEventListener("click", () => {
+        lastActiveCardId = card.id;
         card.vias.splice(idx,1);
         renderVias(container, card);
         scheduleSave();
@@ -868,25 +1429,37 @@
     if (!d) return;
 
     pushUndo();
+
     const c = newCardTemplate(tpl==="spot" ? "spot" : tpl);
-    c.title = tpl==="restaurant" ? "新餐廳" : tpl==="transport" ? "新交通" : tpl==="shopping" ? "新購物" : "新景點";
-    c.tag   = tpl==="restaurant" ? "餐廳" : tpl==="transport" ? "交通" : tpl==="shopping" ? "購物" : "景點";
+    c.title = tpl==="restaurant" ? "新餐廳" :
+              tpl==="transport" ? "交通（行程卡）" :
+              tpl==="shopping" ? "購物（行程卡）" : "新景點";
+    c.tag = tpl==="restaurant" ? "餐廳" :
+            tpl==="transport" ? "交通" :
+            tpl==="shopping" ? "購物" : "景點";
 
     if (tpl==="lodging") return;
 
     d.sections[secKey] = d.sections[secKey] || [];
+
     if (secKey==="night"){
       const lodIdx = d.sections.night.findIndex(x=>x.type==="lodging");
-      if (lodIdx >= 0) d.sections.night.splice(lodIdx,0,c);
-      else d.sections.night.push(c);
+      if (lodIdx >= 0){
+        d.sections.night.splice(lodIdx,0,c);
+      }else{
+        d.sections.night.push(c);
+      }
     }else{
       d.sections[secKey].push(c);
     }
+
     scheduleSave();
     render();
   }
 
-  /* ===== Photos ===== */
+  /* =========================
+     Photos picker + render
+  ========================== */
   const photoPicker = $("#photoPicker");
   let photoResolve = null;
 
@@ -931,7 +1504,9 @@
     });
   }
 
-  /* ===== Map modal ===== */
+  /* =========================
+     Map preview modal
+  ========================== */
   const modal = $("#mapModal");
   const modalFrame = $("#modalFrame");
   $("#btnCloseModal").addEventListener("click", closeModal);
@@ -939,7 +1514,8 @@
 
   function openMapPreview(query){
     $("#modalTitle").textContent = `地圖預覽：${query}`;
-    modalFrame.src = `https://www.google.com/maps?q=${encodeURIComponent(query)}&output=embed`;
+    const url = `https://www.google.com/maps?q=${encodeURIComponent(query)}&output=embed`;
+    modalFrame.src = url;
     modal.classList.add("show");
     modal.setAttribute("aria-hidden","false");
   }
@@ -956,15 +1532,10 @@
     const vias = (card.vias||[]).map(x=>String(x||"").trim()).filter(Boolean);
     const ori = origin || state.settings.hotelNameJP || state.settings.hotelName || "上野";
     let url = `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(ori)}&destination=${encodeURIComponent(dest)}`;
-    if (vias.length) url += `&waypoints=${encodeURIComponent(vias.join("|"))}`;
+    if (vias.length){
+      url += `&waypoints=${encodeURIComponent(vias.join("|"))}`;
+    }
     window.open(url, "_blank");
-  }
-
-  const SEC_ORDER = ["morning","noon","night","transport","shopping"];
-  function flattenDayCards(dayObj){
-    const arr = [];
-    SEC_ORDER.forEach(k => (dayObj.sections[k]||[]).forEach(c=>arr.push(c)));
-    return arr;
   }
 
   function openDayRoute(dayObj){
@@ -974,13 +1545,17 @@
       const q = (c.destination || c.ja || c.title || "").trim();
       if (q) points.push(q);
     });
-    if (!points.length) return alert("這天沒有可導航的目的地（請填目的地/地址）");
+    if (points.length === 0) return alert("這天沒有可導航的目的地（請填目的地/地址）");
 
     const origin = state.settings.hotelNameJP || state.settings.hotelName || "上野";
     const destination = points[points.length-1];
-    const mids = points.slice(0, points.length-1).slice(0,9);
+    const mids = points.slice(0, points.length-1);
+    const way = mids.slice(0, 9);
+
     let url = `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(destination)}`;
-    if (mids.length) url += `&waypoints=${encodeURIComponent(mids.join("|"))}`;
+    if (way.length){
+      url += `&waypoints=${encodeURIComponent(way.join("|"))}`;
+    }
     window.open(url, "_blank");
   }
 
@@ -995,27 +1570,42 @@
     const pick = prompt("附近搜尋：輸入 1-5\n1 超商\n2 藥妝\n3 車站\n4 廁所\n5 餐廳", "2");
     const n = parseInt(pick||"", 10);
     if (!n || n<1 || n>5) return;
-    window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(options[n-1].q)}`, "_blank");
+    const q = options[n-1].q;
+    window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}`, "_blank");
   }
 
-  /* ===== Totals ===== */
+  /* =========================
+     Flatten day cards (visual order)
+  ========================== */
+  const SEC_ORDER = ["morning","noon","night","transport","shopping"];
+  function flattenDayCards(dayObj){
+    const arr = [];
+    SEC_ORDER.forEach(k=>{
+      (dayObj.sections[k]||[]).forEach(c=>arr.push(c));
+    });
+    return arr;
+  }
+
+  /* =========================
+     Totals + budget warning
+  ========================== */
   function recalcTotals(){
     const rate = Number(state.settings.rate||0.22);
+
     let tripJPY = 0, tripTWD = 0;
 
     state.days.forEach(d=>{
       let dayJPY = 0, dayTWD = 0;
-      flattenDayCards(d).forEach(c=>{
+      const cards = flattenDayCards(d);
+      cards.forEach(c=>{
         const j = parseFloat(c.jpy||"");
-        let t = parseFloat(c.twd||"");
-        if (!isNaN(j)){
-          dayJPY += j;
-          if (isNaN(t) || !c.twd){
-            t = Math.round(j*rate);
-            c.twd = String(t);
-          }
-        }
+        const t = parseFloat(c.twd||"");
+        if (!isNaN(j)) dayJPY += j;
         if (!isNaN(t)) dayTWD += t;
+        if (!isNaN(j) && (isNaN(t) || !c.twd)){
+          const calc = Math.round(j*rate);
+          c.twd = String(calc);
+        }
       });
 
       tripJPY += dayJPY;
@@ -1024,39 +1614,46 @@
       const sec = document.querySelector(`.day-section[data-id="${d.id}"]`);
       if (sec){
         const badge = sec.querySelector(".dayTotalBadge");
-        if (badge){
-          badge.textContent = `當日合計：${Math.round(dayJPY)} JPY / ${Math.round(dayTWD)} TWD`;
-          const bud = parseFloat(d.budgetJPY||"");
-          if (!isNaN(bud) && bud>0 && dayJPY>bud){
-            badge.style.background = "#ffb0a6";
-            badge.style.color = "#7a221b";
-            badge.textContent += "（超出預算⚠️）";
-          }else{
-            badge.style.background = "";
-            badge.style.color = "";
-          }
+        if (badge) badge.textContent = `當日合計：${Math.round(dayJPY)} JPY / ${Math.round(dayTWD)} TWD`;
+
+        const bud = parseFloat(d.budgetJPY||"");
+        if (!isNaN(bud) && bud>0 && dayJPY>bud){
+          badge.style.background = "#ffb0a6";
+          badge.style.color = "#7a221b";
+          badge.textContent += "（超出預算⚠️）";
+        }else{
+          badge.style.background = "";
+          badge.style.color = "";
         }
       }
     });
 
-    // 不要一直覆蓋登入狀態提示，這裡只加合計資訊
-    const base = (window.CloudSync ? "雲端同步可用" : "離線可用");
-    $("#syncBadge").textContent = `全旅程合計：${Math.round(tripJPY)} JPY / ${Math.round(tripTWD)} TWD（${base}）`;
+    const base = `全旅程合計：${Math.round(tripJPY)} JPY / ${Math.round(tripTWD)} TWD（離線可用：已自動保存）`;
+    // 不覆蓋雲端狀態文字時，就用 base
+    const b = $("#syncBadge");
+    if (b && !String(b.textContent||"").includes("雲端")) b.textContent = base;
   }
 
-  /* ===== Day add/remove ===== */
+  /* =========================
+     Day add/remove
+  ========================== */
   function addDay(){
     pushUndo();
     const idx = state.days.length + 1;
+
     const id = `d_${Date.now()}_${Math.random().toString(16).slice(2)}`;
     const day = {
-      id, autoDayLabel:true, dayLabel:`Day ${idx}`,
-      subtitle:"（新的一天行程）", dateText:"",
-      budgetJPY:"",
-      tickets:{ text:"", photos:[] },
-      sections:{ morning:[], noon:[], night:[], transport:[], shopping:[] },
-      dayNote:{ text:"", photos:[] }
+      id,
+      autoDayLabel: true,
+      dayLabel: `Day ${idx}`,
+      subtitle: "（新的一天行程）",
+      dateText: "",
+      budgetJPY: "",
+      tickets: { text:"", photos:[] },
+      sections: { morning:[], noon:[], night:[], transport:[], shopping:[] },
+      dayNote: { text:"", photos:[] }
     };
+
     const lod = newCardTemplate("lodging");
     lod.title = `住宿：${state.settings.hotelName}`;
     lod.ja = state.settings.hotelNameJP;
@@ -1079,14 +1676,22 @@
     render();
   }
 
-  /* ===== Import/Export ===== */
+  /* =========================
+     Import / Export
+  ========================== */
   $("#btnExport").addEventListener("click", () => {
-    const data = { savedAt:new Date().toISOString(), state };
+    const data = {
+      savedAt: new Date().toISOString(),
+      state
+    };
     const blob = new Blob([JSON.stringify(data, null, 2)], {type:"application/json"});
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
-    a.href = url; a.download = "NijiTrip2026_backup.json";
-    document.body.appendChild(a); a.click(); a.remove();
+    a.href = url;
+    a.download = "NijiTrip2026_backup.json";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
     URL.revokeObjectURL(url);
   });
 
@@ -1101,11 +1706,17 @@
         if (data && data.state){
           pushUndo();
           state = data.state;
-          state._rev = state._rev || 0;
+
+          if (!state.meta) state.meta = { clientId: CLIENT_ID, rev: 0 };
+          if (!state.meta.clientId) state.meta.clientId = CLIENT_ID;
+          if (typeof state.meta.rev !== "number") state.meta.rev = 0;
+
           ensureDatesFromDay1();
           saveNow(true);
           render();
-        }else alert("匯入失敗：JSON 格式不對");
+        }else{
+          alert("匯入失敗：JSON 格式不對");
+        }
       }catch(err){
         alert("匯入失敗：JSON 解析錯誤");
       }
@@ -1122,7 +1733,9 @@
     render();
   });
 
-  /* ===== Undo ===== */
+  /* =========================
+     Undo
+  ========================== */
   $("#btnUndo").addEventListener("click", () => {
     if (undoStack.length <= 1) return;
     undoStack.pop();
@@ -1130,82 +1743,33 @@
     if (!prev) return;
     try{
       state = JSON.parse(prev);
-      state._rev = state._rev || 0;
       saveNow(true);
       render();
       $("#btnUndo").disabled = undoStack.length <= 1;
     }catch(e){}
   });
 
+  /* =========================
+     Jump to active day
+  ========================== */
   $("#btnJumpActive").addEventListener("click", () => {
     if (!activeDayId) return;
     const sec = document.querySelector(`.day-section[data-id="${activeDayId}"]`);
     if (sec) sec.scrollIntoView({behavior:"smooth", block:"start"});
   });
 
-  /* ===== Search ===== */
-  function doSearch(){
-    const q = $("#searchInput").value.trim();
-    if (!q){ $("#searchResult").textContent = "請輸入關鍵字"; return; }
-    const hits = [];
-    state.days.forEach(d=>{
-      if ((d.tickets?.text||"").includes(q)) hits.push({day:d, where:"票券文字"});
-      if ((d.dayNote?.text||"").includes(q)) hits.push({day:d, where:"當日備註"});
-      flattenDayCards(d).forEach(c=>{
-        const blob = `${c.title||""} ${c.ja||""} ${c.meta||""} ${c.note||""} ${c.origin||""} ${c.destination||""} ${(c.vias||[]).join(" ")}`;
-        if (blob.includes(q)) hits.push({day:d, card:c, where:"行程卡"});
-      });
-    });
-    $("#searchResult").textContent = hits.length ? `找到 ${hits.length} 筆` : "找不到";
-    if (!hits.length) return;
-
-    const first = hits[0];
-    activeDayId = first.day.id;
-    setActiveChip(activeDayId);
-    const sec = document.querySelector(`.day-section[data-id="${first.day.id}"]`);
-    if (sec) sec.scrollIntoView({behavior:"smooth", block:"start"});
-    if (first.card){
-      setTimeout(()=>{
-        const cardEl = sec.querySelector(`.spot-card[data-card-id="${first.card.id}"]`) || sec.querySelector(`.spot-card[data-cardid="${first.card.id}"]`);
-        if (cardEl){
-          cardEl.style.outline = "3px solid rgba(255,184,92,.9)";
-          cardEl.style.outlineOffset = "3px";
-          setTimeout(()=>{ cardEl.style.outline=""; cardEl.style.outlineOffset=""; }, 1600);
-        }
-      }, 350);
-    }
-  }
-  $("#btnSearch").addEventListener("click", doSearch);
-  $("#searchInput").addEventListener("keydown", (e) => {
-    if (e.key==="Enter"){ e.preventDefault(); doSearch(); }
-  });
-
-  /* ===== title/desc save ===== */
-  $("#appTitle").addEventListener("input", () => { state.appTitle = $("#appTitle").textContent.trim(); scheduleSave(); });
-  $("#appDesc").addEventListener("input", () => { state.appDesc = $("#appDesc").textContent; scheduleSave(); });
-
-  $("#btnAddDay").addEventListener("click", addDay);
-  $("#btnRemoveDay").addEventListener("click", removeLastDay);
-
-  /* ===== ✅ scheduleSave：加 _rev 防止打字跳掉 ===== */
-  let saveTimer = null;
-  function scheduleSave(){
-    clearTimeout(saveTimer);
-    saveTimer = setTimeout(() => {
-      // ✅ 版本號遞增：雲端 snapshot 回來如果不是更大版本，就不套用，不會 re-render 掉焦點
-      state._rev = (state._rev || 0) + 1;
-
-      saveNow(true);
-      pushUndo();
-      recalcTotals();
-    }, 250);
-  }
-
-  /* ===== Drag reorder (days) ===== */
+  /* =========================
+     Day chip drag reorder
+  ========================== */
   let draggingChip = null;
+
   function enableChipDrag(chip){
     chip.draggable = true;
-    chip.addEventListener("dragstart", (e) => { draggingChip = chip; chip.classList.add("dragging"); e.dataTransfer.effectAllowed = "move"; });
+    chip.addEventListener("dragstart", (e) => {
+      draggingChip = chip;
+      chip.classList.add("dragging");
+      e.dataTransfer.effectAllowed = "move";
+    });
     chip.addEventListener("dragend", () => {
       if (!draggingChip) return;
       draggingChip.classList.remove("dragging");
@@ -1218,7 +1782,10 @@
         if (d) newDays.push(d);
       });
       state.days = newDays;
-      state.days.forEach((d, idx) => { if (d.autoDayLabel) d.dayLabel = `Day ${idx+1}`; });
+
+      state.days.forEach((d, idx) => {
+        if (d.autoDayLabel) d.dayLabel = `Day ${idx+1}`;
+      });
       ensureDatesFromDay1();
 
       scheduleSave();
@@ -1240,12 +1807,16 @@
     chips.forEach(c=>{
       const box = c.getBoundingClientRect();
       const offset = x - (box.left + box.width/2);
-      if (offset < 0 && offset > closest.offset) closest = { offset, el:c };
+      if (offset < 0 && offset > closest.offset){
+        closest = { offset, el:c };
+      }
     });
     return closest.el;
   }
 
-  /* ===== Card drag/drop ===== */
+  /* =========================
+     Card Drag + Drop
+  ========================== */
   let draggingCardEl = null;
 
   function enableCardDrag(cardEl){
@@ -1280,27 +1851,24 @@
     els.forEach(el=>{
       const box = el.getBoundingClientRect();
       const offset = y - (box.top + box.height/2);
-      if (offset < 0 && offset > closest.offset) closest = { offset, el };
+      if (offset < 0 && offset > closest.offset){
+        closest = { offset, el };
+      }
     });
     return closest.el;
   }
 
   function autoScrollWhileDragging(clientY){
-    const margin = 80, speed = 18;
-    const top = margin, bottom = window.innerHeight - margin;
-    if (clientY < top) window.scrollBy(0, -speed);
-    else if (clientY > bottom) window.scrollBy(0, speed);
-  }
+    const margin = 80;
+    const speed = 18;
+    const top = margin;
+    const bottom = window.innerHeight - margin;
 
-  function findCardById(cid){
-    for (const d of state.days){
-      for (const k of Object.keys(d.sections)){
-        for (const c of (d.sections[k]||[])){
-          if (c.id===cid) return c;
-        }
-      }
+    if (clientY < top){
+      window.scrollBy(0, -speed);
+    }else if (clientY > bottom){
+      window.scrollBy(0, speed);
     }
-    return null;
   }
 
   function syncCardsFromDOM(){
@@ -1308,10 +1876,12 @@
       Object.keys(d.sections).forEach(k=>d.sections[k]=[]);
       const daySec = document.querySelector(`.day-section[data-id="${d.id}"]`);
       if (!daySec) return;
-      daySec.querySelectorAll(".sec").forEach(secEl=>{
+      const secEls = daySec.querySelectorAll(".sec");
+      secEls.forEach(secEl=>{
         const secKey = secEl.dataset.sec;
-        [...secEl.querySelectorAll(".spot-card")].forEach(cardEl=>{
-          const cid = cardEl.dataset.cardId;
+        const cards = [...secEl.querySelectorAll(".spot-card")];
+        cards.forEach(cardEl=>{
+          const cid = cardEl.getAttribute("data-card-id");
           const card = findCardById(cid);
           if (card) d.sections[secKey].push(card);
         });
@@ -1326,9 +1896,23 @@
     });
   }
 
-  /* ===== Long press menu ===== */
+  function findCardById(cid){
+    for (const d of state.days){
+      for (const k of Object.keys(d.sections)){
+        for (const c of (d.sections[k]||[])){
+          if (c.id===cid) return c;
+        }
+      }
+    }
+    return null;
+  }
+
+  /* =========================
+     Long press menu
+  ========================== */
   const menu = $("#ctxMenu");
   let menuCardInfo = null;
+
   let pressTimer = null;
   let pressStart = null;
 
@@ -1337,21 +1921,37 @@
       if (e.type==="mousedown" && e.button !== 0) return;
       pressStart = { x: e.clientX, y: e.clientY };
       clearTimeout(pressTimer);
-      pressTimer = setTimeout(() => openMenuForCard(cardEl, e.clientX, e.clientY), 520);
+      pressTimer = setTimeout(() => {
+        openMenuForCard(cardEl, e.clientX, e.clientY);
+      }, 520);
     };
+
     const onMove = (e) => {
       if (!pressStart) return;
       const dx = Math.abs(e.clientX - pressStart.x);
       const dy = Math.abs(e.clientY - pressStart.y);
-      if (dx > 12 || dy > 12) clearTimeout(pressTimer);
+      if (dx > 12 || dy > 12){
+        clearTimeout(pressTimer);
+      }
     };
-    const onUp = () => { clearTimeout(pressTimer); pressStart = null; };
 
-    cardEl.addEventListener("touchstart", (e) => { const t = e.touches[0]; onDown({type:"touchstart", clientX:t.clientX, clientY:t.clientY}); }, {passive:true});
-    cardEl.addEventListener("touchmove",  (e) => { const t = e.touches[0]; onMove({clientX:t.clientX, clientY:t.clientY}); }, {passive:true});
+    const onUp = () => {
+      clearTimeout(pressTimer);
+      pressStart = null;
+    };
+
+    cardEl.addEventListener("touchstart", (e) => {
+      const t = e.touches[0];
+      lastActiveCardId = cardEl.getAttribute("data-card-id");
+      onDown({type:"touchstart", clientX:t.clientX, clientY:t.clientY});
+    }, {passive:true});
+    cardEl.addEventListener("touchmove", (e) => {
+      const t = e.touches[0];
+      onMove({clientX:t.clientX, clientY:t.clientY});
+    }, {passive:true});
     cardEl.addEventListener("touchend", onUp);
 
-    cardEl.addEventListener("mousedown", onDown);
+    cardEl.addEventListener("mousedown", (e)=>{ lastActiveCardId = cardEl.getAttribute("data-card-id"); onDown(e); });
     cardEl.addEventListener("mousemove", onMove);
     cardEl.addEventListener("mouseup", onUp);
     cardEl.addEventListener("mouseleave", onUp);
@@ -1359,12 +1959,14 @@
 
   function openMenuForCard(cardEl, x, y){
     const dayId = cardEl.dataset.dayId;
-    const cardId = cardEl.dataset.cardId;
+    const cardId = cardEl.getAttribute("data-card-id");
     const secEl = cardEl.closest(".sec");
     const secKey = secEl ? secEl.dataset.sec : "morning";
 
     const card = findCardById(cardId);
     if (!card) return;
+
+    lastActiveCardId = cardId;
 
     menuCardInfo = { dayId, secKey, cardId };
     $("#ctxTitle").textContent = `卡片：${(card.title||"")}`.slice(0, 28);
@@ -1374,13 +1976,23 @@
     menu.classList.add("show");
   }
 
-  function closeMenu(){ menu.classList.remove("show"); menuCardInfo = null; }
+  function closeMenu(){
+    menu.classList.remove("show");
+    menuCardInfo = null;
+  }
 
   document.addEventListener("click", (e) => {
-    if (menu.classList.contains("show") && !menu.contains(e.target)) closeMenu();
+    if (menu.classList.contains("show")){
+      if (!menu.contains(e.target)){
+        closeMenu();
+      }
+    }
   });
 
-  $("#mDrag").addEventListener("click", () => { alert("已進入拖拉模式：請直接拖拉卡片（拖拉時會自動滾動）"); closeMenu(); });
+  $("#mDrag").addEventListener("click", () => {
+    alert("已進入拖拉模式：請直接拖拉卡片（拖拉時會自動滾動）");
+    closeMenu();
+  });
 
   $("#mDelete").addEventListener("click", () => {
     if (!menuCardInfo) return;
@@ -1392,7 +2004,10 @@
     if (idx<0) return;
 
     const card = list[idx];
-    if (card.type==="lodging"){ alert("住宿卡是固定的（不能刪除）。"); closeMenu(); return; }
+    if (card.type==="lodging"){
+      alert("住宿卡是固定的（不能刪除）。如需改飯店名稱，請直接編輯住宿卡文字。");
+      closeMenu(); return;
+    }
 
     pushUndo();
     list.splice(idx,1);
@@ -1430,7 +2045,10 @@
     if (idx<0) return;
 
     const card = list[idx];
-    if (card.type==="lodging"){ alert("住宿卡已固定在底部。"); closeMenu(); return; }
+    if (card.type==="lodging"){
+      alert("住宿卡已固定在底部，不需要置頂。");
+      closeMenu(); return;
+    }
 
     pushUndo();
     list.splice(idx,1);
@@ -1451,6 +2069,7 @@
     const n = parseInt(pick||"", 10);
     if (!n || n<1 || n>state.days.length){ closeMenu(); return; }
     const toDay = state.days[n-1];
+    if (!toDay){ closeMenu(); return; }
 
     const secPick = prompt("移到哪個分區？輸入：morning / noon / night / transport / shopping", "morning");
     const targetSec = ["morning","noon","night","transport","shopping"].includes(secPick) ? secPick : "morning";
@@ -1460,7 +2079,9 @@
     if (idx<0) return;
 
     const card = list[idx];
-    if (card.type==="lodging"){ alert("住宿卡是固定的，不支援移動。"); closeMenu(); return; }
+    if (card.type==="lodging"){
+      alert("住宿卡是固定的，不支援移動。"); closeMenu(); return;
+    }
 
     pushUndo();
     list.splice(idx,1);
@@ -1472,66 +2093,183 @@
     }else{
       toDay.sections[targetSec].push(card);
     }
+
     scheduleSave();
     render();
     closeMenu();
   });
 
-  /* ===== ✅ Cloud: auto load + subscribe (rev-based) ===== */
+  /* =========================
+     Search
+  ========================== */
+  function doSearch(){
+    const q = $("#searchInput").value.trim();
+    if (!q){
+      $("#searchResult").textContent = "請輸入關鍵字";
+      return;
+    }
+    const hits = [];
+    state.days.forEach((d)=>{
+      if ((d.tickets?.text||"").includes(q)) hits.push({day:d, where:"票券文字"});
+      if ((d.dayNote?.text||"").includes(q)) hits.push({day:d, where:"當日備註"});
+      flattenDayCards(d).forEach(c=>{
+        const inlineT = (c.transportItems||[]).map(x=>x.text).join(" ");
+        const inlineS = (c.shoppingItems||[]).map(x=>x.text).join(" ");
+        const blob = `${c.title||""} ${c.ja||""} ${c.meta||""} ${c.note||""} ${c.origin||""} ${c.destination||""} ${(c.vias||[]).join(" ")} ${inlineT} ${inlineS}`;
+        if (blob.includes(q)){
+          hits.push({day:d, card:c, where:"行程卡"});
+        }
+      });
+    });
+
+    $("#searchResult").textContent = hits.length ? `找到 ${hits.length} 筆` : "找不到";
+    if (!hits.length) return;
+
+    const first = hits[0];
+    activeDayId = first.day.id;
+    setActiveChip(activeDayId);
+    const sec = document.querySelector(`.day-section[data-id="${first.day.id}"]`);
+    if (sec) sec.scrollIntoView({behavior:"smooth", block:"start"});
+
+    if (first.card){
+      setTimeout(()=>{
+        const cardEl = sec.querySelector(`.spot-card[data-card-id="${first.card.id}"]`);
+        if (cardEl){
+          cardEl.style.outline = "3px solid rgba(255,184,92,0.9)";
+          cardEl.style.outlineOffset = "3px";
+          setTimeout(()=>{ cardEl.style.outline=""; cardEl.style.outlineOffset=""; }, 1600);
+        }
+      }, 350);
+    }
+  }
+  $("#btnSearch").addEventListener("click", doSearch);
+  $("#searchInput").addEventListener("keydown", (e) => {
+    if (e.key==="Enter"){
+      e.preventDefault();
+      doSearch();
+    }
+  });
+
+  /* =========================
+     App title/desc save
+  ========================== */
+  $("#appTitle").addEventListener("input", () => {
+    state.appTitle = $("#appTitle").textContent.trim();
+    scheduleSave();
+  });
+  $("#appDesc").addEventListener("input", () => {
+    state.appDesc = $("#appDesc").textContent;
+    scheduleSave();
+  });
+
+  /* =========================
+     Buttons add/remove day
+  ========================== */
+  $("#btnAddDay").addEventListener("click", addDay);
+  $("#btnRemoveDay").addEventListener("click", removeLastDay);
+
+  /* =========================
+     Escaping
+  ========================== */
+  function escapeHTML(s){
+    return String(s||"")
+      .replaceAll("&","&amp;")
+      .replaceAll("<","&lt;")
+      .replaceAll(">","&gt;")
+      .replaceAll('"',"&quot;")
+      .replaceAll("'","&#39;");
+  }
+
+  /* =========================
+     Cloud Sync (Auto load + Subscribe)  ✅ 修打字跳
+  ========================== */
+  function sleep(ms){ return new Promise(r => setTimeout(r, ms)); }
+
   async function waitCloudSyncReady(timeoutMs=8000){
     const start = Date.now();
-    while(!window.CloudSync){
+    while (!window.CloudSync){
       if (Date.now() - start > timeoutMs) return false;
-      await new Promise(r=>setTimeout(r,120));
+      await sleep(120);
     }
     return true;
   }
 
-  async function autoLoadFromCloudOnce(){
-    if (_autoLoaded) return;
+  async function cloudLoadThenApply(){
     if (!window.CloudSync) return;
     try{
       setStatus("雲端載入中…");
-      const remoteState = await window.CloudSync.load();
-      if (remoteState && typeof remoteState === "object"){
-        state = remoteState;
-        state._rev = state._rev || 0;
+      const remote = await window.CloudSync.load();
+      if (!remote){
+        setStatus("雲端尚無資料（維持本機）");
+        return;
+      }
+
+      const rmeta = remote.meta || {};
+      const rClient = rmeta.clientId || "";
+      const rRev = (typeof rmeta.rev === "number") ? rmeta.rev : -1;
+
+      const lmeta = state.meta || {};
+      const lClient = lmeta.clientId || CLIENT_ID;
+      const lRev = (typeof lmeta.rev === "number") ? lmeta.rev : -1;
+
+      // ✅ 若雲端是別台更新且版本更高 → 套用
+      const shouldApply =
+        (rClient !== lClient && rRev > lRev) ||
+        (rRev === -1 && JSON.stringify(remote) !== JSON.stringify(state));
+
+      if (shouldApply){
+        state = remote;
+        if (!state.meta) state.meta = { clientId: CLIENT_ID, rev: 0 };
         ensureDatesFromDay1();
-        saveNow(false); // 只存本機
-        render();
+        saveNow(false);
+        lastAppliedRemoteRev = rRev;
+        render(); // 只在「開啟時載入」這次 render
         setStatus("已從雲端載入 ✅");
       }else{
-        setStatus("雲端尚無資料（維持本機）");
+        setStatus("已連線雲端 ✅（維持本機）");
       }
-      subscribeCloud();
-      _autoLoaded = true;
     }catch(e){
-      console.warn(e);
-      setStatus("雲端載入失敗（先用本機資料）");
+      console.warn("cloudLoad failed", e);
+      setStatus("雲端載入失敗 ❌（先用本機資料）");
     }
   }
 
   function subscribeCloud(){
     if (!window.CloudSync) return;
-    if (cloudUnsub) { try{ cloudUnsub(); }catch(e){} cloudUnsub=null; }
 
-    cloudUnsub = window.CloudSync.subscribe((remoteState) => {
-      const localRev  = state?._rev || 0;
-      const remoteRev = remoteState?._rev || 0;
+    window.CloudSync.subscribe((remoteState) => {
+      if (!remoteState || typeof remoteState !== "object") return;
 
-      // ✅ 只套用「更大的版本」：避免你打字時 snapshot 造成 render -> 游標跳掉
-      if (remoteRev <= localRev) return;
+      const rmeta = remoteState.meta || {};
+      const rClient = rmeta.clientId || "";
+      const rRev = (typeof rmeta.rev === "number") ? rmeta.rev : -1;
 
+      const lmeta = state?.meta || {};
+      const lClient = lmeta.clientId || CLIENT_ID;
+      const lRev = (typeof lmeta.rev === "number") ? lmeta.rev : -1;
+
+      // ✅ 1) 自己寫上去的回彈 → 忽略（不 render，不掉游標）
+      if (rClient === lClient && rRev <= lRev) return;
+
+      // ✅ 2) 已經套用過的 remote rev → 忽略
+      if (rRev !== -1 && rRev <= lastAppliedRemoteRev) return;
+
+      // ✅ 3) 真的外部更新才套用 + render
       state = remoteState;
-      state._rev = state._rev || 0;
+      if (!state.meta) state.meta = { clientId: CLIENT_ID, rev: 0 };
+
       ensureDatesFromDay1();
       saveNow(false);
+      lastAppliedRemoteRev = rRev;
+
       render();
-      setStatus("雲端同步更新 ✅");
+      setStatus("雲端有更新，已同步 ✅");
     });
   }
 
-  /* ===== Init ===== */
+  /* =========================
+     Init
+  ========================== */
   initState();
   render();
 
@@ -1540,39 +2278,25 @@
     $("#btnUndo").disabled = true;
   }
 
-  // 暴露給 auth module 使用
-  window.__NijiTrip = {
-    onCloudReady: async () => {
-      const ok = await waitCloudSyncReady();
-      if (!ok) return;
-      await autoLoadFromCloudOnce();
-    },
-    onCloudOff: () => {
-      if (cloudUnsub) { try{ cloudUnsub(); }catch(e){} }
-      cloudUnsub = null;
-      window.CloudSync = null;
-      _autoLoaded = false;
-      setStatus("離線模式（未登入或雲端不可用）");
-    }
-  };
+  // ✅ 開啟就自動載入（等 CloudSync 準備好）
+  (async () => {
+    const ok = await waitCloudSyncReady();
+    if (!ok) return;
+    await cloudLoadThenApply();
+    subscribeCloud();
+  })();
 
 })();
 </script>
 
-<!-- ✅ Firebase Auth + Firestore CloudSync (Email/Password only) -->
 <script type="module">
-  import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-  import {
-    getAuth, onAuthStateChanged,
-    createUserWithEmailAndPassword,
-    signInWithEmailAndPassword,
-    signOut
-  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-
+  // ====== Cloud Sync Adapter (Firestore version) ======
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
   import {
     getFirestore, doc, getDoc, setDoc, onSnapshot, serverTimestamp
   } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
+  // 你的 firebaseConfig（用你提供的）
   const firebaseConfig = {
     apiKey: "AIzaSyAkFpjZVwRDA92YLK-JfDPeoHJ3hbgKVXM",
     authDomain: "trip-db86d.firebaseapp.com",
@@ -1583,100 +2307,30 @@
     measurementId: "G-FD0411E3XH"
   };
 
-  const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
-  const auth = getAuth(app);
+  const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
 
-  const TRIP_ID = "main"; // 每個帳號各自一份 main
+  const TRIP_ID = "main"; // 兩台裝置要一樣，才會同步
+  const tripRef = doc(db, "trips", TRIP_ID);
 
-  // UI refs
-  const $ = (s)=>document.querySelector(s);
-  const emailEl = $("#loginEmail");
-  const passEl  = $("#loginPass");
-  const infoEl  = $("#loginInfo");
-  const btnUp   = $("#btnSignUp");
-  const btnIn   = $("#btnSignIn");
-  const btnOut  = $("#btnSignOut");
-
-  function setLoginUI(user){
-    if (user){
-      infoEl.textContent = `已登入：${user.email}（登入後自動雲端載入/同步）`;
-      btnOut.style.display = "";
-      btnIn.style.display  = "none";
-      btnUp.style.display  = "none";
-    }else{
-      infoEl.textContent = "未登入（可離線使用；登入後自動從雲端載入/同步）";
-      btnOut.style.display = "none";
-      btnIn.style.display  = "";
-      btnUp.style.display  = "";
+  window.CloudSync = {
+    async load() {
+      const snap = await getDoc(tripRef);
+      return snap.exists() ? snap.data()?.state ?? null : null;
+    },
+    async save(state) {
+      await setDoc(tripRef, { state, updatedAt: serverTimestamp() }, { merge: true });
+    },
+    subscribe(onState) {
+      return onSnapshot(tripRef, (snap) => {
+        if (!snap.exists()) return;
+        const remote = snap.data()?.state ?? null;
+        if (remote) onState(remote);
+      });
     }
-  }
+  };
 
-  btnUp.addEventListener("click", async () => {
-    const email = (emailEl.value||"").trim();
-    const pass  = (passEl.value||"").trim();
-    if (!email || !pass) return alert("請輸入 Email 與 密碼");
-    if (pass.length < 6) return alert("密碼至少 6 碼");
-    try{
-      await createUserWithEmailAndPassword(auth, email, pass);
-      alert("註冊成功 ✅");
-    }catch(e){
-      alert("註冊失敗：" + (e?.message || e));
-    }
-  });
-
-  btnIn.addEventListener("click", async () => {
-    const email = (emailEl.value||"").trim();
-    const pass  = (passEl.value||"").trim();
-    if (!email || !pass) return alert("請輸入 Email 與 密碼");
-    try{
-      await signInWithEmailAndPassword(auth, email, pass);
-    }catch(e){
-      alert("登入失敗：" + (e?.message || e));
-    }
-  });
-
-  btnOut.addEventListener("click", async () => {
-    try{
-      await signOut(auth);
-    }catch(e){
-      alert("登出失敗：" + (e?.message || e));
-    }
-  });
-
-  // When auth changes: create CloudSync adapter bound to uid
-  onAuthStateChanged(auth, async (user) => {
-    setLoginUI(user);
-
-    if (!user){
-      // turn off CloudSync
-      if (window.__NijiTrip) window.__NijiTrip.onCloudOff();
-      return;
-    }
-
-    // ✅ per-user doc: users/{uid}/trips/main
-    const tripRef = doc(db, "users", user.uid, "trips", TRIP_ID);
-
-    window.CloudSync = {
-      async load(){
-        const snap = await getDoc(tripRef);
-        return snap.exists() ? (snap.data()?.state ?? null) : null;
-      },
-      async save(state){
-        await setDoc(tripRef, { state, updatedAt: serverTimestamp() }, { merge:true });
-      },
-      subscribe(onState){
-        return onSnapshot(tripRef, (snap) => {
-          if (!snap.exists()) return;
-          const remote = snap.data()?.state ?? null;
-          if (remote) onState(remote);
-        });
-      }
-    };
-
-    // ✅ 登入後自動雲端載入（只跑一次）
-    if (window.__NijiTrip) await window.__NijiTrip.onCloudReady();
-  });
+  console.log("[CloudSync] ready: trips/" + TRIP_ID);
 </script>
 
 </body>
