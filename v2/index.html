@@ -451,7 +451,7 @@
       </div>
 
       <div class="muted" style="margin-top:10px;">
-        ✅ 打字不會跳掉（輸入不會整頁刷新）。<br>
+        ✅ 打字不會跳掉（支援中文注音/拼音組字，不會被存檔打斷）。<br>
         ✅ Day1 日期可編輯；新增/拖拉天數會自動接續日期。<br>
         ✅ 長按卡片可刪除/複製/置頂/移動/上移下移。<br>
         ✅ 圖片「點一下直接刪除」。住宿卡固定（不可刪）。<br>
@@ -506,12 +506,17 @@
   ========================== */
   const STORAGE_KEY = "niji_trip_2026_A_v3";
   const UNDO_LIMIT = 10;
-
-  // Firestore doc path: users/{uid}/trips/main
   const TRIP_ID = "main";
 
   const $ = (sel, root=document) => root.querySelector(sel);
   const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
+
+  /* =========================
+     IME 組字保護：避免打字被跳掉
+  ========================== */
+  let __isComposing = false;
+  document.addEventListener("compositionstart", () => { __isComposing = true; }, true);
+  document.addEventListener("compositionend",   () => { __isComposing = false; }, true);
 
   /* =========================
      UI helpers
@@ -590,7 +595,6 @@
       sections: { morning:[], afternoon:[], night:[] },
       dayNote: { text:"", photos:[] }
     };
-    // fixed lodging in night
     const lod = newCard("lodging");
     lod.meta = "住宿地點（固定在當日備註上方）";
     d.sections.night.push(lod);
@@ -680,7 +684,7 @@
         if (overwrite){
           state = remote;
           normalizeState();
-          pushUndo();
+          pushUndo();          // ✅ 雲端覆蓋算一次 Undo
           saveLocal();
           render(true);
           toast("已從雲端載入");
@@ -719,7 +723,6 @@
       const remoteStr = JSON.stringify(remote);
       if (localStr === remoteStr) return;
 
-      // Remote changed (other device)
       state = remote;
       normalizeState();
       saveLocal();
@@ -733,8 +736,6 @@
     if (cloud.autoLoaded) return;
     cloud.autoLoaded = true;
 
-    // 先顯示本機（立即可用）
-    // 再覆蓋雲端（如果有）
     await cloudLoad(true);
     cloudSubscribe();
   }
@@ -753,17 +754,14 @@
     if (!state.appTitle) state.appTitle = "Niji Trip 2026";
     if (typeof state.appDesc !== "string") state.appDesc = "";
 
-    // migrate old structures if needed
     state.days.forEach((d, idx) => {
       if (!d.sections){
         d.sections = { morning:[], afternoon:[], night:[] };
       }else{
-        // if old noon exists -> map to afternoon
         if (d.sections.noon && !d.sections.afternoon){
           d.sections.afternoon = d.sections.noon;
           delete d.sections.noon;
         }
-        // drop old transport/shopping sections by merging into afternoon (best effort)
         if (d.sections.transport){
           d.sections.afternoon = (d.sections.afternoon||[]).concat(d.sections.transport);
           delete d.sections.transport;
@@ -783,7 +781,6 @@
       if (!d.dayLabel) d.dayLabel = `Day ${idx+1}`;
       if (typeof d.autoDayLabel !== "boolean") d.autoDayLabel = true;
 
-      // Ensure lodging exists in night section, last
       const night = d.sections.night;
       const lodIdx = night.findIndex(c=>c && c.type==="lodging");
       if (lodIdx < 0){
@@ -791,7 +788,6 @@
         lod.meta = "住宿地點（固定在當日備註上方）";
         night.push(lod);
       }
-      // move lodging to end
       const lodIdx2 = night.findIndex(c=>c && c.type==="lodging");
       if (lodIdx2 >= 0 && lodIdx2 !== night.length-1){
         const [lod] = night.splice(lodIdx2,1);
@@ -808,28 +804,66 @@
   }
 
   /* =========================
-     Save scheduling (NO re-render while typing)
+     Save scheduling (IME-safe, no undo per keystroke)
   ========================== */
-  let saveTimer = null;
-  function scheduleSave(pushCloud=true){
-    clearTimeout(saveTimer);
-    saveTimer = setTimeout(async () => {
-      saveLocal();
-      if (pushCloud) await cloudSave();
-      pushUndo();
-      recalcTotalsUI();
+  let __saveTimer = null;
+  let __pendingRecalc = false;
+  let __pendingCloud = false;
+  let __pendingToast = false;
+
+  function scheduleSave(opts = { pushCloud:true, recalc:true, toast:true }){
+    if (opts.recalc) __pendingRecalc = true;
+    if (opts.pushCloud) __pendingCloud = true;
+    if (opts.toast) __pendingToast = true;
+
+    clearTimeout(__saveTimer);
+
+    // 組字中完全不做存檔/雲端/重算，避免鍵盤跳掉
+    if (__isComposing){
+      __saveTimer = setTimeout(() => {
+        if (__isComposing) return;
+        flushSave();
+      }, 700);
+      return;
+    }
+
+    __saveTimer = setTimeout(() => {
+      if (__isComposing) return;
+      flushSave();
+    }, 700);
+  }
+
+  function flushSave(){
+    // 本機保存（較重：JSON.stringify）— 已延後到停止打字後
+    saveLocal();
+
+    // 雲端保存（更重）— 也延後，且不要阻塞 UI
+    if (__pendingCloud){
+      __pendingCloud = false;
+      cloudSave(); // no await
+    }
+
+    // totals / badge（輕量 UI 更新）
+    if (__pendingRecalc){
+      __pendingRecalc = false;
+      requestAnimationFrame(() => {
+        recalcTotalsUI();
+        setSyncBadge(buildTotalText());
+      });
+    }else{
       setSyncBadge(buildTotalText());
+    }
+
+    if (__pendingToast){
+      __pendingToast = false;
       toast("已儲存");
-    }, 220);
+    }
   }
 
   /* =========================
      Rendering
-     - Major changes use render(true)
-     - Typing uses scheduleSave() only (no rerender)
   ========================== */
   function render(full=false){
-    // header
     $("#appTitleText").textContent = state.appTitle || "Niji Trip 2026";
     $("#appDesc").value = state.appDesc || "";
 
@@ -862,7 +896,7 @@
       chip.addEventListener("click", () => {
         activeDayId = d.id;
         setActiveChip(d.id);
-        const sec = document.querySelector(`.daySection[data-id="${d.id}"]`);
+        const sec = document.querySelector(\`.daySection[data-id="\${d.id}"]\`);
         if (sec) sec.scrollIntoView({behavior:"smooth", block:"start"});
       });
 
@@ -949,38 +983,38 @@
         </div>
       `;
 
-      // bind day header inputs (NO rerender while typing)
+      // day header inputs (typing-safe)
       const dayLabelInp = sec.querySelector(".dayLabelInp");
       dayLabelInp.value = d.dayLabel || `Day ${idx+1}`;
       dayLabelInp.addEventListener("input", () => {
         d.dayLabel = dayLabelInp.value.trim() || `Day ${idx+1}`;
         d.autoDayLabel = false;
-        // sync nav label only
-        const chip = document.querySelector(`.dayChip[data-id="${d.id}"] .t`);
+        const chip = document.querySelector(\`.dayChip[data-id="\${d.id}"] .t\`);
         if (chip) chip.textContent = d.dayLabel;
-        scheduleSave();
+        scheduleSave({pushCloud:true, recalc:false, toast:false});
       });
 
       const daySubInp = sec.querySelector(".daySubInp");
       daySubInp.value = d.subtitle || "";
       daySubInp.addEventListener("input", () => {
         d.subtitle = daySubInp.value;
-        scheduleSave();
+        scheduleSave({pushCloud:true, recalc:false, toast:false});
       });
 
       const dateInp = sec.querySelector(".dateInp");
       dateInp.value = d.dateText || "";
       dateInp.addEventListener("change", () => {
-        d.dateText = dateInp.value.trim() || d.dateText;
+        // change 是「完成輸入」才觸發，比 input 更穩
         if (idx===0){
+          pushUndo();
+          d.dateText = dateInp.value.trim() || d.dateText;
           ensureDatesFromDay1();
-          // major UI updates (dates)
-          scheduleSave();
+          scheduleSave({pushCloud:true, recalc:false, toast:true});
           render(true);
         }else{
-          scheduleSave();
-          // update chip subtitle only
-          const chipS = document.querySelector(`.dayChip[data-id="${d.id}"] .s`);
+          d.dateText = dateInp.value.trim() || d.dateText;
+          scheduleSave({pushCloud:true, recalc:false, toast:true});
+          const chipS = document.querySelector(\`.dayChip[data-id="\${d.id}"] .s\`);
           if (chipS) chipS.textContent = d.dateText;
         }
       });
@@ -989,7 +1023,7 @@
       budgetInp.value = d.budgetJPY || "";
       budgetInp.addEventListener("input", () => {
         d.budgetJPY = budgetInp.value;
-        scheduleSave();
+        scheduleSave({pushCloud:true, recalc:true, toast:false});
       });
 
       const rateInp = sec.querySelector(".rateInp");
@@ -998,7 +1032,7 @@
         const v = parseFloat(rateInp.value);
         if (!isNaN(v) && v>0){
           state.settings.rate = v;
-          scheduleSave();
+          scheduleSave({pushCloud:true, recalc:true, toast:false});
         }
       });
 
@@ -1007,18 +1041,19 @@
       ticketText.value = d.tickets?.text || "";
       ticketText.addEventListener("input", () => {
         d.tickets.text = ticketText.value;
-        scheduleSave();
+        scheduleSave({pushCloud:true, recalc:false, toast:false});
       });
 
       const ticketPhotos = sec.querySelector(".ticketPhotos");
-      renderPhotoStrip(ticketPhotos, d.tickets.photos, () => scheduleSave());
+      renderPhotoStrip(ticketPhotos, d.tickets.photos, () => scheduleSave({pushCloud:true, recalc:false, toast:true}));
 
       sec.querySelector(".btnTicketPhoto").addEventListener("click", async () => {
         const url = await pickPhoto();
         if (!url) return;
+        pushUndo();
         d.tickets.photos.push(url);
-        renderPhotoStrip(ticketPhotos, d.tickets.photos, () => scheduleSave());
-        scheduleSave();
+        renderPhotoStrip(ticketPhotos, d.tickets.photos, () => scheduleSave({pushCloud:true, recalc:false, toast:true}));
+        scheduleSave({pushCloud:true, recalc:false, toast:true});
       });
 
       // day note
@@ -1026,17 +1061,19 @@
       dayNoteText.value = d.dayNote?.text || "";
       dayNoteText.addEventListener("input", () => {
         d.dayNote.text = dayNoteText.value;
-        scheduleSave();
+        scheduleSave({pushCloud:true, recalc:false, toast:false});
       });
 
       const dayNotePhotos = sec.querySelector(".dayNotePhotos");
-      renderPhotoStrip(dayNotePhotos, d.dayNote.photos, () => scheduleSave());
+      renderPhotoStrip(dayNotePhotos, d.dayNote.photos, () => scheduleSave({pushCloud:true, recalc:false, toast:true}));
+
       sec.querySelector(".btnDayNotePhoto").addEventListener("click", async () => {
         const url = await pickPhoto();
         if (!url) return;
+        pushUndo();
         d.dayNote.photos.push(url);
-        renderPhotoStrip(dayNotePhotos, d.dayNote.photos, () => scheduleSave());
-        scheduleSave();
+        renderPhotoStrip(dayNotePhotos, d.dayNote.photos, () => scheduleSave({pushCloud:true, recalc:false, toast:true}));
+        scheduleSave({pushCloud:true, recalc:false, toast:true});
       });
 
       // route overview
@@ -1044,9 +1081,8 @@
 
       // render cards for each section
       ["morning","afternoon","night"].forEach(key=>{
-        const body = sec.querySelector(`.sec[data-sec="${key}"] .secBody`);
+        const body = sec.querySelector(\`.sec[data-sec="\${key}"] .secBody\`);
         body.innerHTML = "";
-        // ensure lodging last in night
         if (key==="night"){
           const list = d.sections.night || [];
           const lodIdx = list.findIndex(c=>c.type==="lodging");
@@ -1157,7 +1193,6 @@
       </div>
     `;
 
-    // fill
     const titleInp = el.querySelector(".titleInp");
     const jaInp = el.querySelector(".jaInp");
     const metaInp = el.querySelector(".metaInp");
@@ -1176,9 +1211,8 @@
     jpyInp.value = card.jpy || "";
     noteText.value = card.note || "";
 
-    renderPhotoStrip(notePhotos, card.photos, () => scheduleSave());
+    renderPhotoStrip(notePhotos, card.photos, () => scheduleSave({pushCloud:true, recalc:false, toast:true}));
 
-    // calc
     function updateTwd(){
       const rate = Number(state.settings.rate||0.22);
       const j = parseFloat(card.jpy||"");
@@ -1188,28 +1222,28 @@
     }
     updateTwd();
 
-    // bind inputs (NO rerender)
-    titleInp.addEventListener("input", () => { card.title = titleInp.value; scheduleSave(); });
+    // typing-safe bindings
+    titleInp.addEventListener("input", () => { card.title = titleInp.value; scheduleSave({pushCloud:true, recalc:false, toast:false}); });
     jaInp.addEventListener("input", () => {
       card.ja = jaInp.value;
       if (!card.destination){
         card.destination = jaInp.value;
         destInp.value = card.destination;
       }
-      scheduleSave();
+      scheduleSave({pushCloud:true, recalc:false, toast:false});
     });
-    metaInp.addEventListener("input", () => { card.meta = metaInp.value; scheduleSave(); });
+    metaInp.addEventListener("input", () => { card.meta = metaInp.value; scheduleSave({pushCloud:true, recalc:false, toast:false}); });
 
-    originInp.addEventListener("input", () => { card.origin = originInp.value; scheduleSave(); });
-    destInp.addEventListener("input", () => { card.destination = destInp.value; scheduleSave(); });
+    originInp.addEventListener("input", () => { card.origin = originInp.value; scheduleSave({pushCloud:true, recalc:false, toast:false}); });
+    destInp.addEventListener("input", () => { card.destination = destInp.value; scheduleSave({pushCloud:true, recalc:false, toast:false}); });
 
     jpyInp.addEventListener("input", () => {
       card.jpy = jpyInp.value;
       updateTwd();
-      scheduleSave();
+      scheduleSave({pushCloud:true, recalc:true, toast:false});
     });
 
-    noteText.addEventListener("input", () => { card.note = noteText.value; scheduleSave(); });
+    noteText.addEventListener("input", () => { card.note = noteText.value; scheduleSave({pushCloud:true, recalc:false, toast:false}); });
 
     // vias
     const viasWrap = el.querySelector(".vias");
@@ -1227,12 +1261,13 @@
         inp.value = v || "";
         inp.addEventListener("input", () => {
           card.vias[idx] = inp.value;
-          scheduleSave();
+          scheduleSave({pushCloud:true, recalc:false, toast:false});
         });
         row.querySelector(".btnDelVia").addEventListener("click", () => {
+          pushUndo();
           card.vias.splice(idx,1);
           renderVias();
-          scheduleSave();
+          scheduleSave({pushCloud:true, recalc:false, toast:true});
         });
         viasWrap.appendChild(row);
       });
@@ -1240,19 +1275,21 @@
     renderVias();
 
     el.querySelector(".btnAddVia").addEventListener("click", () => {
+      pushUndo();
       card.vias = card.vias || [];
       card.vias.push("");
       renderVias();
-      scheduleSave();
+      scheduleSave({pushCloud:true, recalc:false, toast:true});
     });
 
     // note photos
     el.querySelector(".btnNotePhoto").addEventListener("click", async () => {
       const url = await pickPhoto();
       if (!url) return;
+      pushUndo();
       card.photos.push(url);
-      renderPhotoStrip(notePhotos, card.photos, () => scheduleSave());
-      scheduleSave();
+      renderPhotoStrip(notePhotos, card.photos, () => scheduleSave({pushCloud:true, recalc:false, toast:true}));
+      scheduleSave({pushCloud:true, recalc:false, toast:true});
     });
 
     // map actions
@@ -1273,7 +1310,7 @@
       openNearbyMenu(q);
     });
 
-    // long-press menu (mobile friendly)
+    // long-press menu
     attachLongPress(el, card);
 
     return el;
@@ -1282,14 +1319,11 @@
   function addCard(dayId, secKey, type){
     const d = state.days.find(x=>x.id===dayId);
     if (!d) return;
-
-    // Lodging can't be manually created
     if (type==="lodging") return;
 
     pushUndo();
     const c = newCard(type);
 
-    // If adding into night, insert before lodging
     if (secKey==="night"){
       const list = d.sections.night || [];
       const lodIdx = list.findIndex(x=>x.type==="lodging");
@@ -1299,7 +1333,7 @@
       d.sections[secKey].push(c);
     }
 
-    scheduleSave();
+    scheduleSave({pushCloud:true, recalc:true, toast:true});
     render(true);
   }
 
@@ -1341,6 +1375,7 @@
       img.alt = "photo";
       img.title = "點一下直接刪除";
       img.addEventListener("click", () => {
+        pushUndo();
         list.splice(idx,1);
         renderPhotoStrip(container, list, onChanged);
         onChanged && onChanged();
@@ -1422,7 +1457,7 @@
   ========================== */
   function buildTotalText(){
     const rate = Number(state.settings.rate||0.22);
-    let tripJPY = 0, tripTWD = 0;
+    let tripJPY = 0;
 
     state.days.forEach(d=>{
       flattenDayCards(d).forEach(c=>{
@@ -1430,7 +1465,7 @@
         if (!isNaN(j)) tripJPY += j;
       });
     });
-    tripTWD = Math.round(tripJPY * rate);
+    const tripTWD = Math.round(tripJPY * rate);
 
     return `全旅程合計：${Math.round(tripJPY)} JPY / ${tripTWD} TWD（離線可用：已自動保存）`;
   }
@@ -1452,7 +1487,6 @@
         if (badge){
           badge.textContent = `當日合計：${Math.round(dayJPY)} JPY / ${dayTWD} TWD`;
           badge.classList.remove("warn");
-          // budget warning
           const bud = parseFloat(d.budgetJPY||"");
           if (!isNaN(bud) && bud>0 && dayJPY>bud){
             badge.classList.add("warn");
@@ -1472,7 +1506,7 @@
     const d = newDay(i);
     state.days.push(d);
     ensureDatesFromDay1();
-    scheduleSave();
+    scheduleSave({pushCloud:true, recalc:true, toast:true});
     render(true);
   }
 
@@ -1481,7 +1515,7 @@
     pushUndo();
     state.days.pop();
     ensureDatesFromDay1();
-    scheduleSave();
+    scheduleSave({pushCloud:true, recalc:true, toast:true});
     render(true);
   }
 
@@ -1514,7 +1548,7 @@
           state = data.state;
           normalizeState();
           saveLocal();
-          scheduleSave();
+          scheduleSave({pushCloud:true, recalc:true, toast:true});
           render(true);
           toast("匯入成功");
         }else{
@@ -1572,7 +1606,6 @@
       render(true);
       $("#btnUndo").disabled = undoStack.length <= 1;
       toast("已 Undo");
-      // optional: do NOT push to cloud on undo immediately
     }catch(e){}
   });
 
@@ -1622,11 +1655,11 @@
   });
 
   /* =========================
-     App title/desc
+     App desc
   ========================== */
   $("#appDesc").addEventListener("input", () => {
     state.appDesc = $("#appDesc").value;
-    scheduleSave();
+    scheduleSave({pushCloud:true, recalc:false, toast:false});
   });
 
   /* =========================
@@ -1636,43 +1669,55 @@
   $("#btnRemoveDay").addEventListener("click", removeLastDay);
 
   /* =========================
-     Long press menu (Delete/Copy/Pin/Move/Up/Down)
+     Long press menu
   ========================== */
   const menu = $("#ctxMenu");
-  let menuCtx = null; // {dayId, secKey, cardId}
+  let menuCtx = null;
 
   let pressTimer = null;
   let pressStart = null;
 
+  const isInteractiveTarget = (t) => {
+    if (!t || !t.closest) return false;
+    return !!t.closest("input,textarea,select,button,a,[contenteditable='true']");
+  };
+
   function attachLongPress(cardEl, card){
-    const onDown = (e) => {
-      if (e.type==="mousedown" && e.button !== 0) return;
-      pressStart = { x: e.clientX, y: e.clientY };
+    const start = (clientX, clientY, target) => {
+      // ✅ 在輸入框上不要觸發長按（避免失焦/跳掉）
+      if (isInteractiveTarget(target)) return;
+
+      pressStart = { x: clientX, y: clientY };
       clearTimeout(pressTimer);
-      pressTimer = setTimeout(() => openMenu(cardEl, e.clientX, e.clientY, card), 520);
+      pressTimer = setTimeout(() => openMenu(cardEl, clientX, clientY, card), 520);
     };
-    const onMove = (e) => {
+
+    const move = (clientX, clientY) => {
       if (!pressStart) return;
-      const dx = Math.abs(e.clientX - pressStart.x);
-      const dy = Math.abs(e.clientY - pressStart.y);
+      const dx = Math.abs(clientX - pressStart.x);
+      const dy = Math.abs(clientY - pressStart.y);
       if (dx > 12 || dy > 12) clearTimeout(pressTimer);
     };
-    const onUp = () => { clearTimeout(pressTimer); pressStart = null; };
+
+    const end = () => { clearTimeout(pressTimer); pressStart = null; };
 
     cardEl.addEventListener("touchstart", (e) => {
       const t = e.touches[0];
-      onDown({type:"touchstart", clientX:t.clientX, clientY:t.clientY});
+      start(t.clientX, t.clientY, e.target);
     }, {passive:true});
     cardEl.addEventListener("touchmove", (e) => {
       const t = e.touches[0];
-      onMove({clientX:t.clientX, clientY:t.clientY});
+      move(t.clientX, t.clientY);
     }, {passive:true});
-    cardEl.addEventListener("touchend", onUp);
+    cardEl.addEventListener("touchend", end);
 
-    cardEl.addEventListener("mousedown", onDown);
-    cardEl.addEventListener("mousemove", onMove);
-    cardEl.addEventListener("mouseup", onUp);
-    cardEl.addEventListener("mouseleave", onUp);
+    cardEl.addEventListener("mousedown", (e) => {
+      if (e.button !== 0) return;
+      start(e.clientX, e.clientY, e.target);
+    });
+    cardEl.addEventListener("mousemove", (e) => move(e.clientX, e.clientY));
+    cardEl.addEventListener("mouseup", end);
+    cardEl.addEventListener("mouseleave", end);
   }
 
   function openMenu(cardEl, x, y, card){
@@ -1714,7 +1759,7 @@
     pushUndo();
     list.splice(idx,1);
     list.splice(idx-1,0,card);
-    scheduleSave();
+    scheduleSave({pushCloud:true, recalc:true, toast:true});
     render(true);
     closeMenu();
   });
@@ -1729,7 +1774,7 @@
     pushUndo();
     list.splice(idx,1);
     list.splice(idx+1,0,card);
-    scheduleSave();
+    scheduleSave({pushCloud:true, recalc:true, toast:true});
     render(true);
     closeMenu();
   });
@@ -1742,7 +1787,7 @@
     if (card.type==="lodging") return alert("住宿卡固定（不能刪除）");
     pushUndo();
     list.splice(idx,1);
-    scheduleSave();
+    scheduleSave({pushCloud:true, recalc:true, toast:true});
     render(true);
     closeMenu();
   });
@@ -1757,7 +1802,7 @@
     const clone = JSON.parse(JSON.stringify(card));
     clone.id = `c_${Date.now()}_${Math.random().toString(16).slice(2)}`;
     list.splice(idx+1,0,clone);
-    scheduleSave();
+    scheduleSave({pushCloud:true, recalc:true, toast:true});
     render(true);
     closeMenu();
   });
@@ -1771,7 +1816,7 @@
     pushUndo();
     list.splice(idx,1);
     list.unshift(card);
-    scheduleSave();
+    scheduleSave({pushCloud:true, recalc:true, toast:true});
     render(true);
     closeMenu();
   });
@@ -1780,7 +1825,7 @@
     if (!menuCtx) return;
     const found = findCard(menuCtx.dayId, menuCtx.secKey, menuCtx.cardId);
     if (!found) return closeMenu();
-    const {d:fromDay, list, idx, card} = found;
+    const {list, idx, card} = found;
     if (card.type==="lodging") return alert("住宿卡固定（不能移動）");
 
     const labels = state.days.map((dd,i)=> `${i+1}. ${dd.dayLabel} (${dd.dateText})`).join("\n");
@@ -1802,7 +1847,7 @@
     }else{
       toDay.sections[targetSec].push(card);
     }
-    scheduleSave();
+    scheduleSave({pushCloud:true, recalc:true, toast:true});
     render(true);
     closeMenu();
   });
@@ -1815,12 +1860,10 @@
     state = s || defaultState();
     normalizeState();
 
-    // undo initial snapshot
     undoStack = [];
     pushUndo();
     $("#btnUndo").disabled = true;
 
-    // header binds
     $("#appDesc").value = state.appDesc || "";
     render(true);
   }
@@ -1828,16 +1871,9 @@
   init();
 
   /* =========================
-     Wire header title from state
-     (Keep title editable by changing state.appTitle in code if you want UI later)
-  ========================== */
-  // If you want editable title UI later, I can add it. For now keep stable.
-
-  /* =========================
-     Hook auth & cloud signals (from module script)
+     Hook auth & cloud signals
   ========================== */
   window.NijiApp = {
-    // called by auth module
     onAuthState(user){
       cloud.user = user || null;
       cloud.uid = user ? user.uid : null;
@@ -1848,11 +1884,9 @@
         $("#btnSignOut").disabled = false;
         setCloudStatus("雲端：準備中…", "soft");
 
-        // enable cloud actions
         $("#btnCloudPull").disabled = false;
         $("#btnCloudPush").disabled = false;
 
-        // auto load once
         autoLoadFromCloudOnce().then(()=>{
           setCloudStatus("雲端：已連線 ✅", "ok");
         });
@@ -1860,7 +1894,6 @@
         setAuthStatus("尚未登入（可離線使用）");
         $("#btnSignOut").disabled = true;
 
-        // disable cloud actions
         $("#btnCloudPull").disabled = true;
         $("#btnCloudPush").disabled = true;
 
@@ -1868,7 +1901,6 @@
         setCloudStatus("雲端：未連線", "soft");
       }
     },
-    // UI hooks
     setCloudReady(ok){
       if (!ok) setCloudStatus("雲端：未就緒", "soft");
     }
@@ -1902,7 +1934,6 @@
   const auth = getAuth(app);
   const db = getFirestore(app);
 
-  // CloudSync API: users/{uid}/trips/{tripId}
   window.CloudSync = {
     _ref(uid, tripId){
       return doc(db, "users", uid, "trips", tripId);
