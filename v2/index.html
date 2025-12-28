@@ -25,7 +25,7 @@
     html,body{ margin:0; padding:0; font-family:system-ui,-apple-system,"Noto Sans TC","PingFang TC",sans-serif; background:var(--bg-main); color:var(--brown); }
     body{ min-height:100vh; }
 
-    .page{ max-width:920px; margin:0 auto; padding:14px 12px 90px; }
+    .page{ max-width:920px; margin:0 auto; padding:14px 12px 110px; }
 
     header{
       background:var(--bg-card);
@@ -49,17 +49,17 @@
       padding:8px 14px; font-size:14px;
       background:#ffd59a; color:#5a351e;
       box-shadow:var(--shadow); cursor:pointer; white-space:nowrap;
-      font-weight:700;
+      font-weight:800;
     }
     .btn.primary{ background:#ffb85c; }
     .btn.danger{ background:#ffb0a6; color:#7a221b; }
     .btn.ghost{ background:#fff3da; }
-    .btn.small{ padding:6px 10px; font-size:13px; }
+    .btn.small{ padding:6px 10px; font-size:13px; box-shadow:none; }
     .btn:active{ transform:translateY(1px); box-shadow:0 1px 3px rgba(0,0,0,0.16); }
 
     .badge{
       display:inline-block; padding:7px 11px; border-radius:var(--r-pill);
-      background:#fff3c5; color:#5c3a1c; font-weight:800; font-size:13px;
+      background:#fff3c5; color:#5c3a1c; font-weight:900; font-size:13px;
       border:1px solid rgba(122,74,38,0.10);
     }
     .hint{
@@ -96,9 +96,30 @@
     }
     .day-chip.active{ background:var(--chip-active); border-color:rgba(122,74,38,0.22); }
     .day-chip.dragging{ opacity:0.55; }
-    .chip-main{ font-weight:900; font-size:15px; display:block; }
+    .chip-main{ font-weight:1000; font-size:15px; display:block; }
     .chip-sub{ font-size:12px; color:var(--brown-soft); display:block; margin-top:2px; }
     .chip-main[contenteditable], .chip-sub[contenteditable]{ outline:none; }
+
+    /* Filter tabs */
+    .filters{
+      display:flex; flex-wrap:wrap; gap:8px;
+      margin-top:10px; padding-top:10px;
+      border-top:1px dashed rgba(122,74,38,0.20);
+    }
+    .tab{
+      border:none;
+      border-radius:999px;
+      padding:7px 12px;
+      background:#fff3da;
+      color:#5a351e;
+      font-weight:1000;
+      cursor:pointer;
+    }
+    .tab.active{
+      background:#ffffff;
+      box-shadow:var(--shadow);
+      border:1px solid rgba(122,74,38,0.18);
+    }
 
     /* Day section */
     .day-section{ margin-top:12px; margin-bottom:16px; }
@@ -118,7 +139,7 @@
       border-radius:var(--r-pill);
       padding:7px 14px;
       box-shadow:var(--shadow);
-      font-size:18px; font-weight:900;
+      font-size:18px; font-weight:1000;
     }
     .day-pill span[contenteditable]{ outline:none; }
     .day-subtitle{ color:var(--brown-soft); font-size:15px; }
@@ -132,7 +153,7 @@
     .day-meta .datebox{
       background:#fff; border-radius:var(--r-pill);
       padding:6px 12px; box-shadow:var(--shadow);
-      font-weight:900; color:#5c3a1c;
+      font-weight:1000; color:#5c3a1c;
     }
     .day-meta .datebox span[contenteditable]{ outline:none; border-bottom:1px dashed rgba(122,74,38,0.22); }
     .day-meta .budget{
@@ -143,11 +164,10 @@
     }
     .day-meta input{
       width:92px; border:none; outline:none;
-      background:transparent; color:#5c3a1c; font-weight:900;
+      background:transparent; color:#5c3a1c; font-weight:1000;
       font-size:13px;
     }
 
-    /* Sections */
     .sections{
       display:grid;
       grid-template-columns: 1fr;
@@ -176,7 +196,7 @@
       box-shadow:var(--shadow);
     }
     .sec-actions{ display:flex; gap:6px; flex-wrap:wrap; }
-    .sec-actions .btn{ box-shadow:none; background:#ffe7bf; }
+    .sec-actions .btn{ background:#ffe7bf; }
 
     /* Spot card */
     .spot-card{
@@ -190,10 +210,6 @@
       touch-action: pan-y;
     }
     .spot-card.dragging{ opacity:0.60; }
-    .spot-card.active{
-      outline:3px solid rgba(255,184,92,0.75);
-      outline-offset:3px;
-    }
     .spot-top{
       display:flex; justify-content:space-between; align-items:flex-start; gap:8px;
     }
@@ -203,7 +219,7 @@
     }
     .spot-title[contenteditable]{ outline:none; border-bottom:1px dashed rgba(122,74,38,0.18); }
     .spot-tag{
-      font-size:12px; font-weight:900;
+      font-size:12px; font-weight:1000;
       padding:4px 10px; border-radius:var(--r-pill);
       background:#fff3da;
       border:1px solid rgba(122,74,38,0.10);
@@ -243,7 +259,7 @@
       border-radius:999px;
       background:#fff3da;
       color:#5a351e;
-      font-weight:800;
+      font-weight:900;
     }
     .loc-mini{
       font-size:12px; color:var(--brown-soft);
@@ -280,9 +296,7 @@
       cursor:pointer;
       border:1px solid rgba(122,74,38,0.10);
     }
-    .thumb:active{ transform:scale(0.98); }
 
-    /* Expense */
     .expense{
       display:flex; gap:10px; flex-wrap:wrap; align-items:center;
       margin-top:8px;
@@ -304,88 +318,7 @@
     }
     .expense .calc{ font-size:12px; font-weight:1000; color:#5c3a1c; }
 
-    /* Inline transport/shopping lists inside same card */
-    .mini{
-      margin-top:10px;
-      border-radius:14px;
-      border:1px dashed var(--border);
-      background:#fffdf6;
-      padding:9px 9px 8px;
-    }
-    .mini-head{
-      display:flex; justify-content:space-between; align-items:center; gap:10px;
-      font-weight:1000; font-size:12px; color:var(--brown-soft);
-      margin-bottom:6px;
-    }
-    .mini-list{ display:flex; flex-direction:column; gap:6px; }
-    .mini-item{
-      display:flex; gap:8px; align-items:center;
-    }
-    .mini-item input{
-      flex:1;
-      border:none; outline:none;
-      padding:9px 10px;
-      border-radius:999px;
-      background:#fff3da;
-      color:#5a351e;
-      font-weight:800;
-    }
-    .mini-item button{
-      border:none;
-      border-radius:999px;
-      padding:8px 10px;
-      background:#ffb0a6;
-      color:#7a221b;
-      font-weight:900;
-      cursor:pointer;
-      box-shadow:var(--shadow);
-    }
-    .mini-item button:active{ transform:translateY(1px); }
-
-    /* Day note card (kept at bottom) */
-    .day-note-card{
-      background:var(--bg-card);
-      border-radius:var(--r-card);
-      padding:12px 12px 10px;
-      box-shadow:var(--shadow);
-      margin:12px 0 0;
-    }
-    .day-note-head{
-      display:flex; justify-content:space-between; align-items:center; gap:10px;
-      font-size:15px; font-weight:1000;
-      margin-bottom:8px;
-    }
-    .day-note-box{
-      border-radius:14px;
-      border:1px dashed var(--border);
-      background:#fffdf6;
-      padding:9px 10px;
-      font-size:13px;
-      min-height:34px;
-      white-space:pre-wrap;
-      outline:none;
-    }
-    .day-note-photos{
-      display:flex; flex-wrap:wrap; gap:6px; margin-top:8px;
-    }
-
-    /* Tickets */
-    .tickets{
-      background:rgba(255,255,255,0.70);
-      border-radius:14px;
-      padding:10px 10px 8px;
-      border:1px solid rgba(122,74,38,0.10);
-      margin-top:10px;
-    }
-    .tickets-head{
-      display:flex; justify-content:space-between; align-items:center; gap:10px;
-      font-weight:1000; color:#5c3a1c; margin-bottom:8px;
-    }
-    .tickets-grid{
-      display:flex; flex-wrap:wrap; gap:6px;
-    }
-
-    /* Modal map preview */
+    /* Modal */
     .modal{
       position:fixed; inset:0; z-index:100;
       background:rgba(0,0,0,0.35);
@@ -394,56 +327,41 @@
     }
     .modal.show{ display:flex; }
     .modal-card{
-      width:min(860px, 100%);
-      height:min(560px, 80vh);
+      width:min(560px, 100%);
       background:#fff;
       border-radius:18px;
       box-shadow:0 10px 30px rgba(0,0,0,0.22);
       overflow:hidden;
-      display:flex; flex-direction:column;
     }
     .modal-bar{
       padding:10px 12px;
       background:#fff3da;
       display:flex; align-items:center; justify-content:space-between; gap:10px;
+      font-weight:1000; color:#5c3a1c;
     }
-    .modal-bar .t{ font-weight:1000; color:#5c3a1c; }
-    .modal-bar .btn{ box-shadow:none; padding:7px 12px; }
-    .modal-body{ flex:1; }
-    .modal-body iframe{ width:100%; height:100%; border:0; }
-
-    /* Long-press menu */
-    .menu{
-      position:fixed; z-index:120;
-      min-width:220px;
-      background:#fff;
-      border-radius:16px;
-      box-shadow:0 12px 30px rgba(0,0,0,0.22);
-      padding:8px;
-      display:none;
-    }
-    .menu.show{ display:block; }
-    .menu .m-title{
-      font-size:12px; color:var(--brown-soft);
-      padding:6px 8px 4px;
-      font-weight:1000;
-    }
-    .menu button{
+    .modal-body{ padding:12px; }
+    .frow{ display:flex; gap:10px; flex-wrap:wrap; margin:10px 0; }
+    .frow label{ font-size:12px; font-weight:1000; color:var(--brown-soft); width:100%; }
+    .frow input, .frow select, .frow textarea{
       width:100%;
-      text-align:left;
       border:none;
-      border-radius:12px;
-      padding:10px 10px;
+      outline:none;
       background:#fff3da;
-      font-weight:1000;
+      border-radius:14px;
+      padding:10px 12px;
+      font-weight:900;
       color:#5c3a1c;
-      cursor:pointer;
-      margin:4px 0;
     }
-    .menu button.danger{ background:#ffb0a6; color:#7a221b; }
-    .menu button.secondary{ background:#eaf6ff; }
+    textarea{ min-height:90px; resize:vertical; font-weight:800; line-height:1.5; }
 
-    /* Floating actions */
+    .modal-actions{
+      display:flex; gap:10px; justify-content:flex-end;
+      padding:12px;
+      border-top:1px solid rgba(122,74,38,0.10);
+      background:#fff;
+    }
+
+    /* Floating + toast */
     .floating{
       position:fixed; right:10px; bottom:12px;
       z-index:50;
@@ -475,30 +393,6 @@
     }
     .save-toast.show{ opacity:1; }
 
-    /* Search panel */
-    .search-panel{
-      display:flex; gap:8px; flex-wrap:wrap; align-items:center;
-      margin-top:10px;
-      padding-top:10px;
-      border-top:1px dashed rgba(122,74,38,0.20);
-    }
-    .search-panel input{
-      flex:1 1 220px;
-      border:none; outline:none;
-      padding:10px 12px;
-      border-radius:999px;
-      background:#fff;
-      box-shadow:var(--shadow);
-      font-weight:800;
-      color:#5c3a1c;
-    }
-    .search-panel .badge{ background:#eaf6ff; }
-
-    .drag-hint{
-      font-size:12px; color:var(--brown-soft); margin-top:6px;
-      opacity:0.9;
-    }
-
     @media (max-width:600px){
       .title-row h1{ font-size:22px; }
       .day-card{ border-radius:24px; }
@@ -516,34 +410,25 @@
       </div>
 
       <div class="desc" id="appDesc" contenteditable="true">
-        東京行程・暖色主題。支援拖拉排序、卡片模板、多地點路線、一鍵導航、圖片/票券收納、日幣換算、預算提醒、搜尋、Undo（10步）。
+        東京行程・暖色主題。支援拖拉排序、分類篩選、表單新增行程、圖片收納、日幣換算、預算提醒、匯出/匯入、Undo（10步）。
       </div>
 
       <div class="toolbar">
+        <button class="btn primary" id="btnQuickAdd" type="button">＋ 新增行程（表單）</button>
         <button class="btn" id="btnAddDay" type="button">＋ 新增一天</button>
         <button class="btn danger" id="btnRemoveDay" type="button">－ 刪除最後一天</button>
         <button class="btn" id="btnExport" type="button">匯出備份（JSON）</button>
         <button class="btn" id="btnImport" type="button">匯入備份</button>
         <button class="btn ghost" id="btnClear" type="button">清除本機資料</button>
         <span class="badge" id="syncBadge">離線可用：已自動保存</span>
-        <button class="btn small" id="btnApplyCloud" type="button" style="display:none;">☁️ 雲端有新版本：點我套用</button>
       </div>
 
-      <div class="search-panel">
-        <input id="searchInput" placeholder="🔎 搜尋：景點/備註/票券文字（輸入後按 Enter）" />
-        <button class="btn" id="btnSearch" type="button">搜尋</button>
-        <span class="badge" id="searchResult">尚未搜尋</span>
-      </div>
+      <div class="filters" id="filterTabs"></div>
 
       <div class="hint">
-        ✅ Day1 日期可編輯；新增天數會自動接續日期。<br/>
-        ✅ 長按卡片可刪除/複製/置頂/移動/拖拉。拖拉時會自動滾動。<br/>
-        ✅ 圖片「點一下直接刪除」。票券/QR 也可放在「票券收納」。<br/>
-        ✅ 「＋交通／＋購物」會加到你最後點選的那張卡裡（不再跳出新卡）。<br/>
-      </div>
-
-      <div class="drag-hint">
-        小提示：若手機拖拉不好抓，請「長按卡片 → 選『進入拖拉模式』」再拖。
+        ✅ 「分類篩選」會套用在畫面顯示（不影響資料）。<br/>
+        ✅ 打字不會跳：輸入時不重繪整頁，只自動存檔。<br/>
+        ✅ 「交通/購物」也是同一種行程卡，不會再跳出另一張卡。
       </div>
     </header>
 
@@ -554,30 +439,53 @@
     <div id="daysContainer"></div>
   </div>
 
-  <!-- modal map preview -->
-  <div class="modal" id="mapModal" aria-hidden="true">
+  <!-- Add Item Modal -->
+  <div class="modal" id="addModal" aria-hidden="true">
     <div class="modal-card">
       <div class="modal-bar">
-        <div class="t" id="modalTitle">地圖預覽</div>
-        <button class="btn" id="btnCloseModal" type="button">關閉</button>
+        <div>新增行程</div>
+        <button class="btn small" id="btnCloseAdd" type="button">關閉</button>
       </div>
       <div class="modal-body">
-        <iframe id="modalFrame" title="map"></iframe>
+        <div class="frow">
+          <label>時間（可空）</label>
+          <input id="fTime" placeholder="例如 09:30" />
+        </div>
+        <div class="frow">
+          <label>類別</label>
+          <select id="fCat">
+            <option value="景點">景點</option>
+            <option value="餐飲">餐飲</option>
+            <option value="住宿">住宿</option>
+            <option value="交通">交通</option>
+            <option value="購物">購物</option>
+            <option value="其他">其他</option>
+          </select>
+        </div>
+        <div class="frow">
+          <label>標題（必填）</label>
+          <input id="fTitle" placeholder="例如：淺草寺 / 轉車到上野" />
+        </div>
+        <div class="frow">
+          <label>地點 / 地址（可空）</label>
+          <input id="fPlace" placeholder="填了就可一鍵開地圖 / 導航" />
+        </div>
+        <div class="frow">
+          <label>預算 JPY（可空）</label>
+          <input id="fJPY" inputmode="numeric" placeholder="例如 1200" />
+        </div>
+        <div class="frow">
+          <label>備註</label>
+          <textarea id="fNote" placeholder="排隊、訂位、注意事項…"></textarea>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn ghost" id="btnCancelAdd" type="button">取消</button>
+        <button class="btn primary" id="btnSaveAdd" type="button">儲存</button>
       </div>
     </div>
   </div>
 
-  <!-- long press menu -->
-  <div class="menu" id="ctxMenu">
-    <div class="m-title" id="ctxTitle">卡片操作</div>
-    <button id="mDrag" class="secondary" type="button">🟦 進入拖拉模式</button>
-    <button id="mCopy" type="button">📄 複製此卡片</button>
-    <button id="mPin" type="button">📌 置頂（本分區）</button>
-    <button id="mMove" type="button">➡️ 移到其他天…</button>
-    <button id="mDelete" class="danger" type="button">🗑️ 刪除</button>
-  </div>
-
-  <!-- floating -->
   <div class="floating">
     <button class="fab" id="btnUndo" type="button" disabled>↩ Undo</button>
     <button class="fab" id="btnJumpActive" type="button">⬆ 回到目前 Day</button>
@@ -590,44 +498,26 @@
 <script>
 (() => {
   /* =========================
-     Storage + Undo + Status
+     Storage + Undo (修好打字跳：輸入時不 render)
   ========================== */
-  const STORAGE_KEY = "niji_trip_2026_v2_full";
+  const STORAGE_KEY = "niji_trip_2026_full_v2_fixed";
   const UNDO_LIMIT = 10;
-
-  // 用一個 deviceId 讓雲端回來的 snapshot 不要把自己正在輸入的畫面打掉
-  const DEVICE_ID_KEY = "niji_trip_device_id_v1";
-  const deviceId = (()=>{
-    const old = localStorage.getItem(DEVICE_ID_KEY);
-    if (old) return old;
-    const id = `dev_${Date.now()}_${Math.random().toString(16).slice(2)}`;
-    localStorage.setItem(DEVICE_ID_KEY, id);
-    return id;
-  })();
 
   let state = null;
   let undoStack = [];
   let activeDayId = null;
 
-  // 「最後點選的卡」：用來把交通/購物加進同一張卡
-  let activeCardId = null;
-
-  // 雲端：等待套用狀態（避免打字跳掉）
-  let pendingCloudState = null;
-  let lastLocalWriteAt = 0;
-
   const $ = (sel, root=document) => root.querySelector(sel);
   const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
 
-  function setStatus(text){
-    const b = $("#syncBadge");
-    if (b) b.textContent = text;
-  }
+  // UI filter (參考舊版分類)
+  const FILTERS = ["全部","景點","餐飲","住宿","交通","購物","其他"];
+  let activeFilter = "全部";
 
   function toastSaved(){
     const t = $("#saveToast");
     t.classList.add("show");
-    setTimeout(()=>t.classList.remove("show"), 700);
+    setTimeout(()=>t.classList.remove("show"), 650);
   }
 
   function pushUndo(){
@@ -635,15 +525,6 @@
     undoStack.push(snap);
     if (undoStack.length > UNDO_LIMIT) undoStack.shift();
     $("#btnUndo").disabled = undoStack.length <= 1;
-  }
-
-  // 判斷使用者是否正在輸入（避免雲端更新把焦點打掉）
-  function isUserTyping(){
-    const el = document.activeElement;
-    if (!el) return false;
-    if (el.tagName === "INPUT" || el.tagName === "TEXTAREA") return true;
-    if (el.isContentEditable) return true;
-    return false;
   }
 
   function loadLocal(){
@@ -654,138 +535,21 @@
     return null;
   }
 
-  function clearLocal(){
-    localStorage.removeItem(STORAGE_KEY);
+  function saveLocal(){
+    try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){}
   }
 
-  function saveNow(pushCloud=true){
-    // 本機保存
-    try{
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-    }catch(e){
-      console.warn("local save failed", e);
-    }
-
-    // 雲端保存
-    if (pushCloud && window.CloudSync){
-      lastLocalWriteAt = Date.now();
-      window.CloudSync.save(state, {
-        deviceId,
-        clientUpdatedAt: lastLocalWriteAt
-      }).catch(err => {
-        console.warn("cloud save failed", err);
-        setStatus("雲端同步失敗 ❌（先用本機資料）");
-      });
-    }
-
-    toastSaved();
-  }
-
-  /* ✅ 你螢幕上看到的 scheduleSave（打字就存） */
+  // ✅ 只做存檔 + 更新合計，不做整頁 render（避免游標跳）
   let saveTimer = null;
   function scheduleSave(){
     clearTimeout(saveTimer);
     saveTimer = setTimeout(() => {
-      // 每次修改：本機一定存；若 CloudSync 就緒也寫上去
-      saveNow(true);
-      // undo snapshot
-      pushUndo();
+      saveLocal();
+      toastSaved();
       recalcTotals();
+      // 如果你有 CloudSync：這裡可以加 window.CloudSync.save(state)
+      // if (window.CloudSync) window.CloudSync.save(state).catch(()=>{});
     }, 250);
-  }
-
-  /* =========================
-     Cloud load on open + safe subscribe
-  ========================== */
-  async function waitCloudSyncReady(timeoutMs = 9000){
-    const start = Date.now();
-    while (!window.CloudSync){
-      if (Date.now() - start > timeoutMs) return false;
-      await new Promise(r => setTimeout(r, 120));
-    }
-    return true;
-  }
-
-  async function cloudLoadOnOpen(){
-    const ok = await waitCloudSyncReady();
-    if (!ok){
-      setStatus("雲端尚未就緒（先用本機資料）");
-      return;
-    }
-
-    try{
-      setStatus("雲端載入中…");
-      const remote = await window.CloudSync.load();
-      if (remote && typeof remote === "object"){
-        // 直接套用一次（開啟時允許）
-        state = remote;
-        patchStateDefaults();
-        ensureDatesFromDay1();
-        saveNow(false); // 只存本機，不立刻回寫
-        render();
-        setStatus("已從雲端載入 ✅");
-      }else{
-        setStatus("雲端尚無資料（維持本機）");
-      }
-      subscribeCloudSafely();
-    }catch(e){
-      console.warn(e);
-      setStatus("雲端載入失敗 ❌（先用本機資料）");
-      subscribeCloudSafely();
-    }
-  }
-
-  function showApplyCloudButton(show){
-    const btn = $("#btnApplyCloud");
-    if (!btn) return;
-    btn.style.display = show ? "" : "none";
-  }
-
-  $("#btnApplyCloud").addEventListener("click", () => {
-    if (!pendingCloudState) return;
-    state = pendingCloudState;
-    pendingCloudState = null;
-    showApplyCloudButton(false);
-    patchStateDefaults();
-    ensureDatesFromDay1();
-    saveNow(false);
-    render();
-    setStatus("已套用雲端新版本 ✅");
-  });
-
-  function subscribeCloudSafely(){
-    if (!window.CloudSync) return;
-
-    window.CloudSync.subscribe((payload) => {
-      // payload 可以是 state 或 {state, meta}
-      const remoteState = payload && payload.state ? payload.state : payload;
-      const meta = payload && payload.meta ? payload.meta : null;
-
-      if (!remoteState || typeof remoteState !== "object") return;
-
-      // 如果這次更新是自己剛寫上去的，就忽略（避免循環與打字跳）
-      if (meta && meta.deviceId === deviceId){
-        if (meta.clientUpdatedAt && (Date.now() - meta.clientUpdatedAt) < 4000){
-          return;
-        }
-      }
-
-      // 如果使用者正在輸入：不要立刻 render 覆蓋，改成等你點「套用」
-      if (isUserTyping()){
-        pendingCloudState = remoteState;
-        showApplyCloudButton(true);
-        setStatus("☁️ 雲端有新版本（為避免打字跳掉，請點『套用』）");
-        return;
-      }
-
-      // 沒在輸入：就直接套用
-      state = remoteState;
-      patchStateDefaults();
-      ensureDatesFromDay1();
-      saveNow(false);
-      render();
-      setStatus("已同步到雲端 ✅");
-    });
   }
 
   /* =========================
@@ -804,7 +568,6 @@
     return `${mm}/${dd}`;
   }
   function ensureDatesFromDay1(){
-    if (!state || !Array.isArray(state.days) || !state.days.length) return;
     const first = state.days[0];
     const md = parseMD(first.dateText);
     let base = md ? new Date(state.settings.year, md.mm-1, md.dd) : new Date(state.settings.year, 4, 8);
@@ -817,44 +580,15 @@
   }
 
   /* =========================
-     Default state + patch
+     State
   ========================== */
-  function patchStateDefaults(){
-    if (!state.settings) state.settings = {};
-    if (!state.settings.rate) state.settings.rate = 0.22;
-    if (!state.settings.year) state.settings.year = 2026;
-    if (!state.settings.hotelName) state.settings.hotelName = "VESSEL INN 上野入谷站 飯店";
-    if (!state.settings.hotelNameJP) state.settings.hotelNameJP = "ベッセルイン上野入谷駅前";
-    if (!state.settings.currencyLabel) state.settings.currencyLabel = "JPY→TWD";
-    if (!Array.isArray(state.days)) state.days = [];
-
-    // 讓舊資料也擁有 card.transportList / card.shoppingList
-    state.days.forEach(d=>{
-      d.sections = d.sections || { morning:[], noon:[], night:[], transport:[], shopping:[] };
-      Object.values(d.sections).forEach(list=>{
-        (list||[]).forEach(c=>{
-          if (!c) return;
-          if (!Array.isArray(c.transportList)) c.transportList = [];
-          if (!Array.isArray(c.shoppingList)) c.shoppingList = [];
-        });
-      });
-      if (!d.tickets) d.tickets = { text:"", photos:[] };
-      if (!d.dayNote) d.dayNote = { text:"", photos:[] };
-      if (!d.budgetJPY) d.budgetJPY = d.budgetJPY || "";
-    });
-  }
-
-  function newCardTemplate(type="spot"){
+  function newCard(tag="景點"){
     const id = `c_${Date.now()}_${Math.random().toString(16).slice(2)}`;
     return {
       id,
-      type,
-      title: type==="lodging" ? "住宿" :
-             type==="restaurant" ? "餐廳" :
-             "景點",
-      tag: type==="lodging" ? "住宿" :
-           type==="restaurant" ? "餐廳" :
-           "景點",
+      tag,              // ✅ 分類：景點/餐飲/住宿/交通/購物/其他
+      time: "",
+      title: "新行程",
       ja: "",
       meta: "",
       origin: "",
@@ -863,56 +597,28 @@
       note: "",
       photos: [],
       jpy: "",
-      twd: "",
-      pinned: false,
-
-      // ✅ 新增：同一卡片內的交通/購物清單
-      transportList: [],
-      shoppingList: []
+      twd: ""
     };
   }
 
   function makeDefaultDays(){
     const days = [];
     for (let i=1;i<=3;i++){
-      const id = `d_${Date.now()}_${i}_${Math.random().toString(16).slice(2)}`;
       days.push({
-        id,
-        autoDayLabel: true,
-        dayLabel: `Day ${i}`,
+        id:`d_${Date.now()}_${i}_${Math.random().toString(16).slice(2)}`,
+        autoDayLabel:true,
+        dayLabel:`Day ${i}`,
         subtitle: i===1 ? "（範例）成田機場・入住上野" : i===2 ? "（範例）上野・淺草散步" : "（範例）自由活動日",
         dateText: i===1 ? "5/8" : i===2 ? "5/9" : "5/10",
-        budgetJPY: "",
-        tickets: { text:"（可放票券/QR/訂位資訊）", photos:[] },
-        sections: {
-          morning: [],
-          noon: [],
-          night: [],
-          transport: [], // 保留欄位但不再用來加卡
-          shopping: []   // 保留欄位但不再用來加卡
-        },
-        dayNote: { text:"例：餐飲 xxx、交通 xxx、購物 xxx、心得…", photos:[] }
+        budgetJPY:"",
+        sections:{ morning:[], noon:[], night:[] }
       });
     }
-
-    const c1 = newCardTemplate("spot");
-    c1.title="範例景點";
-    c1.ja="日文名稱或地址";
-    c1.meta="地區・說明：上野・車站附近…";
-    c1.note="可在這裡寫排隊、注意事項、順遊…";
-    c1.destination="日文名稱或地址";
-    days[0].sections.morning.push(c1);
-
-    // lodging for each day (固定在晚上分區最底)
-    days.forEach(d=>{
-      const lod = newCardTemplate("lodging");
-      lod.title = `住宿：${state?.settings?.hotelName || "住宿"}`;
-      lod.ja = state?.settings?.hotelNameJP || "";
-      lod.meta="住宿地點（固定在當日備註上方）";
-      lod.pinned = true;
-      d.sections.night.push(lod);
-    });
-
+    const c = newCard("景點");
+    c.title="範例景點";
+    c.destination="上野駅";
+    c.note="可寫排隊、注意事項、順遊…";
+    days[0].sections.morning.push(c);
     return days;
   }
 
@@ -920,52 +626,52 @@
     const s = loadLocal();
     if (s){
       state = s;
-      patchStateDefaults();
+      if (!state.settings) state.settings = {};
+      if (!state.settings.rate) state.settings.rate = 0.22;
+      if (!state.settings.year) state.settings.year = 2026;
+      if (!Array.isArray(state.days)) state.days = makeDefaultDays();
       if (state.days.length === 0) state.days = makeDefaultDays();
       ensureDatesFromDay1();
       return;
     }
 
     state = {
-      settings:{
-        year: 2026,
-        rate: 0.22,
-        hotelName: "VESSEL INN 上野入谷站 飯店",
-        hotelNameJP: "ベッセルイン上野入谷駅前",
-        currencyLabel: "JPY→TWD"
-      },
-      appTitle: "Niji Trip 2026",
-      appDesc: "東京行程・暖色主題。支援拖拉排序、卡片模板、多地點路線、一鍵導航、圖片/票券收納、日幣換算、預算提醒、搜尋、Undo（10步）。",
-      days: []
+      settings:{ year:2026, rate:0.22 },
+      appTitle:"Niji Trip 2026",
+      appDesc:"東京行程・暖色主題。支援拖拉排序、分類篩選、表單新增行程、圖片收納、日幣換算、預算提醒、匯出/匯入、Undo（10步）。",
+      days: makeDefaultDays()
     };
-    state.days = makeDefaultDays();
     ensureDatesFromDay1();
     pushUndo();
-    saveNow(false);
+    saveLocal();
   }
 
   /* =========================
-     Render
+     Render helpers
   ========================== */
-  function render(){
-    $("#appTitle").textContent = state.appTitle || "Niji Trip 2026";
-    $("#appDesc").textContent = state.appDesc || "";
-
-    renderDayNav();
-    renderDays();
-
-    if (!activeDayId && state.days[0]) activeDayId = state.days[0].id;
-    setActiveChip(activeDayId);
-
-    // highlight active card if exists
-    markActiveCard();
-
-    recalcTotals();
+  function escapeHTML(s){
+    return String(s||"")
+      .replaceAll("&","&amp;")
+      .replaceAll("<","&lt;")
+      .replaceAll(">","&gt;")
+      .replaceAll('"',"&quot;")
+      .replaceAll("'","&#39;");
   }
 
-  function markActiveCard(){
-    $$(".spot-card").forEach(el=>{
-      el.classList.toggle("active", el.dataset.cardId === activeCardId);
+  function renderFilterTabs(){
+    const wrap = $("#filterTabs");
+    wrap.innerHTML = "";
+    FILTERS.forEach(f=>{
+      const b = document.createElement("button");
+      b.className = "tab" + (f===activeFilter ? " active" : "");
+      b.type = "button";
+      b.textContent = f;
+      b.addEventListener("click", ()=>{
+        activeFilter = f;
+        renderFilterTabs();
+        applyFilterToDOM();
+      });
+      wrap.appendChild(b);
     });
   }
 
@@ -980,27 +686,26 @@
         <span class="chip-main" contenteditable="true"></span>
         <span class="chip-sub" contenteditable="true"></span>
       `;
-      const main = $(".chip-main", chip);
-      const sub  = $(".chip-sub", chip);
+      const main = chip.querySelector(".chip-main");
+      const sub  = chip.querySelector(".chip-sub");
 
       main.textContent = d.dayLabel || `Day ${idx+1}`;
       sub.textContent  = d.dateText || "";
 
+      // ✅ 輸入時不 render，只寫 state + 存檔
       main.addEventListener("input", () => {
         d.dayLabel = main.textContent.trim() || `Day ${idx+1}`;
         d.autoDayLabel = false;
+        const sec = document.querySelector(`.day-section[data-id="${d.id}"] .day-pill span`);
+        if (sec) sec.textContent = d.dayLabel;
         scheduleSave();
-        const sec = document.querySelector(`.day-section[data-id="${d.id}"]`);
-        if (sec){
-          const h = sec.querySelector(".day-pill span");
-          if (h) h.textContent = d.dayLabel;
-        }
       });
 
       sub.addEventListener("input", () => {
         d.dateText = sub.textContent.trim() || d.dateText;
         if (idx === 0){
           ensureDatesFromDay1();
+          // 結構性更新 → 需要 render（日期會連動）
           scheduleSave();
           render();
         }else{
@@ -1024,9 +729,25 @@
     $$(".day-chip").forEach(c=>c.classList.toggle("active", c.dataset.id===id));
   }
 
+  function render(){
+    $("#appTitle").textContent = state.appTitle || "Niji Trip 2026";
+    $("#appDesc").textContent = state.appDesc || "";
+
+    renderFilterTabs();
+    renderDayNav();
+    renderDays();
+
+    if (!activeDayId && state.days[0]) activeDayId = state.days[0].id;
+    setActiveChip(activeDayId);
+
+    applyFilterToDOM();
+    recalcTotals();
+  }
+
   function renderDays(){
     const wrap = $("#daysContainer");
     wrap.innerHTML = "";
+
     state.days.forEach((d, idx) => {
       const sec = document.createElement("section");
       sec.className = "day-section";
@@ -1054,56 +775,30 @@
             </div>
 
             <span class="badge dayTotalBadge">當日合計：0 JPY / 0 TWD</span>
-            <button class="btn small btnDayRoute" type="button">🧭 當天路線總覽</button>
-          </div>
-
-          <div class="tickets">
-            <div class="tickets-head">
-              <div>🎫 票券 / QR 收納（可貼文字＋加圖片）</div>
-              <div style="display:flex;gap:8px;flex-wrap:wrap;">
-                <button class="btn small btnTicketPhoto" type="button">📷 加圖片</button>
-              </div>
-            </div>
-            <div class="day-note-box ticketText" contenteditable="true"></div>
-            <div class="tickets-grid ticketPhotos"></div>
           </div>
 
           <div class="sections">
-            ${renderSectionHTML("morning","☀️ 早上", true)}
-            ${renderSectionHTML("noon","🌤️ 下午", true)}
-            ${renderSectionHTML("night","🌙 晚上", true)}
-            ${renderSectionHTML("transport","🚇 交通（加到卡片內）", false)}
-            ${renderSectionHTML("shopping","🛍️ 購物（加到卡片內）", false)}
-          </div>
-
-          <div class="day-note-card" data-fixed="dayNote">
-            <div class="day-note-head">
-              <div>當日備註／花費（固定在最下方）</div>
-              <button class="btn small btnDayNotePhoto" type="button">📷 新增圖片</button>
-            </div>
-            <div class="day-note-box dayNoteText" contenteditable="true"></div>
-            <div class="day-note-photos dayNotePhotos"></div>
+            ${renderSectionHTML("morning","☀️ 早上")}
+            ${renderSectionHTML("noon","🌤️ 下午")}
+            ${renderSectionHTML("night","🌙 晚上")}
           </div>
         </div>
       `;
 
-      // bind header fields
+      // header fields (不 render，只更新 state)
       const dayLabelEl = sec.querySelector(".day-pill span");
       dayLabelEl.textContent = d.dayLabel || `Day ${idx+1}`;
       dayLabelEl.addEventListener("input", () => {
         d.dayLabel = dayLabelEl.textContent.trim() || `Day ${idx+1}`;
         d.autoDayLabel = false;
-        const chip = document.querySelector(`.day-chip[data-id="${d.id}"] .chip-main`);
-        if (chip) chip.textContent = d.dayLabel;
+        const chipMain = document.querySelector(`.day-chip[data-id="${d.id}"] .chip-main`);
+        if (chipMain) chipMain.textContent = d.dayLabel;
         scheduleSave();
       });
 
       const subEl = sec.querySelector(".day-subtitle span");
       subEl.textContent = d.subtitle || "";
-      subEl.addEventListener("input", () => {
-        d.subtitle = subEl.textContent;
-        scheduleSave();
-      });
+      subEl.addEventListener("input", () => { d.subtitle = subEl.textContent; scheduleSave(); });
 
       const dateEl = sec.querySelector(".datebox span");
       dateEl.textContent = d.dateText || "";
@@ -1118,93 +813,33 @@
         }
       });
 
-      // budget
       const budgetInput = sec.querySelector(".budgetInput");
       budgetInput.value = d.budgetJPY || "";
-      budgetInput.addEventListener("input", () => {
-        d.budgetJPY = budgetInput.value;
-        scheduleSave();
-        recalcTotals();
-      });
+      budgetInput.addEventListener("input", () => { d.budgetJPY = budgetInput.value; scheduleSave(); recalcTotals(); });
 
-      // rate
       const rateInput = sec.querySelector(".rateInput");
       rateInput.value = String(state.settings.rate ?? 0.22);
       rateInput.addEventListener("input", () => {
         const v = parseFloat(rateInput.value);
-        if (!isNaN(v) && v > 0){
-          state.settings.rate = v;
-          scheduleSave();
-          recalcTotals();
-        }
-      });
-
-      // tickets
-      const ticketText = sec.querySelector(".ticketText");
-      ticketText.textContent = d.tickets?.text || "";
-      ticketText.addEventListener("input", () => {
-        d.tickets.text = ticketText.textContent;
-        scheduleSave();
-      });
-      const ticketPhotos = sec.querySelector(".ticketPhotos");
-      renderPhotoStrip(ticketPhotos, d.tickets.photos, () => scheduleSave());
-
-      sec.querySelector(".btnTicketPhoto").addEventListener("click", async () => {
-        const url = await pickPhoto();
-        if (!url) return;
-        d.tickets.photos.push(url);
-        renderPhotoStrip(ticketPhotos, d.tickets.photos, () => scheduleSave());
-        scheduleSave();
-      });
-
-      // day note bottom
-      const dayNoteText = sec.querySelector(".dayNoteText");
-      dayNoteText.textContent = d.dayNote?.text || "";
-      dayNoteText.addEventListener("input", () => {
-        d.dayNote.text = dayNoteText.textContent;
-        scheduleSave();
-      });
-      const dayNotePhotos = sec.querySelector(".dayNotePhotos");
-      renderPhotoStrip(dayNotePhotos, d.dayNote.photos, () => scheduleSave());
-
-      sec.querySelector(".btnDayNotePhoto").addEventListener("click", async () => {
-        const url = await pickPhoto();
-        if (!url) return;
-        d.dayNote.photos.push(url);
-        renderPhotoStrip(dayNotePhotos, d.dayNote.photos, () => scheduleSave());
-        scheduleSave();
-      });
-
-      // day route
-      sec.querySelector(".btnDayRoute").addEventListener("click", () => {
-        openDayRoute(d);
+        if (!isNaN(v) && v > 0){ state.settings.rate = v; scheduleSave(); recalcTotals(); }
       });
 
       wrap.appendChild(sec);
 
-      // after appended: render cards per section
-      renderCardsForDay(sec, d);
+      // Render cards
+      ["morning","noon","night"].forEach(k=>{
+        const body = sec.querySelector(`.sec[data-sec="${k}"] .sec-body`);
+        body.innerHTML = "";
+        (d.sections[k]||[]).forEach(card=>{
+          body.appendChild(renderCard(card, d));
+        });
+        enableDropZone(body);
+      });
     });
   }
 
-  function renderSectionHTML(key, title, showNormalButtons){
-    const dotColor = key==="morning" ? "#ffb85c" :
-                     key==="noon" ? "#ffd59a" :
-                     key==="night" ? "#a9e2ff" :
-                     key==="transport" ? "#b7f2d4" : "#ffb0a6";
-
-    // 交通/購物：不再建立新卡，而是加到「已選取的卡」內
-    const actions = showNormalButtons
-      ? `
-        <button class="btn small" data-add="${key}" data-tpl="spot" type="button">＋ 景點</button>
-        <button class="btn small" data-add="${key}" data-tpl="restaurant" type="button">＋ 餐廳</button>
-        <button class="btn small" data-addinline="transport" type="button">＋ 交通</button>
-        <button class="btn small" data-addinline="shopping" type="button">＋ 購物</button>
-      `
-      : `
-        <button class="btn small" data-addinline="${key}" type="button">＋ 加到卡片內</button>
-      `;
-
+  function renderSectionHTML(key, title){
+    const dotColor = key==="morning" ? "#ffb85c" : key==="noon" ? "#ffd59a" : "#a9e2ff";
     return `
       <div class="sec" data-sec="${key}">
         <div class="sec-head">
@@ -1213,59 +848,17 @@
             <span>${title}</span>
           </div>
           <div class="sec-actions">
-            ${actions}
+            <button class="btn small" data-add="${key}" data-tag="景點" type="button">＋ 景點</button>
+            <button class="btn small" data-add="${key}" data-tag="餐飲" type="button">＋ 餐飲</button>
+            <button class="btn small" data-add="${key}" data-tag="住宿" type="button">＋ 住宿</button>
+            <button class="btn small" data-add="${key}" data-tag="交通" type="button">＋ 交通</button>
+            <button class="btn small" data-add="${key}" data-tag="購物" type="button">＋ 購物</button>
+            <button class="btn small" data-add="${key}" data-tag="其他" type="button">＋ 其他</button>
           </div>
         </div>
         <div class="sec-body" data-dropzone="true"></div>
       </div>
     `;
-  }
-
-  function renderCardsForDay(daySectionEl, dayObj){
-    // bind buttons
-    $$("[data-add]", daySectionEl).forEach(btn=>{
-      btn.addEventListener("click", () => {
-        const secKey = btn.dataset.add;
-        const tpl = btn.dataset.tpl;
-        addCard(dayObj.id, secKey, tpl);
-      });
-    });
-
-    // ✅ 交通 / 購物：加到同一張卡內（最後點選的卡）
-    $$("[data-addinline]", daySectionEl).forEach(btn=>{
-      btn.addEventListener("click", () => {
-        const kind = btn.dataset.addinline; // transport / shopping
-        addInlineItemToActiveCard(kind);
-      });
-    });
-
-    // render each section cards
-    Object.entries(dayObj.sections).forEach(([secKey, list])=>{
-      const secEl = daySectionEl.querySelector(`.sec[data-sec="${secKey}"] .sec-body`);
-      secEl.innerHTML = "";
-
-      // transport/shopping 這兩個分區保留外觀，但裡面不顯示獨立卡（因為改成卡內清單）
-      if (secKey === "transport" || secKey === "shopping"){
-        secEl.innerHTML = `<div class="badge" style="background:#eaf6ff;">提示：交通/購物已改成「加在卡片內」。請先點一張卡，再按「＋」。</div>`;
-        return;
-      }
-
-      // lodging is always last in night
-      if (secKey === "night" && list && list.length){
-        const lodIdx = list.findIndex(x => x && x.type==="lodging");
-        if (lodIdx >= 0 && lodIdx !== list.length-1){
-          const [lod] = list.splice(lodIdx,1);
-          list.push(lod);
-        }
-      }
-
-      (list||[]).forEach(card=>{
-        const cardEl = renderCard(card, dayObj);
-        secEl.appendChild(cardEl);
-      });
-
-      enableDropZone(secEl);
-    });
   }
 
   function renderCard(card, dayObj){
@@ -1275,11 +868,9 @@
     el.dataset.dayId  = dayObj.id;
     el.draggable = true;
 
-    const tag = card.tag || "景點";
-
     const rate = Number(state.settings.rate||0.22);
     const jpyVal = parseFloat(card.jpy||"");
-    const twdCalc = (!isNaN(jpyVal) ? (jpyVal*rate) : null);
+    const twdCalc = (!isNaN(jpyVal) ? Math.round(jpyVal*rate) : 0);
 
     el.innerHTML = `
       <div class="spot-top">
@@ -1289,16 +880,13 @@
           <div class="spot-meta" contenteditable="true"></div>
         </div>
         <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end;">
-          <div class="spot-tag">${escapeHTML(tag)}</div>
-          ${card.type==="lodging" ? `<div class="badge" style="background:#eaf6ff;">住宿卡</div>` : ``}
+          <div class="spot-tag">${escapeHTML(card.tag||"景點")}</div>
         </div>
       </div>
 
       <div class="row">
-        <button class="btn small btnPreview" type="button">地圖預覽</button>
         <button class="btn small btnSearch" type="button">在地圖上搜尋</button>
-        <button class="btn small btnRoute" type="button">一鍵導航路線</button>
-        <button class="btn small btnNearby" type="button">附近搜尋</button>
+        <button class="btn small btnRoute" type="button">一鍵導航</button>
       </div>
 
       <div class="loc-box">
@@ -1310,84 +898,43 @@
           <div class="loc-label">目的</div>
           <input class="loc-input dest" placeholder="目的地 / 地址（建議填日文或地址）" />
         </div>
-        <div class="loc-line viasRow">
-          <div class="loc-label">途經</div>
-          <div style="flex:1;display:flex;gap:6px;flex-wrap:wrap;align-items:center;">
-            <span class="loc-mini">（可加多個）</span>
-            <button class="btn small btnAddVia" type="button">＋ 途經</button>
-          </div>
-        </div>
-        <div class="viasList"></div>
       </div>
 
       <div class="expense">
         <span class="lab">花費 JPY</span>
         <input class="inJPY" inputmode="numeric" placeholder="例如 1200" />
-        <span class="calc">→ TWD：<span class="twdText">${twdCalc!==null ? Math.round(twdCalc) : 0}</span></span>
-      </div>
-
-      <div class="mini">
-        <div class="mini-head">
-          <span>🚇 交通（加在同一張卡內）</span>
-          <button class="btn small btnAddTransport" type="button">＋ 新增</button>
-        </div>
-        <div class="mini-list transportList"></div>
-      </div>
-
-      <div class="mini">
-        <div class="mini-head">
-          <span>🛍️ 購物（加在同一張卡內）</span>
-          <button class="btn small btnAddShopping" type="button">＋ 新增</button>
-        </div>
-        <div class="mini-list shoppingList"></div>
+        <span class="calc">→ TWD：<span class="twdText">${twdCalc}</span></span>
       </div>
 
       <div class="note">
         <div class="note-head">
           <span>備註</span>
-          <div style="display:flex;gap:6px;flex-wrap:wrap;">
-            <button class="btn small btnNotePhoto" type="button">📷</button>
-          </div>
         </div>
         <div class="note-body" contenteditable="true"></div>
-        <div class="note-photos"></div>
       </div>
     `;
 
-    // mark active on click
-    el.addEventListener("click", () => {
-      activeCardId = card.id;
-      markActiveCard();
-    });
-
-    const titleEl = $(".spot-title", el);
-    const jaEl    = $(".spot-ja", el);
-    const metaEl  = $(".spot-meta", el);
-    const noteEl  = $(".note-body", el);
+    const titleEl = el.querySelector(".spot-title");
+    const jaEl    = el.querySelector(".spot-ja");
+    const metaEl  = el.querySelector(".spot-meta");
+    const noteEl  = el.querySelector(".note-body");
 
     titleEl.textContent = card.title || "";
     jaEl.textContent = card.ja || "";
     metaEl.textContent = card.meta || "";
     noteEl.textContent = card.note || "";
 
-    const origin = $(".origin", el);
-    const dest   = $(".dest", el);
-    const inJPY  = $(".inJPY", el);
+    const origin = el.querySelector(".origin");
+    const dest   = el.querySelector(".dest");
+    const inJPY  = el.querySelector(".inJPY");
 
     origin.value = card.origin || "";
-    dest.value   = card.destination || card.ja || "";
+    dest.value   = card.destination || "";
     inJPY.value  = card.jpy || "";
 
-    const viasList = $(".viasList", el);
-    renderVias(viasList, card);
-
-    // ✅ 重要：不要在 input 事件裡做 render()（會造成跳字），只 scheduleSave()
+    // ✅ 輸入只更新 state + scheduleSave（不 render）
     titleEl.addEventListener("input", () => { card.title = titleEl.textContent; scheduleSave(); });
-    jaEl.addEventListener("input", () => {
-      card.ja = jaEl.textContent;
-      if (!card.destination) { card.destination = jaEl.textContent; dest.value = card.destination; }
-      scheduleSave();
-    });
+    jaEl.addEventListener("input", () => { card.ja = jaEl.textContent; scheduleSave(); });
     metaEl.addEventListener("input", () => { card.meta = metaEl.textContent; scheduleSave(); });
     noteEl.addEventListener("input", () => { card.note = noteEl.textContent; scheduleSave(); });
 
@@ -1399,340 +946,54 @@
       const rate = Number(state.settings.rate||0.22);
       const j = parseFloat(inJPY.value||"");
       const t = (!isNaN(j) ? Math.round(j*rate) : 0);
-      $(".twdText", el).textContent = String(t);
+      el.querySelector(".twdText").textContent = String(t);
       card.twd = String(t);
       scheduleSave();
       recalcTotals();
     });
 
-    // note photos
-    const notePhotos = $(".note-photos", el);
-    renderPhotoStrip(notePhotos, card.photos, () => scheduleSave());
-
-    $(".btnNotePhoto", el).addEventListener("click", async (ev) => {
-      ev.preventDefault();
-      const url = await pickPhoto();
-      if (!url) return;
-      card.photos.push(url);
-      renderPhotoStrip(notePhotos, card.photos, () => scheduleSave());
-      scheduleSave();
-    });
-
-    // map buttons
-    $(".btnPreview", el).addEventListener("click", (ev) => {
-      ev.preventDefault();
+    // Maps
+    el.querySelector(".btnSearch").addEventListener("click", () => {
       const q = (card.destination || card.ja || card.title || "").trim();
-      if (!q) return alert("請先填『目的地/地址』或『日文名稱』");
-      openMapPreview(q);
-    });
-    $(".btnSearch", el).addEventListener("click", (ev) => {
-      ev.preventDefault();
-      const q = (card.destination || card.ja || card.title || "").trim();
-      if (!q) return alert("請先填『目的地/地址』或『日文名稱』");
+      if (!q) return alert("請先填『目的地/地址』或『標題』");
       window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}`, "_blank");
     });
-    $(".btnRoute", el).addEventListener("click", (ev) => {
-      ev.preventDefault();
-      openCardRoute(card);
-    });
-    $(".btnNearby", el).addEventListener("click", (ev) => {
-      ev.preventDefault();
-      const q = (card.destination || card.ja || card.title || "").trim();
-      if (!q) return alert("請先填『目的地/地址』或『日文名稱』");
-      openNearbyMenu(q);
-    });
 
-    $(".btnAddVia", el).addEventListener("click", (ev) => {
-      ev.preventDefault();
-      card.vias = card.vias || [];
-      card.vias.push("");
-      renderVias(viasList, card);
-      scheduleSave();
+    el.querySelector(".btnRoute").addEventListener("click", () => {
+      const destQ = (card.destination || card.ja || card.title || "").trim();
+      if (!destQ) return alert("請先填『目的地/地址』或『標題』");
+      const oriQ = (card.origin || "").trim();
+      let url = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(destQ)}`;
+      if (oriQ) url += `&origin=${encodeURIComponent(oriQ)}`;
+      window.open(url, "_blank");
     });
 
-    // ✅ 卡片內交通/購物清單
-    if (!Array.isArray(card.transportList)) card.transportList = [];
-    if (!Array.isArray(card.shoppingList)) card.shoppingList = [];
-
-    const transportWrap = $(".transportList", el);
-    const shoppingWrap  = $(".shoppingList", el);
-
-    function renderMiniList(container, list){
-      container.innerHTML = "";
-      list.forEach((text, idx)=>{
-        const row = document.createElement("div");
-        row.className = "mini-item";
-        row.innerHTML = `
-          <input inputmode="text" placeholder="輸入內容…" />
-          <button type="button">刪</button>
-        `;
-        const input = row.querySelector("input");
-        input.value = text || "";
-        input.addEventListener("input", ()=>{
-          list[idx] = input.value;
-          scheduleSave();
-        });
-        row.querySelector("button").addEventListener("click", ()=>{
-          list.splice(idx,1);
-          renderMiniList(container, list);
-          scheduleSave();
-        });
-        container.appendChild(row);
-      });
-    }
-
-    renderMiniList(transportWrap, card.transportList);
-    renderMiniList(shoppingWrap, card.shoppingList);
-
-    $(".btnAddTransport", el).addEventListener("click", (ev)=>{
-      ev.preventDefault();
-      card.transportList.push("");
-      renderMiniList(transportWrap, card.transportList);
-      scheduleSave();
-      // 讓新行直接可打字
-      setTimeout(()=>{
-        const last = transportWrap.querySelector(".mini-item:last-child input");
-        if (last) last.focus();
-      }, 10);
-    });
-
-    $(".btnAddShopping", el).addEventListener("click", (ev)=>{
-      ev.preventDefault();
-      card.shoppingList.push("");
-      renderMiniList(shoppingWrap, card.shoppingList);
-      scheduleSave();
-      setTimeout(()=>{
-        const last = shoppingWrap.querySelector(".mini-item:last-child input");
-        if (last) last.focus();
-      }, 10);
-    });
-
-    // drag + long press
     enableCardDrag(el);
-    attachLongPress(el);
-
     return el;
   }
 
-  function renderVias(container, card){
-    container.innerHTML = "";
-    const vias = card.vias || [];
-    vias.forEach((v, idx) => {
-      const line = document.createElement("div");
-      line.className = "loc-line";
-      line.innerHTML = `
-        <div class="loc-label">途經${idx+1}</div>
-        <input class="loc-input via" placeholder="途經地點/地址" />
-        <button class="btn small btnDelVia" type="button">刪</button>
-      `;
-      const input = $(".via", line);
-      input.value = v || "";
-      input.addEventListener("input", () => {
-        card.vias[idx] = input.value;
-        scheduleSave();
-      });
-      $(".btnDelVia", line).addEventListener("click", (ev) => {
-        ev.preventDefault();
-        card.vias.splice(idx,1);
-        renderVias(container, card);
-        scheduleSave();
-      });
-      container.appendChild(line);
+  /* =========================
+     Filter apply (不重繪：直接隱藏/顯示卡片)
+  ========================== */
+  function applyFilterToDOM(){
+    $$(".spot-card").forEach(cardEl=>{
+      const cid = cardEl.dataset.cardId;
+      const card = findCardById(cid);
+      if (!card) return;
+      const show = (activeFilter==="全部") ? true : (String(card.tag||"")===activeFilter);
+      cardEl.style.display = show ? "" : "none";
     });
   }
 
-  function addCard(dayId, secKey, tpl){
-    const d = state.days.find(x=>x.id===dayId);
-    if (!d) return;
-
-    pushUndo();
-
-    const c = newCardTemplate(tpl==="restaurant" ? "restaurant" : "spot");
-    c.title = tpl==="restaurant" ? "新餐廳" : "新景點";
-    c.tag = tpl==="restaurant" ? "餐廳" : "景點";
-
-    d.sections[secKey] = d.sections[secKey] || [];
-    if (secKey==="night"){
-      const lodIdx = d.sections.night.findIndex(x=>x.type==="lodging");
-      if (lodIdx >= 0){
-        d.sections.night.splice(lodIdx,0,c);
-      }else{
-        d.sections.night.push(c);
+  function findCardById(cid){
+    for (const d of state.days){
+      for (const k of Object.keys(d.sections)){
+        for (const c of (d.sections[k]||[])){
+          if (c.id===cid) return c;
+        }
       }
-    }else{
-      d.sections[secKey].push(c);
     }
-
-    activeCardId = c.id; // 新增後直接選到這張
-    scheduleSave();
-    render();
-  }
-
-  function addInlineItemToActiveCard(kind){
-    if (!activeCardId){
-      alert("請先點一下你要加內容的『那張卡』，再按＋交通／＋購物。");
-      return;
-    }
-    const card = findCardById(activeCardId);
-    if (!card){
-      alert("找不到已選取的卡，請重新點一下卡片。");
-      return;
-    }
-    if (card.type==="lodging"){
-      alert("住宿卡不建議加交通/購物，請點選一般行程卡。");
-      return;
-    }
-
-    if (!Array.isArray(card.transportList)) card.transportList = [];
-    if (!Array.isArray(card.shoppingList)) card.shoppingList = [];
-
-    if (kind === "transport"){
-      card.transportList.push("");
-    }else{
-      card.shoppingList.push("");
-    }
-
-    scheduleSave();
-    // 為了讓新行立刻出現，這裡只針對 render 不大範圍刷新：最簡單是整體 render（但不會跳字，因為你是按按鈕）
-    render();
-
-    // focus 到新行
-    setTimeout(()=>{
-      const el = document.querySelector(`.spot-card[data-card-id="${card.id}"]`);
-      if (!el) return;
-      const target = kind === "transport"
-        ? el.querySelector(".transportList .mini-item:last-child input")
-        : el.querySelector(".shoppingList .mini-item:last-child input");
-      if (target) target.focus();
-    }, 60);
-  }
-
-  /* =========================
-     Photos picker + render
-  ========================== */
-  const photoPicker = $("#photoPicker");
-  let photoResolve = null;
-
-  function pickPhoto(){
-    return new Promise((resolve) => {
-      photoResolve = resolve;
-      photoPicker.value = "";
-      photoPicker.click();
-    });
-  }
-
-  photoPicker.addEventListener("change", () => {
-    const file = photoPicker.files && photoPicker.files[0];
-    if (!file){
-      if (photoResolve) photoResolve(null);
-      photoResolve = null;
-      return;
-    }
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      if (photoResolve) photoResolve(String(e.target.result || ""));
-      photoResolve = null;
-    };
-    reader.readAsDataURL(file);
-  });
-
-  function renderPhotoStrip(container, list, onChanged){
-    container.innerHTML = "";
-    (list||[]).forEach((url, idx) => {
-      const img = document.createElement("img");
-      img.className = "thumb";
-      img.src = url;
-      img.alt = "photo";
-      img.title = "點一下直接刪除";
-      img.addEventListener("click", () => {
-        list.splice(idx,1);
-        renderPhotoStrip(container, list, onChanged);
-        onChanged && onChanged();
-        scheduleSave();
-      });
-      container.appendChild(img);
-    });
-  }
-
-  /* =========================
-     Map preview modal
-  ========================== */
-  const modal = $("#mapModal");
-  const modalFrame = $("#modalFrame");
-  $("#btnCloseModal").addEventListener("click", closeModal);
-  modal.addEventListener("click", (e)=>{ if (e.target===modal) closeModal(); });
-
-  function openMapPreview(query){
-    $("#modalTitle").textContent = `地圖預覽：${query}`;
-    const url = `https://www.google.com/maps?q=${encodeURIComponent(query)}&output=embed`;
-    modalFrame.src = url;
-    modal.classList.add("show");
-    modal.setAttribute("aria-hidden","false");
-  }
-  function closeModal(){
-    modal.classList.remove("show");
-    modal.setAttribute("aria-hidden","true");
-    modalFrame.src = "about:blank";
-  }
-
-  function openCardRoute(card){
-    const origin = (card.origin||"").trim();
-    const dest = (card.destination || card.ja || card.title || "").trim();
-    if (!dest) return alert("請先填『目的地/地址』");
-    const vias = (card.vias||[]).map(x=>String(x||"").trim()).filter(Boolean);
-    const ori = origin || state.settings.hotelNameJP || state.settings.hotelName || "上野";
-    let url = `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(ori)}&destination=${encodeURIComponent(dest)}`;
-    if (vias.length){
-      url += `&waypoints=${encodeURIComponent(vias.join("|"))}`;
-    }
-    window.open(url, "_blank");
-  }
-
-  function openDayRoute(dayObj){
-    const cards = flattenDayCards(dayObj).filter(c=>c.type!=="lodging");
-    const points = [];
-    cards.forEach(c=>{
-      const q = (c.destination || c.ja || c.title || "").trim();
-      if (q) points.push(q);
-    });
-    if (points.length === 0) return alert("這天沒有可導航的目的地（請填目的地/地址）");
-
-    const origin = state.settings.hotelNameJP || state.settings.hotelName || "上野";
-    const destination = points[points.length-1];
-    const mids = points.slice(0, points.length-1);
-    const way = mids.slice(0, 9);
-    let url = `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(destination)}`;
-    if (way.length){
-      url += `&waypoints=${encodeURIComponent(way.join("|"))}`;
-    }
-    window.open(url, "_blank");
-  }
-
-  function openNearbyMenu(baseQuery){
-    const options = [
-      {k:"超商", q:`${baseQuery} 附近 便利商店`},
-      {k:"藥妝", q:`${baseQuery} 附近 藥妝店`},
-      {k:"車站", q:`${baseQuery} 附近 車站`},
-      {k:"廁所", q:`${baseQuery} 附近 トイレ`},
-      {k:"餐廳", q:`${baseQuery} 附近 餐廳`},
-    ];
-    const pick = prompt("附近搜尋：輸入 1-5\n1 超商\n2 藥妝\n3 車站\n4 廁所\n5 餐廳", "2");
-    const n = parseInt(pick||"", 10);
-    if (!n || n<1 || n>5) return;
-    const q = options[n-1].q;
-    window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}`, "_blank");
-  }
-
-  /* =========================
-     Flatten day cards (visual order)
-  ========================== */
-  const SEC_ORDER = ["morning","noon","night"];
-  function flattenDayCards(dayObj){
-    const arr = [];
-    SEC_ORDER.forEach(k=>{
-      (dayObj.sections[k]||[]).forEach(c=>arr.push(c));
-    });
-    return arr;
+    return null;
   }
 
   /* =========================
@@ -1744,16 +1005,16 @@
 
     state.days.forEach(d=>{
       let dayJPY = 0, dayTWD = 0;
-      const cards = flattenDayCards(d);
-      cards.forEach(c=>{
-        const j = parseFloat(c.jpy||"");
-        const t = parseFloat(c.twd||"");
-        if (!isNaN(j)) dayJPY += j;
-        if (!isNaN(t)) dayTWD += t;
-        if (!isNaN(j) && (isNaN(t) || !c.twd)){
-          const calc = Math.round(j*rate);
-          c.twd = String(calc);
-        }
+      ["morning","noon","night"].forEach(k=>{
+        (d.sections[k]||[]).forEach(c=>{
+          const j = parseFloat(c.jpy||"");
+          const t = parseFloat(c.twd||"");
+          if (!isNaN(j)) dayJPY += j;
+          if (!isNaN(t)) dayTWD += t;
+          if (!isNaN(j) && (isNaN(t) || !c.twd)){
+            c.twd = String(Math.round(j*rate));
+          }
+        });
       });
 
       tripJPY += dayJPY;
@@ -1762,56 +1023,41 @@
       const sec = document.querySelector(`.day-section[data-id="${d.id}"]`);
       if (sec){
         const badge = sec.querySelector(".dayTotalBadge");
-        if (badge) badge.textContent = `當日合計：${Math.round(dayJPY)} JPY / ${Math.round(dayTWD)} TWD`;
-
-        const bud = parseFloat(d.budgetJPY||"");
-        if (!isNaN(bud) && bud>0 && dayJPY>bud){
-          badge.style.background = "#ffb0a6";
-          badge.style.color = "#7a221b";
-          badge.textContent += "（超出預算⚠️）";
-        }else{
-          badge.style.background = "";
-          badge.style.color = "";
+        if (badge){
+          badge.textContent = `當日合計：${Math.round(dayJPY)} JPY / ${Math.round(dayTWD)} TWD`;
+          const bud = parseFloat(d.budgetJPY||"");
+          if (!isNaN(bud) && bud>0 && dayJPY>bud){
+            badge.style.background = "#ffb0a6";
+            badge.style.color = "#7a221b";
+            badge.textContent += "（超出預算⚠️）";
+          }else{
+            badge.style.background = "";
+            badge.style.color = "";
+          }
         }
       }
     });
 
-    // header
-    if (!pendingCloudState){
-      $("#syncBadge").textContent = `全旅程合計：${Math.round(tripJPY)} JPY / ${Math.round(tripTWD)} TWD（離線可用：已自動保存）`;
-    }
+    $("#syncBadge").textContent = `全旅程合計：${Math.round(tripJPY)} JPY / ${Math.round(tripTWD)} TWD（離線可用：已自動保存）`;
   }
 
   /* =========================
-     Day add/remove
+     Add/Remove day
   ========================== */
   function addDay(){
     pushUndo();
     const idx = state.days.length + 1;
-
-    const id = `d_${Date.now()}_${Math.random().toString(16).slice(2)}`;
-    const day = {
-      id,
-      autoDayLabel: true,
-      dayLabel: `Day ${idx}`,
-      subtitle: "（新的一天行程）",
-      dateText: "",
-      budgetJPY: "",
-      tickets: { text:"", photos:[] },
-      sections: { morning:[], noon:[], night:[], transport:[], shopping:[] },
-      dayNote: { text:"", photos:[] }
-    };
-
-    const lod = newCardTemplate("lodging");
-    lod.title = `住宿：${state.settings.hotelName}`;
-    lod.ja = state.settings.hotelNameJP;
-    lod.meta = "住宿地點（固定在當日備註上方）";
-    lod.pinned = true;
-    day.sections.night.push(lod);
-
-    state.days.push(day);
+    state.days.push({
+      id:`d_${Date.now()}_${Math.random().toString(16).slice(2)}`,
+      autoDayLabel:true,
+      dayLabel:`Day ${idx}`,
+      subtitle:"（新的一天行程）",
+      dateText:"",
+      budgetJPY:"",
+      sections:{ morning:[], noon:[], night:[] }
+    });
     ensureDatesFromDay1();
-    scheduleSave();
+    saveLocal();
     render();
   }
 
@@ -1820,23 +1066,20 @@
     pushUndo();
     state.days.pop();
     ensureDatesFromDay1();
-    scheduleSave();
+    saveLocal();
     render();
   }
 
   /* =========================
-     Import / Export
+     Export/Import/Clear
   ========================== */
   $("#btnExport").addEventListener("click", () => {
-    const data = {
-      savedAt: new Date().toISOString(),
-      state
-    };
+    const data = { savedAt:new Date().toISOString(), state };
     const blob = new Blob([JSON.stringify(data, null, 2)], {type:"application/json"});
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "NijiTrip2026_backup.json";
+    a.download = "NijiTrip_backup.json";
     document.body.appendChild(a);
     a.click();
     a.remove();
@@ -1854,9 +1097,8 @@
         if (data && data.state){
           pushUndo();
           state = data.state;
-          patchStateDefaults();
           ensureDatesFromDay1();
-          saveNow(true);
+          saveLocal();
           render();
         }else{
           alert("匯入失敗：JSON 格式不對");
@@ -1871,7 +1113,7 @@
 
   $("#btnClear").addEventListener("click", () => {
     if (!confirm("確定清除本機所有資料？（不可復原）")) return;
-    clearLocal();
+    localStorage.removeItem(STORAGE_KEY);
     undoStack = [];
     initState();
     render();
@@ -1887,16 +1129,12 @@
     if (!prev) return;
     try{
       state = JSON.parse(prev);
-      patchStateDefaults();
-      saveNow(true);
+      saveLocal();
       render();
       $("#btnUndo").disabled = undoStack.length <= 1;
     }catch(e){}
   });
 
-  /* =========================
-     Jump to active day
-  ========================== */
   $("#btnJumpActive").addEventListener("click", () => {
     if (!activeDayId) return;
     const sec = document.querySelector(`.day-section[data-id="${activeDayId}"]`);
@@ -1927,13 +1165,9 @@
         if (d) newDays.push(d);
       });
       state.days = newDays;
-
-      state.days.forEach((d, idx) => {
-        if (d.autoDayLabel) d.dayLabel = `Day ${idx+1}`;
-      });
+      state.days.forEach((d, idx)=>{ if (d.autoDayLabel) d.dayLabel = `Day ${idx+1}`; });
       ensureDatesFromDay1();
-
-      scheduleSave();
+      saveLocal();
       render();
     });
   }
@@ -1952,15 +1186,13 @@
     chips.forEach(c=>{
       const box = c.getBoundingClientRect();
       const offset = x - (box.left + box.width/2);
-      if (offset < 0 && offset > closest.offset){
-        closest = { offset, el:c };
-      }
+      if (offset < 0 && offset > closest.offset) closest = { offset, el:c };
     });
     return closest.el;
   }
 
   /* =========================
-     Card Drag + Drop
+     Card drag reorder (同分區)
   ========================== */
   let draggingCardEl = null;
 
@@ -1975,7 +1207,8 @@
       draggingCardEl.classList.remove("dragging");
       draggingCardEl = null;
       syncCardsFromDOM();
-      scheduleSave();
+      saveLocal();
+      recalcTotals();
     });
   }
 
@@ -1983,7 +1216,6 @@
     zoneEl.addEventListener("dragover", (e) => {
       if (!draggingCardEl) return;
       e.preventDefault();
-      autoScrollWhileDragging(e.clientY);
       const after = getCardAfterY(zoneEl, e.clientY);
       if (!after) zoneEl.appendChild(draggingCardEl);
       else zoneEl.insertBefore(draggingCardEl, after);
@@ -1996,410 +1228,151 @@
     els.forEach(el=>{
       const box = el.getBoundingClientRect();
       const offset = y - (box.top + box.height/2);
-      if (offset < 0 && offset > closest.offset){
-        closest = { offset, el };
-      }
+      if (offset < 0 && offset > closest.offset) closest = { offset, el };
     });
     return closest.el;
   }
 
-  function autoScrollWhileDragging(clientY){
-    const margin = 80;
-    const speed = 18;
-    const top = margin;
-    const bottom = window.innerHeight - margin;
-
-    if (clientY < top){
-      window.scrollBy(0, -speed);
-    }else if (clientY > bottom){
-      window.scrollBy(0, speed);
-    }
-  }
-
   function syncCardsFromDOM(){
     state.days.forEach(d=>{
-      // reset lists
       Object.keys(d.sections).forEach(k=>d.sections[k]=[]);
       const daySec = document.querySelector(`.day-section[data-id="${d.id}"]`);
       if (!daySec) return;
-      const secEls = daySec.querySelectorAll(".sec");
-      secEls.forEach(secEl=>{
-        const secKey = secEl.dataset.sec;
-        // transport/shopping 不用獨立卡
-        if (secKey === "transport" || secKey === "shopping") return;
-
-        const cards = [...secEl.querySelectorAll(".spot-card")];
+      ["morning","noon","night"].forEach(k=>{
+        const body = daySec.querySelector(`.sec[data-sec="${k}"] .sec-body`);
+        const cards = [...body.querySelectorAll(".spot-card")];
         cards.forEach(cardEl=>{
           const cid = cardEl.dataset.cardId;
           const card = findCardById(cid);
-          if (card) d.sections[secKey].push(card);
+          if (card) d.sections[k].push(card);
         });
       });
-
-      // keep lodging at end of night
-      const night = d.sections.night || [];
-      const lodIdx = night.findIndex(x=>x.type==="lodging");
-      if (lodIdx>=0 && lodIdx !== night.length-1){
-        const [lod] = night.splice(lodIdx,1);
-        night.push(lod);
-      }
     });
   }
 
-  function findCardById(cid){
-    for (const d of state.days){
-      for (const k of Object.keys(d.sections)){
-        for (const c of (d.sections[k]||[])){
-          if (c && c.id===cid) return c;
-        }
-      }
-    }
-    return null;
-  }
-
   /* =========================
-     Long press context menu
+     Quick add modal (參考舊版新增行程)
   ========================== */
-  const menu = $("#ctxMenu");
-  let menuCardInfo = null;
+  const addModal = $("#addModal");
+  const openAdd = ()=>{ addModal.classList.add("show"); addModal.setAttribute("aria-hidden","false"); $("#fTitle").focus(); };
+  const closeAdd = ()=>{ addModal.classList.remove("show"); addModal.setAttribute("aria-hidden","true"); };
 
-  let pressTimer = null;
-  let pressStart = null;
+  $("#btnQuickAdd").addEventListener("click", openAdd);
+  $("#btnCloseAdd").addEventListener("click", closeAdd);
+  $("#btnCancelAdd").addEventListener("click", closeAdd);
+  addModal.addEventListener("click", (e)=>{ if (e.target===addModal) closeAdd(); });
 
-  function attachLongPress(cardEl){
-    const onDown = (e) => {
-      if (e.type==="mousedown" && e.button !== 0) return;
-      pressStart = { x: e.clientX, y: e.clientY };
-      clearTimeout(pressTimer);
-      pressTimer = setTimeout(() => {
-        openMenuForCard(cardEl, e.clientX, e.clientY);
-      }, 520);
-    };
-
-    const onMove = (e) => {
-      if (!pressStart) return;
-      const dx = Math.abs(e.clientX - pressStart.x);
-      const dy = Math.abs(e.clientY - pressStart.y);
-      if (dx > 12 || dy > 12){
-        clearTimeout(pressTimer);
-      }
-    };
-
-    const onUp = () => {
-      clearTimeout(pressTimer);
-      pressStart = null;
-    };
-
-    cardEl.addEventListener("touchstart", (e) => {
-      const t = e.touches[0];
-      onDown({type:"touchstart", clientX:t.clientX, clientY:t.clientY});
-    }, {passive:true});
-    cardEl.addEventListener("touchmove", (e) => {
-      const t = e.touches[0];
-      onMove({clientX:t.clientX, clientY:t.clientY});
-    }, {passive:true});
-    cardEl.addEventListener("touchend", onUp);
-
-    cardEl.addEventListener("mousedown", onDown);
-    cardEl.addEventListener("mousemove", onMove);
-    cardEl.addEventListener("mouseup", onUp);
-    cardEl.addEventListener("mouseleave", onUp);
+  function pickSectionByTimeOrCat(cat, timeStr){
+    if (cat==="交通" || cat==="購物") return "noon"; // 放在中間視覺較好（你也可改 morning）
+    if (cat==="住宿") return "night";
+    const t = String(timeStr||"").trim();
+    const m = t.match(/^(\d{1,2})\s*:/);
+    if (!m) return "morning";
+    const hh = parseInt(m[1],10);
+    if (hh < 11) return "morning";
+    if (hh < 17) return "noon";
+    return "night";
   }
 
-  function openMenuForCard(cardEl, x, y){
-    const dayId = cardEl.dataset.dayId;
-    const cardId = cardEl.dataset.cardId;
-    const secEl = cardEl.closest(".sec");
-    const secKey = secEl ? secEl.dataset.sec : "morning";
+  $("#btnSaveAdd").addEventListener("click", () => {
+    const title = $("#fTitle").value.trim();
+    if (!title) return alert("標題是必填的");
 
-    const card = findCardById(cardId);
-    if (!card) return;
+    const cat = $("#fCat").value;
+    const time = $("#fTime").value.trim();
+    const place = $("#fPlace").value.trim();
+    const jpy = $("#fJPY").value.trim();
+    const note = $("#fNote").value;
 
-    menuCardInfo = { dayId, secKey, cardId };
-    $("#ctxTitle").textContent = `卡片：${(card.title||"")}`.slice(0, 28);
-
-    menu.style.left = Math.min(x, window.innerWidth - 240) + "px";
-    menu.style.top  = Math.min(y, window.innerHeight - 260) + "px";
-    menu.classList.add("show");
-  }
-
-  function closeMenu(){
-    menu.classList.remove("show");
-    menuCardInfo = null;
-  }
-
-  document.addEventListener("click", (e) => {
-    if (menu.classList.contains("show")){
-      if (!menu.contains(e.target)){
-        closeMenu();
-      }
-    }
-  });
-
-  $("#mDrag").addEventListener("click", () => {
-    alert("已進入拖拉模式：請直接拖拉卡片（拖拉時會自動滾動）");
-    closeMenu();
-  });
-
-  $("#mDelete").addEventListener("click", () => {
-    if (!menuCardInfo) return;
-    const { dayId, secKey, cardId } = menuCardInfo;
-    const d = state.days.find(x=>x.id===dayId);
-    if (!d) return;
-    const list = d.sections[secKey]||[];
-    const idx = list.findIndex(c=>c.id===cardId);
-    if (idx<0) return;
-
-    const card = list[idx];
-    if (card.type==="lodging"){
-      alert("住宿卡是固定的（不能刪除）。如需改飯店名稱，請直接編輯住宿卡文字。");
-      closeMenu(); return;
-    }
+    const day = state.days.find(d=>d.id===activeDayId) || state.days[0];
+    if (!day) return alert("請先建立一天");
 
     pushUndo();
-    list.splice(idx,1);
-    scheduleSave();
-    render();
-    closeMenu();
-  });
 
-  $("#mCopy").addEventListener("click", () => {
-    if (!menuCardInfo) return;
-    const { dayId, secKey, cardId } = menuCardInfo;
-    const d = state.days.find(x=>x.id===dayId);
-    if (!d) return;
-    const list = d.sections[secKey]||[];
-    const idx = list.findIndex(c=>c.id===cardId);
-    if (idx<0) return;
+    const c = newCard(cat);
+    c.title = title;
+    c.time = time;
+    c.meta = time ? `時間：${time}` : "";
+    c.destination = place;
+    c.jpy = jpy;
+    c.note = note;
 
-    pushUndo();
-    const src = list[idx];
-    const clone = JSON.parse(JSON.stringify(src));
-    clone.id = `c_${Date.now()}_${Math.random().toString(16).slice(2)}`;
-    list.splice(idx+1, 0, clone);
-    scheduleSave();
-    render();
-    closeMenu();
-  });
+    const rate = Number(state.settings.rate||0.22);
+    const j = parseFloat(jpy||"");
+    if (!isNaN(j)) c.twd = String(Math.round(j*rate));
 
-  $("#mPin").addEventListener("click", () => {
-    if (!menuCardInfo) return;
-    const { dayId, secKey, cardId } = menuCardInfo;
-    const d = state.days.find(x=>x.id===dayId);
-    if (!d) return;
-    const list = d.sections[secKey]||[];
-    const idx = list.findIndex(c=>c.id===cardId);
-    if (idx<0) return;
+    const secKey = pickSectionByTimeOrCat(cat, time);
+    day.sections[secKey].push(c);
 
-    const card = list[idx];
-    if (card.type==="lodging"){
-      alert("住宿卡已固定在底部，不需要置頂。");
-      closeMenu(); return;
-    }
+    // reset form
+    $("#fTime").value = "";
+    $("#fCat").value = "景點";
+    $("#fTitle").value = "";
+    $("#fPlace").value = "";
+    $("#fJPY").value = "";
+    $("#fNote").value = "";
 
-    pushUndo();
-    list.splice(idx,1);
-    list.unshift(card);
-    scheduleSave();
-    render();
-    closeMenu();
-  });
-
-  $("#mMove").addEventListener("click", () => {
-    if (!menuCardInfo) return;
-    const { dayId, secKey, cardId } = menuCardInfo;
-    const fromDay = state.days.find(x=>x.id===dayId);
-    if (!fromDay) return;
-
-    const labels = state.days.map((d,i)=> `${i+1}. ${d.dayLabel} (${d.dateText})`).join("\n");
-    const pick = prompt("移到哪一天？輸入序號：\n" + labels, "2");
-    const n = parseInt(pick||"", 10);
-    if (!n || n<1 || n>state.days.length){ closeMenu(); return; }
-    const toDay = state.days[n-1];
-    if (!toDay){ closeMenu(); return; }
-
-    const targetSec = prompt("移到哪個分區？輸入：morning / noon / night", "morning");
-    const allowed = ["morning","noon","night"];
-    const sec = allowed.includes(targetSec) ? targetSec : "morning";
-
-    const list = fromDay.sections[secKey]||[];
-    const idx = list.findIndex(c=>c.id===cardId);
-    if (idx<0) return;
-
-    const card = list[idx];
-    if (card.type==="lodging"){
-      alert("住宿卡是固定的，不支援移動。"); closeMenu(); return;
-    }
-
-    pushUndo();
-    list.splice(idx,1);
-    toDay.sections[sec] = toDay.sections[sec] || [];
-    if (sec==="night"){
-      const lodIdx = toDay.sections.night.findIndex(x=>x.type==="lodging");
-      if (lodIdx>=0) toDay.sections.night.splice(lodIdx,0,card);
-      else toDay.sections.night.push(card);
-    }else{
-      toDay.sections[sec].push(card);
-    }
-
-    scheduleSave();
-    render();
-    closeMenu();
+    saveLocal();
+    render();       // ✅ 新增卡片屬於結構變更，需要 render
+    closeAdd();
   });
 
   /* =========================
-     Search
-  ========================== */
-  function doSearch(){
-    const q = $("#searchInput").value.trim();
-    if (!q){
-      $("#searchResult").textContent = "請輸入關鍵字";
-      return;
-    }
-    const hits = [];
-    state.days.forEach((d)=>{
-      if ((d.tickets?.text||"").includes(q)) hits.push({day:d, where:"票券文字"});
-      if ((d.dayNote?.text||"").includes(q)) hits.push({day:d, where:"當日備註"});
-      flattenDayCards(d).forEach(c=>{
-        const blob = `${c.title||""} ${c.ja||""} ${c.meta||""} ${c.note||""} ${c.origin||""} ${c.destination||""} ${(c.vias||[]).join(" ")} ${(c.transportList||[]).join(" ")} ${(c.shoppingList||[]).join(" ")}`;
-        if (blob.includes(q)){
-          hits.push({day:d, card:c, where:"行程卡"});
-        }
-      });
-    });
-
-    $("#searchResult").textContent = hits.length ? `找到 ${hits.length} 筆` : "找不到";
-    if (!hits.length) return;
-
-    const first = hits[0];
-    activeDayId = first.day.id;
-    setActiveChip(activeDayId);
-    const sec = document.querySelector(`.day-section[data-id="${first.day.id}"]`);
-    if (sec) sec.scrollIntoView({behavior:"smooth", block:"start"});
-
-    if (first.card){
-      activeCardId = first.card.id;
-      markActiveCard();
-      setTimeout(()=>{
-        const cardEl = sec.querySelector(`.spot-card[data-card-id="${first.card.id}"]`);
-        if (cardEl){
-          cardEl.style.outline = "3px solid rgba(255,184,92,0.9)";
-          cardEl.style.outlineOffset = "3px";
-          setTimeout(()=>{ cardEl.style.outline=""; cardEl.style.outlineOffset=""; }, 1600);
-        }
-      }, 350);
-    }
-  }
-  $("#btnSearch").addEventListener("click", doSearch);
-  $("#searchInput").addEventListener("keydown", (e) => {
-    if (e.key==="Enter"){
-      e.preventDefault();
-      doSearch();
-    }
-  });
-
-  /* =========================
-     App title/desc save
-  ========================== */
-  $("#appTitle").addEventListener("input", () => {
-    state.appTitle = $("#appTitle").textContent.trim();
-    scheduleSave();
-  });
-  $("#appDesc").addEventListener("input", () => {
-    state.appDesc = $("#appDesc").textContent;
-    scheduleSave();
-  });
-
-  /* =========================
-     Buttons add/remove day
+     Buttons day add/remove
   ========================== */
   $("#btnAddDay").addEventListener("click", addDay);
   $("#btnRemoveDay").addEventListener("click", removeLastDay);
 
   /* =========================
-     Escaping
+     Title/Desc save (不 render)
   ========================== */
-  function escapeHTML(s){
-    return String(s||"")
-      .replaceAll("&","&amp;")
-      .replaceAll("<","&lt;")
-      .replaceAll(">","&gt;")
-      .replaceAll('"',"&quot;")
-      .replaceAll("'","&#39;");
+  $("#appTitle").addEventListener("input", () => { state.appTitle = $("#appTitle").textContent.trim(); scheduleSave(); });
+  $("#appDesc").addEventListener("input", () => { state.appDesc = $("#appDesc").textContent; scheduleSave(); });
+
+  /* =========================
+     Bind add buttons per section after render
+  ========================== */
+  function bindSectionAddButtons(){
+    $$("[data-add]").forEach(btn=>{
+      btn.addEventListener("click", () => {
+        const secKey = btn.dataset.add;
+        const tag = btn.dataset.tag;
+        const day = state.days.find(d=>d.id===activeDayId) || state.days[0];
+        if (!day) return;
+
+        pushUndo();
+        const c = newCard(tag);
+        c.title = `新${tag}`;
+        day.sections[secKey].push(c);
+
+        saveLocal();
+        render();
+      }, { once:true });
+    });
   }
+
+  /* =========================
+     Patch render to bind section buttons
+  ========================== */
+  const _render = render;
+  render = function(){
+    _render();
+    // render 完後再綁一次（每次結構變更會重建 DOM）
+    bindSectionAddButtons();
+  };
 
   /* =========================
      Init
   ========================== */
   initState();
   render();
-
   if (undoStack.length === 0){
     pushUndo();
     $("#btnUndo").disabled = true;
   }
 
-  // ✅ 開啟就自動從雲端載入
-  cloudLoadOnOpen();
-
 })();
 </script>
 
-  <script type="module">
-  // ====== Cloud Sync Adapter (Firestore version) ======
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-  import {
-    getFirestore, doc, getDoc, setDoc, onSnapshot, serverTimestamp
-  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyAkFpjZVwRDA92YLK-JfDPeoHJ3hbgKVXM",
-    authDomain: "trip-db86d.firebaseapp.com",
-    projectId: "trip-db86d",
-    storageBucket: "trip-db86d.firebasestorage.app",
-    messagingSenderId: "709795426974",
-    appId: "1:709795426974:web:ec3e2f03f2116b68c1418f",
-    measurementId: "G-FD0411E3XH"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-
-  // ✅ 兩台裝置要一樣才會同步
-  const TRIP_ID = "main";
-  const tripRef = doc(db, "trips", TRIP_ID);
-
-  window.CloudSync = {
-    async load() {
-      const snap = await getDoc(tripRef);
-      return snap.exists() ? snap.data()?.state ?? null : null;
-    },
-    async save(state, meta = {}) {
-      // meta: {deviceId, clientUpdatedAt}
-      await setDoc(
-        tripRef,
-        {
-          state,
-          meta: {
-            ...meta,
-            updatedAt: Date.now()
-          },
-          updatedAt: serverTimestamp()
-        },
-        { merge: true }
-      );
-    },
-    subscribe(onPayload) {
-      return onSnapshot(tripRef, (snap) => {
-        if (!snap.exists()) return;
-        const remoteState = snap.data()?.state ?? null;
-        const meta = snap.data()?.meta ?? null;
-        if (remoteState) onPayload({ state: remoteState, meta });
-      });
-    }
-  };
-
-  console.log("[CloudSync] ready: trips/" + TRIP_ID);
-  </script>
 </body>
 </html>
