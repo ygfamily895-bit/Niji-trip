@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Niji Trip 2026 🌈</title>
+  <title>Niji Trip 2026 🌈 (v2)</title>
   <meta name="theme-color" content="#ffcf8f"/>
 
   <style>
@@ -16,17 +16,20 @@
       --brown:#7a4a26;
       --brown-soft:#a26b3a;
       --border:rgba(186, 140, 91, 0.40);
-      --shadow:0 2px 6px rgba(0,0,0,0.08);
+      --shadow:0 2px 8px rgba(0,0,0,0.08);
       --r-big:24px;
       --r-card:18px;
       --r-pill:999px;
     }
     *{ box-sizing:border-box; }
-    html,body{ margin:0; padding:0; font-family:system-ui,-apple-system,"Noto Sans TC","PingFang TC",sans-serif; background:var(--bg-main); color:var(--brown); }
+    html,body{
+      margin:0; padding:0;
+      font-family:system-ui,-apple-system,"Noto Sans TC","PingFang TC",sans-serif;
+      background:var(--bg-main); color:var(--brown);
+    }
     body{ min-height:100vh; }
 
-    .page{ max-width:920px; margin:0 auto; padding:14px 12px 90px; }
-
+    .page{ max-width:980px; margin:0 auto; padding:14px 12px 110px; }
     header{
       background:var(--bg-card);
       border-radius:26px;
@@ -34,16 +37,17 @@
       box-shadow:var(--shadow);
       margin-bottom:12px;
     }
-    .title-row{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+    .title-row{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
     .title-row h1{ margin:0; font-size:26px; font-weight:900; letter-spacing:0.03em; }
     .title-row .emoji{ font-size:24px; }
-    .desc{ margin:8px 0 10px; font-size:14px; color:var(--brown-soft); line-height:1.65; }
+    .desc{
+      margin:8px 0 10px; font-size:14px; color:var(--brown-soft); line-height:1.65;
+    }
     .desc[contenteditable]{ outline:none; border-bottom:1px dashed rgba(122,74,38,0.2); }
 
-    .toolbar{
-      display:flex; flex-wrap:wrap; gap:8px; align-items:center;
-      margin-top:10px;
-    }
+    .row{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+    .toolbar{ display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-top:10px; }
+
     .btn{
       border:none; border-radius:var(--r-pill);
       padding:8px 14px; font-size:14px;
@@ -54,27 +58,40 @@
     .btn.primary{ background:#ffb85c; }
     .btn.danger{ background:#ffb0a6; color:#7a221b; }
     .btn.ghost{ background:#fff3da; }
-    .btn.small{ padding:6px 10px; font-size:13px; }
-    .btn:active{ transform:translateY(1px); box-shadow:0 1px 3px rgba(0,0,0,0.16); }
-    .btn:disabled{ opacity:.6; cursor:not-allowed; }
+    .btn.small{ padding:6px 10px; font-size:13px; box-shadow:none; }
 
     .badge{
       display:inline-block; padding:7px 11px; border-radius:var(--r-pill);
       background:#fff3c5; color:#5c3a1c; font-weight:900; font-size:13px;
       border:1px solid rgba(122,74,38,0.10);
     }
+    .badge.good{ background:#eaf6ff; }
+    .badge.warn{ background:#ffb0a6; color:#7a221b; }
+    .badge.mini{ font-size:12px; padding:6px 10px; font-weight:900; }
 
-    .hint{
-      margin-top:10px; font-size:13px; color:var(--brown-soft); line-height:1.55;
-    }
+    .hint{ margin-top:10px; font-size:13px; color:var(--brown-soft); line-height:1.55; }
 
-    /* Auth bar */
-    .authbar{
-      display:flex; flex-wrap:wrap; gap:8px; align-items:center;
-      margin-top:10px; padding-top:10px;
+    /* auth card */
+    .auth{
+      margin-top:12px;
+      padding-top:10px;
       border-top:1px dashed rgba(122,74,38,0.20);
     }
-    .authbar input{
+    .auth-grid{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:10px;
+      margin-top:8px;
+    }
+    .auth-box{
+      background:#fffdf6;
+      border:1px dashed var(--border);
+      border-radius:16px;
+      padding:10px;
+    }
+    .auth-box .t{ font-weight:1000; margin-bottom:8px; color:#5c3a1c; }
+    .auth-box input{
+      width:100%;
       border:none; outline:none;
       padding:10px 12px;
       border-radius:999px;
@@ -82,10 +99,10 @@
       box-shadow:var(--shadow);
       font-weight:800;
       color:#5c3a1c;
-      width:min(220px, 42vw);
+      margin-bottom:8px;
     }
 
-    /* Sticky day nav */
+    /* sticky nav */
     .sticky-wrap{
       position:sticky; top:0; z-index:20;
       padding-top:10px;
@@ -119,7 +136,7 @@
     .chip-sub{ font-size:12px; color:var(--brown-soft); display:block; margin-top:2px; }
     .chip-main[contenteditable], .chip-sub[contenteditable]{ outline:none; }
 
-    /* Day section */
+    /* day section */
     .day-section{ margin-top:12px; margin-bottom:16px; }
     .day-card{
       background:var(--bg-soft);
@@ -154,7 +171,6 @@
       font-weight:1000; color:#5c3a1c;
     }
     .day-meta .datebox span[contenteditable]{ outline:none; border-bottom:1px dashed rgba(122,74,38,0.22); }
-
     .day-meta .budget{
       background:#fff; border-radius:var(--r-pill);
       padding:6px 10px; box-shadow:var(--shadow);
@@ -162,12 +178,12 @@
       display:flex; gap:6px; align-items:center;
     }
     .day-meta input{
-      width:92px; border:none; outline:none;
+      width:96px; border:none; outline:none;
       background:transparent; color:#5c3a1c; font-weight:1000;
       font-size:13px;
     }
 
-    /* Sections */
+    /* sections */
     .sections{
       display:grid;
       grid-template-columns: 1fr;
@@ -183,7 +199,6 @@
     .sec-head{
       display:flex; justify-content:space-between; align-items:center; gap:8px;
       margin-bottom:8px;
-      flex-wrap:wrap;
     }
     .sec-title{
       font-weight:1000;
@@ -196,10 +211,12 @@
       background:#ffb85c;
       box-shadow:var(--shadow);
     }
-    .sec-actions{ display:flex; gap:6px; flex-wrap:wrap; }
-    .sec-actions .btn{ box-shadow:none; background:#ffe7bf; }
 
-    /* Spot card */
+    /* unified add buttons (transport/shopping won't "jump") */
+    .sec-actions{ display:flex; gap:6px; flex-wrap:wrap; }
+    .sec-actions .btn{ background:#ffe7bf; }
+
+    /* card */
     .spot-card{
       background:var(--bg-card);
       border-radius:var(--r-card);
@@ -219,6 +236,11 @@
       line-height:1.25;
     }
     .spot-title[contenteditable]{ outline:none; border-bottom:1px dashed rgba(122,74,38,0.18); }
+    .spot-ja{ font-size:13px; color:var(--brown-soft); margin:0 0 4px; }
+    .spot-ja[contenteditable]{ outline:none; border-bottom:1px dashed rgba(122,74,38,0.18); }
+    .spot-meta{ font-size:13px; color:var(--brown-soft); margin:0 0 8px; }
+    .spot-meta[contenteditable]{ outline:none; border-bottom:1px dashed rgba(122,74,38,0.18); }
+
     .spot-tag{
       font-size:12px; font-weight:1000;
       padding:4px 10px; border-radius:var(--r-pill);
@@ -226,15 +248,6 @@
       border:1px solid rgba(122,74,38,0.10);
       color:#5c3a1c;
       white-space:nowrap;
-    }
-    .spot-ja{ font-size:13px; color:var(--brown-soft); margin:0 0 4px; }
-    .spot-ja[contenteditable]{ outline:none; border-bottom:1px dashed rgba(122,74,38,0.18); }
-    .spot-meta{ font-size:13px; color:var(--brown-soft); margin:0 0 8px; }
-    .spot-meta[contenteditable]{ outline:none; border-bottom:1px dashed rgba(122,74,38,0.18); }
-
-    .row{
-      display:flex; flex-wrap:wrap; gap:8px; align-items:center;
-      margin:8px 0;
     }
 
     .loc-box{
@@ -262,9 +275,28 @@
       color:#5a351e;
       font-weight:900;
     }
-    .loc-mini{
-      font-size:12px; color:var(--brown-soft);
+    .loc-mini{ font-size:12px; color:var(--brown-soft); }
+
+    .expense{
+      display:flex; gap:10px; flex-wrap:wrap; align-items:center;
+      margin-top:8px;
+      padding:8px 9px;
+      border-radius:14px;
+      background:#fff3da;
+      border:1px solid rgba(122,74,38,0.10);
     }
+    .expense .lab{ font-size:12px; font-weight:1000; color:var(--brown-soft); }
+    .expense input{
+      width:140px;
+      border:none; outline:none;
+      background:#fff;
+      border-radius:999px;
+      padding:7px 10px;
+      font-weight:1000;
+      color:#5c3a1c;
+      box-shadow:var(--shadow);
+    }
+    .expense .calc{ font-size:12px; font-weight:1000; color:#5c3a1c; }
 
     .note{
       border-radius:14px;
@@ -297,31 +329,21 @@
       cursor:pointer;
       border:1px solid rgba(122,74,38,0.10);
     }
-    .thumb:active{ transform:scale(0.98); }
 
-    /* Expense */
-    .expense{
-      display:flex; gap:10px; flex-wrap:wrap; align-items:center;
-      margin-top:8px;
-      padding:8px 9px;
+    /* tickets + day note */
+    .tickets{
+      background:rgba(255,255,255,0.70);
       border-radius:14px;
-      background:#fff3da;
+      padding:10px 10px 8px;
       border:1px solid rgba(122,74,38,0.10);
+      margin-top:10px;
     }
-    .expense .lab{ font-size:12px; font-weight:1000; color:var(--brown-soft); }
-    .expense input{
-      width:120px;
-      border:none; outline:none;
-      background:#fff;
-      border-radius:999px;
-      padding:7px 10px;
-      font-weight:1000;
-      color:#5c3a1c;
-      box-shadow:var(--shadow);
+    .tickets-head{
+      display:flex; justify-content:space-between; align-items:center; gap:10px;
+      font-weight:1000; color:#5c3a1c; margin-bottom:8px;
     }
-    .expense .calc{ font-size:12px; font-weight:1000; color:#5c3a1c; }
+    .tickets-grid{ display:flex; flex-wrap:wrap; gap:6px; }
 
-    /* Day note card (fixed bottom) */
     .day-note-card{
       background:var(--bg-card);
       border-radius:var(--r-card);
@@ -344,28 +366,9 @@
       white-space:pre-wrap;
       outline:none;
     }
-    .day-note-photos{
-      display:flex; flex-wrap:wrap; gap:6px; margin-top:8px;
-    }
+    .day-note-photos{ display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
 
-    /* Tickets */
-    .tickets{
-      background:rgba(255,255,255,0.70);
-      border-radius:14px;
-      padding:10px 10px 8px;
-      border:1px solid rgba(122,74,38,0.10);
-      margin-top:10px;
-    }
-    .tickets-head{
-      display:flex; justify-content:space-between; align-items:center; gap:10px;
-      font-weight:1000; color:#5c3a1c; margin-bottom:8px;
-      flex-wrap:wrap;
-    }
-    .tickets-grid{
-      display:flex; flex-wrap:wrap; gap:6px;
-    }
-
-    /* Modal map preview */
+    /* modal */
     .modal{
       position:fixed; inset:0; z-index:100;
       background:rgba(0,0,0,0.35);
@@ -388,42 +391,10 @@
       display:flex; align-items:center; justify-content:space-between; gap:10px;
     }
     .modal-bar .t{ font-weight:1000; color:#5c3a1c; }
-    .modal-bar .btn{ box-shadow:none; padding:7px 12px; }
     .modal-body{ flex:1; }
     .modal-body iframe{ width:100%; height:100%; border:0; }
 
-    /* Context menu (long-press) */
-    .menu{
-      position:fixed; z-index:120;
-      min-width:230px;
-      background:#fff;
-      border-radius:16px;
-      box-shadow:0 12px 30px rgba(0,0,0,0.22);
-      padding:8px;
-      display:none;
-    }
-    .menu.show{ display:block; }
-    .menu .m-title{
-      font-size:12px; color:var(--brown-soft);
-      padding:6px 8px 4px;
-      font-weight:1000;
-    }
-    .menu button{
-      width:100%;
-      text-align:left;
-      border:none;
-      border-radius:12px;
-      padding:10px 10px;
-      background:#fff3da;
-      font-weight:1000;
-      color:#5c3a1c;
-      cursor:pointer;
-      margin:4px 0;
-    }
-    .menu button.danger{ background:#ffb0a6; color:#7a221b; }
-    .menu button.secondary{ background:#eaf6ff; }
-
-    /* Floating */
+    /* floating */
     .floating{
       position:fixed; right:10px; bottom:12px;
       z-index:50;
@@ -459,7 +430,6 @@
       .title-row h1{ font-size:22px; }
       .day-card{ border-radius:24px; }
       .day-chip{ min-width:84px; }
-      .authbar input{ width: min(46vw, 220px); }
     }
   </style>
 </head>
@@ -470,11 +440,12 @@
       <div class="title-row">
         <h1 id="appTitle" contenteditable="true">Niji Trip 2026</h1>
         <span class="emoji">🌈</span>
-        <span class="badge" id="authBadge">未登入（離線模式）</span>
+        <span class="badge mini" id="cloudBadge">未登入：僅本機保存</span>
+        <button class="btn small ghost" id="btnApplyRemote" type="button" style="display:none;">套用雲端更新</button>
       </div>
 
       <div class="desc" id="appDesc" contenteditable="true">
-        東京行程・暖色主題。支援：多天拖拉排序、分區行程卡、多地點路線、一鍵導航、圖片/票券收納、日幣換算、預算提醒、Undo（10步）、Email登入雲端同步。
+        東京行程・暖色主題。支援拖拉排序、卡片模板、多地點路線、一鍵導航、圖片/票券收納、日幣換算、預算提醒、搜尋、Undo（10步）。
       </div>
 
       <div class="toolbar">
@@ -482,25 +453,37 @@
         <button class="btn danger" id="btnRemoveDay" type="button">－ 刪除最後一天</button>
         <button class="btn" id="btnExport" type="button">匯出備份（JSON）</button>
         <button class="btn" id="btnImport" type="button">匯入備份</button>
-        <button class="btn ghost" id="btnClearLocal" type="button">清除本機資料</button>
-        <button class="btn ghost" id="btnForceCloudLoad" type="button" disabled>從雲端覆蓋載入</button>
-        <span class="badge" id="syncBadge">離線可用：已自動保存</span>
-      </div>
-
-      <div class="authbar">
-        <input id="emailInput" type="email" autocomplete="email" placeholder="Email（登入/註冊）">
-        <input id="pwInput" type="password" autocomplete="current-password" placeholder="Password">
-        <button class="btn primary" id="btnLogin" type="button">Email 登入</button>
-        <button class="btn" id="btnSignup" type="button">註冊帳號</button>
-        <button class="btn danger" id="btnLogout" type="button" disabled>登出</button>
-        <span class="badge" id="cloudStatus">雲端：尚未連線</span>
+        <button class="btn ghost" id="btnClear" type="button">清除本機資料</button>
+        <span class="badge" id="sumBadge">離線可用：已自動保存</span>
       </div>
 
       <div class="hint">
-        ✅ 打字不會跳掉（輸入不會整頁刷新）。<br/>
         ✅ Day1 日期可編輯；新增天數會自動接續日期。<br/>
-        ✅ 手機拖拉較難：請「長按卡片」開啟選單，可複製/刪除/移動到其他天/上移下移。<br/>
-        ✅ 圖片「點一下直接刪除」。住宿卡固定（不可刪）。<br/>
+        ✅ 交通/購物新增不會跳畫面：都用同一種卡片樣式。<br/>
+        ✅ 「打字不跳」：雲端回音更新不會打斷輸入（輸入中只提示可套用）。<br/>
+      </div>
+
+      <!-- Auth -->
+      <div class="auth">
+        <div class="row" style="justify-content:space-between;">
+          <div class="badge good" id="authState">Auth：初始化中…</div>
+          <button class="btn small ghost" id="btnSignOut" type="button" style="display:none;">登出</button>
+        </div>
+
+        <div class="auth-grid" id="authPanel">
+          <div class="auth-box">
+            <div class="t">Email + 密碼登入（雲端存檔/自動載入）</div>
+            <input id="email" type="email" placeholder="Email（例如 xxx@gmail.com）" autocomplete="email" />
+            <input id="password" type="password" placeholder="密碼" autocomplete="current-password" />
+            <div class="row">
+              <button class="btn primary" id="btnSignIn" type="button">登入</button>
+              <button class="btn" id="btnSignUp" type="button">註冊</button>
+            </div>
+            <div class="hint" id="authHint" style="margin-top:8px;">
+              手機上登入不會跳頁（Email/密碼模式）。登入後會：先載入本機 → 再比對雲端較新版本自動套用。
+            </div>
+          </div>
+        </div>
       </div>
     </header>
 
@@ -524,21 +507,11 @@
     </div>
   </div>
 
-  <!-- long press menu -->
-  <div class="menu" id="ctxMenu">
-    <div class="m-title" id="ctxTitle">卡片操作</div>
-    <button id="mCopy" type="button">📄 複製此卡片</button>
-    <button id="mMove" class="secondary" type="button">➡️ 移到其他天 / 分區</button>
-    <button id="mUp" class="secondary" type="button">⬆️ 上移</button>
-    <button id="mDown" class="secondary" type="button">⬇️ 下移</button>
-    <button id="mDelete" class="danger" type="button">🗑️ 刪除</button>
-  </div>
-
-  <!-- floating -->
   <div class="floating">
     <button class="fab" id="btnUndo" type="button" disabled>↩ Undo</button>
     <button class="fab" id="btnJumpActive" type="button">⬆ 回到目前 Day</button>
   </div>
+
   <div class="save-toast" id="saveToast">已儲存</div>
 
   <input type="file" id="importFile" accept="application/json" style="display:none" />
@@ -546,31 +519,14 @@
 
 <script>
 (() => {
-  /* =========================================================
-     0) Helpers
-  ========================================================= */
+  /* =========================
+     Helpers
+  ========================== */
+  const STORAGE_KEY = "niji_trip_2026_v2_full";
+  const UNDO_LIMIT = 10;
+
   const $ = (sel, root=document) => root.querySelector(sel);
   const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
-  const nowId = (p) => `${p}_${Date.now()}_${Math.random().toString(16).slice(2)}`;
-  const deepClone = (o) => JSON.parse(JSON.stringify(o));
-
-  function toast(msg="已儲存"){
-    const t = $("#saveToast");
-    t.textContent = msg;
-    t.classList.add("show");
-    setTimeout(()=>t.classList.remove("show"), 700);
-  }
-
-  function parseMD(s){
-    const m = String(s||"").match(/(\d{1,2})\s*\/\s*(\d{1,2})/);
-    if (!m) return null;
-    const mm = parseInt(m[1],10), dd = parseInt(m[2],10);
-    if (!mm || !dd) return null;
-    return {mm, dd};
-  }
-  function toMD(d){
-    return `${d.getMonth()+1}/${d.getDate()}`;
-  }
 
   function escapeHTML(s){
     return String(s||"")
@@ -581,75 +537,102 @@
       .replaceAll("'","&#39;");
   }
 
-  /* =========================================================
-     1) Storage / Undo / State
-  ========================================================= */
-  const LOCAL_KEY = "niji_trip_v2_clean_state";
-  const UNDO_LIMIT = 10;
+  function isEditingNow(){
+    const el = document.activeElement;
+    if (!el) return false;
+    if (el.tagName === "INPUT" || el.tagName === "TEXTAREA") return true;
+    if (el.isContentEditable) return true;
+    return false;
+  }
 
+  /* =========================
+     Toast
+  ========================== */
+  function toastSaved(){
+    const t = $("#saveToast");
+    t.classList.add("show");
+    setTimeout(()=>t.classList.remove("show"), 650);
+  }
+
+  /* =========================
+     State + Undo
+  ========================== */
   let state = null;
   let undoStack = [];
   let activeDayId = null;
 
-  let saveTimer = null;
-  let isApplyingRemote = false;     // avoid echo loop
-  let lastPushedLocalHash = "";     // quick loop guard for cloud saves
-
-  function hashState(s){
-    // light hash for loop guard
-    try{
-      const str = JSON.stringify(s);
-      let h=0;
-      for (let i=0;i<str.length;i++) h = ((h<<5)-h) + str.charCodeAt(i) | 0;
-      return String(h);
-    }catch(e){ return String(Math.random()); }
-  }
-
-  function pushUndo(){
+  function pushUndo(force=false){
     const snap = JSON.stringify(state);
+    const last = undoStack.length ? undoStack[undoStack.length-1] : null;
+    if (!force && last === snap) return;
     undoStack.push(snap);
     if (undoStack.length > UNDO_LIMIT) undoStack.shift();
     $("#btnUndo").disabled = undoStack.length <= 1;
   }
 
+  function saveLocal(){
+    try{
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }catch(e){
+      console.warn("local save failed", e);
+    }
+  }
+
   function loadLocal(){
     try{
-      const raw = localStorage.getItem(LOCAL_KEY);
+      const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) return JSON.parse(raw);
     }catch(e){}
     return null;
   }
-  function saveLocal(){
-    try{ localStorage.setItem(LOCAL_KEY, JSON.stringify(state)); }catch(e){}
-  }
+
   function clearLocal(){
-    try{ localStorage.removeItem(LOCAL_KEY); }catch(e){}
+    localStorage.removeItem(STORAGE_KEY);
   }
 
+  /* =========================
+     Date helpers
+  ========================== */
+  function parseMD(s){
+    const m = String(s||"").match(/(\d{1,2})\s*\/\s*(\d{1,2})/);
+    if (!m) return null;
+    const mm = parseInt(m[1],10), dd = parseInt(m[2],10);
+    if (!mm || !dd) return null;
+    return { mm, dd };
+  }
+  function toMD(dateObj){
+    const mm = dateObj.getMonth()+1;
+    const dd = dateObj.getDate();
+    return `${mm}/${dd}`;
+  }
   function ensureDatesFromDay1(){
-    if (!state.days?.length) return;
-    const md = parseMD(state.days[0].dateText);
+    if (!state?.days?.length) return;
+    const first = state.days[0];
+    const md = parseMD(first.dateText);
     const base = md ? new Date(state.settings.year, md.mm-1, md.dd) : new Date(state.settings.year, 4, 8);
     state.days.forEach((d, idx) => {
       const dt = new Date(base);
-      dt.setDate(dt.getDate()+idx);
+      dt.setDate(dt.getDate() + idx);
       d.dateText = toMD(dt);
       if (d.autoDayLabel) d.dayLabel = `Day ${idx+1}`;
     });
   }
 
-  function newCard(type="spot"){
+  /* =========================
+     Default templates
+  ========================== */
+  function newCardTemplate(type="spot"){
+    const id = `c_${Date.now()}_${Math.random().toString(16).slice(2)}`;
+    const tag =
+      type==="lodging" ? "住宿" :
+      type==="restaurant" ? "餐廳" :
+      type==="transport" ? "交通" :
+      type==="shopping" ? "購物" : "景點";
     return {
-      id: nowId("c"),
-      type,                 // spot/restaurant/transport/shopping/lodging
-      tag: type==="lodging" ? "住宿" :
-           type==="restaurant" ? "餐廳" :
-           type==="transport" ? "交通" :
-           type==="shopping" ? "購物" : "景點",
-      title: type==="lodging" ? "住宿" :
-             type==="restaurant" ? "新餐廳" :
-             type==="transport" ? "新交通" :
-             type==="shopping" ? "新購物" : "新景點",
+      id,
+      type,
+      title: tag,
+      tag,
       ja: "",
       meta: "",
       origin: "",
@@ -658,243 +641,140 @@
       note: "",
       photos: [],
       jpy: "",
-      twd: ""
+      twd: "",
+      pinned: false
     };
   }
 
-  function ensureLodgingCard(day){
-    day.sections.night = day.sections.night || [];
-    const idx = day.sections.night.findIndex(c=>c.type==="lodging");
-    if (idx >= 0){
-      // force last
-      const [lod] = day.sections.night.splice(idx,1);
-      day.sections.night.push(lod);
-      return;
-    }
-    const lod = newCard("lodging");
-    lod.title = `住宿：${state.settings.hotelName}`;
-    lod.ja = state.settings.hotelNameJP;
-    lod.meta = "住宿地點（固定在當日備註上方）";
-    day.sections.night.push(lod);
-  }
-
-  function defaultState(){
-    const s = {
-      version: 2,
-      appTitle: "Niji Trip 2026",
-      appDesc: "東京行程・暖色主題。支援：多天拖拉排序、分區行程卡、多地點路線、一鍵導航、圖片/票券收納、日幣換算、預算提醒、Undo（10步）、Email登入雲端同步。",
-      settings:{
-        year: 2026,
-        rate: 0.22,
-        hotelName: "VESSEL INN 上野入谷站 飯店",
-        hotelNameJP: "ベッセルイン上野入谷駅前",
-      },
-      days: []
-    };
-
+  function makeDefaultDays(){
+    const days = [];
     for (let i=1;i<=3;i++){
-      const d = {
-        id: nowId("d"),
+      const id = `d_${Date.now()}_${i}_${Math.random().toString(16).slice(2)}`;
+      days.push({
+        id,
         autoDayLabel: true,
         dayLabel: `Day ${i}`,
         subtitle: i===1 ? "（範例）成田機場・入住上野" : i===2 ? "（範例）上野・淺草散步" : "（範例）自由活動日",
         dateText: i===1 ? "5/8" : i===2 ? "5/9" : "5/10",
         budgetJPY: "",
         tickets: { text:"（可放票券/QR/訂位資訊）", photos:[] },
-        sections: { morning:[], noon:[], night:[], transport:[], shopping:[] },
+        sections: { morning:[], noon:[], night:[] },
         dayNote: { text:"例：餐飲 xxx、交通 xxx、購物 xxx、心得…", photos:[] }
-      };
-      s.days.push(d);
+      });
     }
 
-    // sample card
-    const c = newCard("spot");
-    c.title="範例景點";
-    c.ja="日文名稱或地址";
-    c.meta="地區・說明：上野・車站附近…";
-    c.note="可在這裡寫排隊、注意事項、順遊…";
-    c.destination="日文名稱或地址";
-    s.days[0].sections.morning.push(c);
+    const c1 = newCardTemplate("spot");
+    c1.title="範例景點";
+    c1.ja="日文名稱或地址";
+    c1.meta="地區・說明：上野・車站附近…";
+    c1.note="可在這裡寫排隊、注意事項、順遊…";
+    c1.destination="日文名稱或地址";
+    days[0].sections.morning.push(c1);
 
-    s.days.forEach(d=>{
-      // lodging fixed
-      ensureLodgingCard(d);
-      // keep transport/shopping sections empty by default
+    days.forEach(d=>{
+      const lod = newCardTemplate("lodging");
+      lod.title = `住宿：${state?.settings?.hotelName || "住宿"}`;
+      lod.ja = state?.settings?.hotelNameJP || "";
+      lod.meta="住宿地點（固定在當日備註上方）";
+      lod.pinned = true;
+      d.sections.night.push(lod);
     });
 
-    return s;
+    return days;
   }
 
-  function init(){
-    const local = loadLocal();
-    state = local || defaultState();
+  function initState(){
+    const s = loadLocal();
+    if (s){
+      state = s;
+      if (!state.settings) state.settings = {};
+      if (!state.settings.rate) state.settings.rate = 0.22;
+      if (!state.settings.year) state.settings.year = 2026;
+      if (!state.settings.hotelName) state.settings.hotelName = "VESSEL INN 上野入谷站 飯店";
+      if (!state.settings.hotelNameJP) state.settings.hotelNameJP = "ベッセルイン上野入谷駅前";
+      if (!state.meta) state.meta = { savedAt: Date.now() };
+      if (!Array.isArray(state.days)) state.days = [];
+      if (state.days.length === 0){
+        state.days = makeDefaultDays();
+      }
+      ensureDatesFromDay1();
+      return;
+    }
 
-    // patch missing fields
-    state.settings ||= {};
-    if (!state.settings.year) state.settings.year = 2026;
-    if (!state.settings.rate) state.settings.rate = 0.22;
-    if (!state.settings.hotelName) state.settings.hotelName = "VESSEL INN 上野入谷站 飯店";
-    if (!state.settings.hotelNameJP) state.settings.hotelNameJP = "ベッセルイン上野入谷駅前";
-    state.days ||= [];
-    state.days.forEach(d=>{
-      d.sections ||= { morning:[], noon:[], night:[], transport:[], shopping:[] };
-      d.tickets ||= { text:"", photos:[] };
-      d.dayNote ||= { text:"", photos:[] };
-      ensureLodgingCard(d);
-    });
-
+    state = {
+      settings:{
+        year: 2026,
+        rate: 0.22,
+        hotelName: "VESSEL INN 上野入谷站 飯店",
+        hotelNameJP: "ベッセルイン上野入谷駅前",
+      },
+      appTitle: "Niji Trip 2026",
+      appDesc: "東京行程・暖色主題。支援拖拉排序、卡片模板、多地點路線、一鍵導航、圖片/票券收納、日幣換算、預算提醒、搜尋、Undo（10步）。",
+      days: [],
+      meta: { savedAt: Date.now() }
+    };
+    state.days = makeDefaultDays();
     ensureDatesFromDay1();
-
-    // initial undo snapshot
-    undoStack = [];
-    pushUndo();
-    $("#btnUndo").disabled = true;
-
-    // initial local save
+    pushUndo(true);
     saveLocal();
+  }
 
-    // initial render
-    renderAll();
-
-    // bind app title/desc (NO rerender on typing)
+  /* =========================
+     Render (ONLY for structural changes)
+     - 文字輸入時不會因為雲端回來強制 render，避免游標跳掉
+  ========================== */
+  function render(){
     $("#appTitle").textContent = state.appTitle || "Niji Trip 2026";
     $("#appDesc").textContent = state.appDesc || "";
-    $("#appTitle").addEventListener("input", () => {
-      state.appTitle = $("#appTitle").textContent.trim();
-      scheduleSave("已儲存（本機/雲端）");
-    });
-    $("#appDesc").addEventListener("input", () => {
-      state.appDesc = $("#appDesc").textContent;
-      scheduleSave("已儲存（本機/雲端）");
-    });
-
-    // buttons
-    $("#btnAddDay").addEventListener("click", () => {
-      pushUndo();
-      addDay();
-    });
-    $("#btnRemoveDay").addEventListener("click", () => {
-      pushUndo();
-      removeLastDay();
-    });
-    $("#btnUndo").addEventListener("click", undo);
-    $("#btnJumpActive").addEventListener("click", () => {
-      if (!activeDayId) return;
-      const sec = document.querySelector(`.day-section[data-id="${activeDayId}"]`);
-      if (sec) sec.scrollIntoView({behavior:"smooth", block:"start"});
-    });
-
-    // export/import/clear
-    $("#btnExport").addEventListener("click", exportJson);
-    $("#btnImport").addEventListener("click", ()=>$("#importFile").click());
-    $("#importFile").addEventListener("change", importJson);
-    $("#btnClearLocal").addEventListener("click", () => {
-      if (!confirm("確定清除本機所有資料？（雲端不會刪）")) return;
-      clearLocal();
-      state = defaultState();
-      ensureDatesFromDay1();
-      undoStack = [];
-      pushUndo();
-      $("#btnUndo").disabled = true;
-      renderAll();
-      saveLocal();
-      scheduleSave("已清除本機資料");
-    });
-
-    // map modal close
-    $("#btnCloseModal").addEventListener("click", closeModal);
-    $("#mapModal").addEventListener("click", (e)=>{ if (e.target===$("#mapModal")) closeModal(); });
-
-    // day chip drag reorder (desktop)
-    enableDayNavDrag();
-
-    // long-press menu
-    bindContextMenu();
-
-    // photo picker
-    bindPhotoPicker();
-  }
-
-  function scheduleSave(msg="已儲存"){
-    // NO rerender here
-    clearTimeout(saveTimer);
-    saveTimer = setTimeout(() => {
-      // always keep lodging correct
-      state.days.forEach(ensureLodgingCard);
-      ensureDatesFromDay1();
-
-      saveLocal();
-      toast(msg);
-      updateHeaderTotals();
-
-      // cloud save (if logged in & available)
-      if (window.CloudSync && window.CloudSync.isReady()){
-        const h = hashState(state);
-        if (!isApplyingRemote && h !== lastPushedLocalHash){
-          lastPushedLocalHash = h;
-          window.CloudSync.save(state).catch(()=>{});
-        }
-      }
-    }, 450);
-  }
-
-  function undo(){
-    if (undoStack.length <= 1) return;
-    undoStack.pop();
-    const prev = undoStack[undoStack.length-1];
-    if (!prev) return;
-    try{
-      state = JSON.parse(prev);
-      saveLocal();
-      renderAll();
-      $("#btnUndo").disabled = undoStack.length <= 1;
-      scheduleSave("已復原");
-    }catch(e){}
-  }
-
-  /* =========================================================
-     2) Render (structural changes only)
-     - typing does NOT call renderAll()
-  ========================================================= */
-  const SEC_ORDER = ["morning","noon","night","transport","shopping"];
-  const SEC_INFO = {
-    morning: {title:"☀️ 早上", dot:"#ffb85c"},
-    noon: {title:"🌤️ 下午", dot:"#ffd59a"},
-    night: {title:"🌙 晚上", dot:"#a9e2ff"},
-    transport: {title:"🚇 交通", dot:"#b7f2d4"},
-    shopping: {title:"🛍️ 購物", dot:"#ffb0a6"}
-  };
-
-  function renderAll(){
     renderDayNav();
     renderDays();
-    updateHeaderTotals();
 
     if (!activeDayId && state.days[0]) activeDayId = state.days[0].id;
     setActiveChip(activeDayId);
+
+    recalcTotals();
   }
 
   function renderDayNav(){
     const nav = $("#dayNav");
     nav.innerHTML = "";
-
     state.days.forEach((d, idx) => {
       const chip = document.createElement("div");
       chip.className = "day-chip";
       chip.dataset.id = d.id;
-      chip.draggable = true;
-
       chip.innerHTML = `
         <span class="chip-main" contenteditable="true"></span>
         <span class="chip-sub" contenteditable="true"></span>
       `;
-
       const main = $(".chip-main", chip);
       const sub  = $(".chip-sub", chip);
       main.textContent = d.dayLabel || `Day ${idx+1}`;
       sub.textContent  = d.dateText || "";
 
-      // click -> jump
+      main.addEventListener("input", () => {
+        d.dayLabel = main.textContent.trim() || `Day ${idx+1}`;
+        d.autoDayLabel = false;
+        scheduleSaveTextOnly();
+        // 同步 day header
+        const sec = document.querySelector(`.day-section[data-id="${d.id}"]`);
+        if (sec){
+          const h = sec.querySelector(".day-pill span");
+          if (h) h.textContent = d.dayLabel;
+        }
+      });
+
+      sub.addEventListener("input", () => {
+        d.dateText = sub.textContent.trim() || d.dateText;
+        if (idx === 0){
+          ensureDatesFromDay1();
+          scheduleSaveTextOnly();
+          // 日期連動需要更新別天 chip/日期 => render（但避免輸入中觸發）
+          if (!isEditingNow()) render();
+        }else{
+          scheduleSaveTextOnly();
+        }
+      });
+
       chip.addEventListener("click", () => {
         activeDayId = d.id;
         setActiveChip(d.id);
@@ -902,55 +782,7 @@
         if (sec) sec.scrollIntoView({behavior:"smooth", block:"start"});
       });
 
-      // editable label (NO rerender)
-      main.addEventListener("input", () => {
-        d.dayLabel = main.textContent.trim() || `Day ${idx+1}`;
-        d.autoDayLabel = false;
-        // sync day header in view (only if exists)
-        const sec = document.querySelector(`.day-section[data-id="${d.id}"]`);
-        const hdr = sec?.querySelector(".day-pill span");
-        if (hdr) hdr.textContent = d.dayLabel;
-        scheduleSave();
-      });
-
-      // editable date (Day1 cascades)
-      sub.addEventListener("input", () => {
-        d.dateText = sub.textContent.trim() || d.dateText;
-        if (idx === 0){
-          ensureDatesFromDay1();
-          // update other chips/subtexts without full render
-          state.days.forEach((dd, i2) => {
-            const c2 = document.querySelector(`.day-chip[data-id="${dd.id}"] .chip-sub`);
-            if (c2) c2.textContent = dd.dateText;
-            const dateSpan = document.querySelector(`.day-section[data-id="${dd.id}"] .datebox span`);
-            if (dateSpan) dateSpan.textContent = dd.dateText;
-          });
-        }
-        scheduleSave();
-      });
-
-      // drag events (desktop)
-      chip.addEventListener("dragstart", (e) => {
-        chip.classList.add("dragging");
-        e.dataTransfer.effectAllowed = "move";
-      });
-      chip.addEventListener("dragend", () => {
-        chip.classList.remove("dragging");
-        // reorder state.days according to DOM
-        const ids = $$(".day-chip").map(x=>x.dataset.id);
-        const newDays = [];
-        ids.forEach(id=>{
-          const found = state.days.find(x=>x.id===id);
-          if (found) newDays.push(found);
-        });
-        state.days = newDays;
-        state.days.forEach((dd, i2)=>{ if (dd.autoDayLabel) dd.dayLabel = `Day ${i2+1}`; });
-        ensureDatesFromDay1();
-        pushUndo();
-        renderAll();
-        scheduleSave("已更新天數順序");
-      });
-
+      enableChipDrag(chip);
       nav.appendChild(chip);
     });
   }
@@ -964,8 +796,6 @@
     wrap.innerHTML = "";
 
     state.days.forEach((d, idx) => {
-      ensureLodgingCard(d);
-
       const sec = document.createElement("section");
       sec.className = "day-section";
       sec.dataset.id = d.id;
@@ -998,16 +828,16 @@
           <div class="tickets">
             <div class="tickets-head">
               <div>🎫 票券 / QR 收納（可貼文字＋加圖片）</div>
-              <div style="display:flex;gap:8px;flex-wrap:wrap;">
-                <button class="btn small btnTicketPhoto" type="button">📷 加圖片</button>
-              </div>
+              <button class="btn small btnTicketPhoto" type="button">📷 加圖片</button>
             </div>
             <div class="day-note-box ticketText" contenteditable="true"></div>
             <div class="tickets-grid ticketPhotos"></div>
           </div>
 
           <div class="sections">
-            ${SEC_ORDER.map(k => sectionHTML(k)).join("")}
+            ${renderSectionHTML("morning","☀️ 早上", "#ffb85c")}
+            ${renderSectionHTML("noon","🌤️ 下午", "#ffd59a")}
+            ${renderSectionHTML("night","🌙 晚上", "#a9e2ff")}
           </div>
 
           <div class="day-note-card">
@@ -1021,42 +851,35 @@
         </div>
       `;
 
-      // header bindings (NO rerender on typing)
+      // bind header fields
       const dayLabelEl = sec.querySelector(".day-pill span");
-      const subtitleEl = sec.querySelector(".day-subtitle span");
-      const dateEl = sec.querySelector(".datebox span");
-
       dayLabelEl.textContent = d.dayLabel || `Day ${idx+1}`;
-      subtitleEl.textContent = d.subtitle || "";
-      dateEl.textContent = d.dateText || "";
-
       dayLabelEl.addEventListener("input", () => {
         d.dayLabel = dayLabelEl.textContent.trim() || `Day ${idx+1}`;
         d.autoDayLabel = false;
-        // sync nav chip main
         const chip = document.querySelector(`.day-chip[data-id="${d.id}"] .chip-main`);
         if (chip) chip.textContent = d.dayLabel;
-        scheduleSave();
+        scheduleSaveTextOnly();
       });
 
-      subtitleEl.addEventListener("input", () => {
-        d.subtitle = subtitleEl.textContent;
-        scheduleSave();
+      const subEl = sec.querySelector(".day-subtitle span");
+      subEl.textContent = d.subtitle || "";
+      subEl.addEventListener("input", () => {
+        d.subtitle = subEl.textContent;
+        scheduleSaveTextOnly();
       });
 
+      const dateEl = sec.querySelector(".datebox span");
+      dateEl.textContent = d.dateText || "";
       dateEl.addEventListener("input", () => {
         d.dateText = dateEl.textContent.trim() || d.dateText;
         if (idx === 0){
           ensureDatesFromDay1();
-          // update other date displays without full render
-          state.days.forEach((dd) => {
-            const c2 = document.querySelector(`.day-chip[data-id="${dd.id}"] .chip-sub`);
-            if (c2) c2.textContent = dd.dateText;
-            const dateSpan = document.querySelector(`.day-section[data-id="${dd.id}"] .datebox span`);
-            if (dateSpan) dateSpan.textContent = dd.dateText;
-          });
+          scheduleSaveTextOnly();
+          if (!isEditingNow()) render();
+        }else{
+          scheduleSaveTextOnly();
         }
-        scheduleSave();
       });
 
       // budget
@@ -1064,8 +887,8 @@
       budgetInput.value = d.budgetJPY || "";
       budgetInput.addEventListener("input", () => {
         d.budgetJPY = budgetInput.value;
-        scheduleSave();
-        updateDayTotalsDOM(d.id);
+        scheduleSaveTextOnly();
+        recalcTotals();
       });
 
       // rate
@@ -1075,10 +898,8 @@
         const v = parseFloat(rateInput.value);
         if (!isNaN(v) && v > 0){
           state.settings.rate = v;
-          // update all card TWD display without full render
-          updateAllTwdDisplays();
-          scheduleSave();
-          updateHeaderTotals();
+          scheduleSaveTextOnly();
+          recalcTotals();
         }
       });
 
@@ -1087,79 +908,57 @@
       ticketText.textContent = d.tickets?.text || "";
       ticketText.addEventListener("input", () => {
         d.tickets.text = ticketText.textContent;
-        scheduleSave();
+        scheduleSaveTextOnly();
       });
+
       const ticketPhotos = sec.querySelector(".ticketPhotos");
-      renderPhotoStrip(ticketPhotos, d.tickets.photos, () => scheduleSave());
+      renderPhotoStrip(ticketPhotos, d.tickets.photos, () => scheduleSaveTextOnly());
 
       sec.querySelector(".btnTicketPhoto").addEventListener("click", async () => {
         const url = await pickPhoto();
         if (!url) return;
         d.tickets.photos.push(url);
-        renderPhotoStrip(ticketPhotos, d.tickets.photos, () => scheduleSave());
-        scheduleSave();
+        renderPhotoStrip(ticketPhotos, d.tickets.photos, () => scheduleSaveTextOnly());
+        scheduleSaveTextOnly();
       });
 
-      // day note
+      // day note bottom
       const dayNoteText = sec.querySelector(".dayNoteText");
       dayNoteText.textContent = d.dayNote?.text || "";
       dayNoteText.addEventListener("input", () => {
         d.dayNote.text = dayNoteText.textContent;
-        scheduleSave();
+        scheduleSaveTextOnly();
       });
+
       const dayNotePhotos = sec.querySelector(".dayNotePhotos");
-      renderPhotoStrip(dayNotePhotos, d.dayNote.photos, () => scheduleSave());
+      renderPhotoStrip(dayNotePhotos, d.dayNote.photos, () => scheduleSaveTextOnly());
 
       sec.querySelector(".btnDayNotePhoto").addEventListener("click", async () => {
         const url = await pickPhoto();
         if (!url) return;
         d.dayNote.photos.push(url);
-        renderPhotoStrip(dayNotePhotos, d.dayNote.photos, () => scheduleSave());
-        scheduleSave();
+        renderPhotoStrip(dayNotePhotos, d.dayNote.photos, () => scheduleSaveTextOnly());
+        scheduleSaveTextOnly();
       });
 
       // day route
       sec.querySelector(".btnDayRoute").addEventListener("click", () => openDayRoute(d));
 
-      // add buttons per section
-      SEC_ORDER.forEach(k => {
-        const addSpot = sec.querySelector(`button[data-add="${k}"][data-tpl="spot"]`);
-        const addRes  = sec.querySelector(`button[data-add="${k}"][data-tpl="restaurant"]`);
-        const addTra  = sec.querySelector(`button[data-add="${k}"][data-tpl="transport"]`);
-        const addSho  = sec.querySelector(`button[data-add="${k}"][data-tpl="shopping"]`);
-
-        // ✅ 交通/購物不會跳出「另一張卡」：就是直接加一張同樣格式的行程卡（tag不同）
-        addSpot?.addEventListener("click", () => { pushUndo(); addCard(d.id, k, "spot"); });
-        addRes ?.addEventListener("click", () => { pushUndo(); addCard(d.id, k, "restaurant"); });
-        addTra ?.addEventListener("click", () => { pushUndo(); addCard(d.id, k, "transport"); });
-        addSho ?.addEventListener("click", () => { pushUndo(); addCard(d.id, k, "shopping"); });
-      });
+      wrap.appendChild(sec);
 
       // render cards per section
-      SEC_ORDER.forEach(k=>{
-        const body = sec.querySelector(`.sec[data-sec="${k}"] .sec-body`);
-        body.innerHTML = "";
-        (d.sections[k]||[]).forEach(card=>{
-          body.appendChild(renderCard(d, k, card));
-        });
-        enableDropZone(body);
-      });
-
-      wrap.appendChild(sec);
+      renderCardsForDay(sec, d);
     });
-
-    // after rendering days update totals
-    state.days.forEach(d => updateDayTotalsDOM(d.id));
   }
 
-  function sectionHTML(key){
-    const info = SEC_INFO[key];
+  function renderSectionHTML(key, title, dotColor){
+    // ✅ 交通/購物新增不會跳：同一種卡片，不切換畫面
     return `
       <div class="sec" data-sec="${key}">
         <div class="sec-head">
           <div class="sec-title">
-            <span class="dot" style="background:${info.dot}"></span>
-            <span>${info.title}</span>
+            <span class="dot" style="background:${dotColor}"></span>
+            <span>${title}</span>
           </div>
           <div class="sec-actions">
             <button class="btn small" data-add="${key}" data-tpl="spot" type="button">＋ 景點</button>
@@ -1173,22 +972,48 @@
     `;
   }
 
-  function renderCard(day, secKey, card){
+  function renderCardsForDay(daySectionEl, dayObj){
+    $$("[data-add]", daySectionEl).forEach(btn=>{
+      btn.addEventListener("click", () => {
+        const secKey = btn.dataset.add;
+        const tpl = btn.dataset.tpl;
+        addCard(dayObj.id, secKey, tpl);
+      });
+    });
+
+    Object.entries(dayObj.sections).forEach(([secKey, list])=>{
+      const secEl = daySectionEl.querySelector(`.sec[data-sec="${secKey}"] .sec-body`);
+      secEl.innerHTML = "";
+
+      // keep lodging at end of night
+      if (secKey==="night" && list && list.length){
+        const lodIdx = list.findIndex(x => x && x.type==="lodging");
+        if (lodIdx >= 0 && lodIdx !== list.length-1){
+          const [lod] = list.splice(lodIdx,1);
+          list.push(lod);
+        }
+      }
+
+      (list||[]).forEach(card=>{
+        const cardEl = renderCard(card, dayObj);
+        secEl.appendChild(cardEl);
+      });
+
+      enableDropZone(secEl);
+    });
+  }
+
+  function renderCard(card, dayObj){
     const el = document.createElement("article");
     el.className = "spot-card";
-    el.dataset.dayId = day.id;
-    el.dataset.secKey = secKey;
     el.dataset.cardId = card.id;
+    el.dataset.dayId  = dayObj.id;
     el.draggable = true;
 
-    const rate = Number(state.settings.rate || 0.22);
-    const jpyVal = parseFloat(card.jpy || "");
-    const twdCalc = (!isNaN(jpyVal) ? Math.round(jpyVal * rate) : 0);
-
-    // lodging lock label
-    const lodgingBadge = card.type==="lodging"
-      ? `<div class="badge" style="background:#eaf6ff;">住宿卡（固定）</div>`
-      : ``;
+    const tag = card.tag || "景點";
+    const rate = Number(state.settings.rate||0.22);
+    const jpyVal = parseFloat(card.jpy||"");
+    const twdCalc = (!isNaN(jpyVal) ? (jpyVal*rate) : null);
 
     el.innerHTML = `
       <div class="spot-top">
@@ -1198,12 +1023,12 @@
           <div class="spot-meta" contenteditable="true"></div>
         </div>
         <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end;">
-          <div class="spot-tag">${escapeHTML(card.tag || "景點")}</div>
-          ${lodgingBadge}
+          <div class="spot-tag">${escapeHTML(tag)}</div>
+          ${card.type==="lodging" ? `<span class="badge mini good">住宿卡</span>` : ``}
         </div>
       </div>
 
-      <div class="row">
+      <div class="row" style="margin:8px 0;">
         <button class="btn small btnPreview" type="button">地圖預覽</button>
         <button class="btn small btnSearch" type="button">在地圖上搜尋</button>
         <button class="btn small btnRoute" type="button">一鍵導航路線</button>
@@ -1232,22 +1057,19 @@
       <div class="expense">
         <span class="lab">花費 JPY</span>
         <input class="inJPY" inputmode="numeric" placeholder="例如 1200" />
-        <span class="calc">→ TWD：<span class="twdText">${twdCalc}</span></span>
+        <span class="calc">→ TWD：<span class="twdText">${twdCalc!==null ? Math.round(twdCalc) : 0}</span></span>
       </div>
 
       <div class="note">
         <div class="note-head">
-          <span>備註（長按卡片可刪/複製/移動）</span>
-          <div style="display:flex;gap:6px;flex-wrap:wrap;">
-            <button class="btn small btnNotePhoto" type="button">📷</button>
-          </div>
+          <span>備註（可直接打字，不會跳）</span>
+          <button class="btn small btnNotePhoto" type="button">📷</button>
         </div>
         <div class="note-body" contenteditable="true"></div>
         <div class="note-photos"></div>
       </div>
     `;
 
-    // fill
     const titleEl = $(".spot-title", el);
     const jaEl    = $(".spot-ja", el);
     const metaEl  = $(".spot-meta", el);
@@ -1261,6 +1083,7 @@
     const origin = $(".origin", el);
     const dest   = $(".dest", el);
     const inJPY  = $(".inJPY", el);
+
     origin.value = card.origin || "";
     dest.value   = card.destination || card.ja || "";
     inJPY.value  = card.jpy || "";
@@ -1268,46 +1091,41 @@
     const viasList = $(".viasList", el);
     renderVias(viasList, card);
 
-    // typing -> update state only, no rerender
-    titleEl.addEventListener("input", () => { card.title = titleEl.textContent; scheduleSave(); });
+    // ✅ 文字輸入：只做「局部 state 更新 + 保存」，不 render
+    titleEl.addEventListener("input", () => { card.title = titleEl.textContent; scheduleSaveTextOnly(); });
     jaEl.addEventListener("input", () => {
       card.ja = jaEl.textContent;
-      if (!card.destination){
-        card.destination = card.ja;
-        dest.value = card.destination;
-      }
-      scheduleSave();
+      if (!card.destination) { card.destination = jaEl.textContent; dest.value = card.destination; }
+      scheduleSaveTextOnly();
     });
-    metaEl.addEventListener("input", () => { card.meta = metaEl.textContent; scheduleSave(); });
-    noteEl.addEventListener("input", () => { card.note = noteEl.textContent; scheduleSave(); });
+    metaEl.addEventListener("input", () => { card.meta = metaEl.textContent; scheduleSaveTextOnly(); });
+    noteEl.addEventListener("input", () => { card.note = noteEl.textContent; scheduleSaveTextOnly(); });
 
-    origin.addEventListener("input", () => { card.origin = origin.value; scheduleSave(); });
-    dest.addEventListener("input", () => { card.destination = dest.value; scheduleSave(); });
+    origin.addEventListener("input", () => { card.origin = origin.value; scheduleSaveTextOnly(); });
+    dest.addEventListener("input", () => { card.destination = dest.value; scheduleSaveTextOnly(); });
 
     inJPY.addEventListener("input", () => {
       card.jpy = inJPY.value;
-      const rate = Number(state.settings.rate || 0.22);
-      const j = parseFloat(inJPY.value || "");
-      const t = (!isNaN(j) ? Math.round(j * rate) : 0);
+      const rate = Number(state.settings.rate||0.22);
+      const j = parseFloat(inJPY.value||"");
+      const t = (!isNaN(j) ? Math.round(j*rate) : 0);
       $(".twdText", el).textContent = String(t);
       card.twd = String(t);
-      scheduleSave();
-      updateDayTotalsDOM(day.id);
-      updateHeaderTotals();
+      scheduleSaveTextOnly();
+      recalcTotals();
     });
 
-    // photos
     const notePhotos = $(".note-photos", el);
-    renderPhotoStrip(notePhotos, card.photos, () => scheduleSave());
+    renderPhotoStrip(notePhotos, card.photos, () => scheduleSaveTextOnly());
+
     $(".btnNotePhoto", el).addEventListener("click", async () => {
       const url = await pickPhoto();
       if (!url) return;
       card.photos.push(url);
-      renderPhotoStrip(notePhotos, card.photos, () => scheduleSave());
-      scheduleSave();
+      renderPhotoStrip(notePhotos, card.photos, () => scheduleSaveTextOnly());
+      scheduleSaveTextOnly();
     });
 
-    // map buttons
     $(".btnPreview", el).addEventListener("click", () => {
       const q = (card.destination || card.ja || card.title || "").trim();
       if (!q) return alert("請先填『目的地/地址』或『日文名稱』");
@@ -1326,18 +1144,13 @@
     });
 
     $(".btnAddVia", el).addEventListener("click", () => {
-      card.vias ||= [];
+      card.vias = card.vias || [];
       card.vias.push("");
       renderVias(viasList, card);
-      scheduleSave();
+      scheduleSaveTextOnly();
     });
 
-    // drag desktop
     enableCardDrag(el);
-
-    // long press menu (mobile/desktop)
-    attachLongPress(el);
-
     return el;
   }
 
@@ -1356,191 +1169,22 @@
       input.value = v || "";
       input.addEventListener("input", () => {
         card.vias[idx] = input.value;
-        scheduleSave();
+        scheduleSaveTextOnly();
       });
       $(".btnDelVia", line).addEventListener("click", () => {
         card.vias.splice(idx,1);
         renderVias(container, card);
-        scheduleSave();
+        scheduleSaveTextOnly();
       });
       container.appendChild(line);
     });
   }
 
-  /* =========================================================
-     3) Actions (add/remove/move cards, days)
-  ========================================================= */
-  function addDay(){
-    const idx = state.days.length + 1;
-    const d = {
-      id: nowId("d"),
-      autoDayLabel: true,
-      dayLabel: `Day ${idx}`,
-      subtitle: "（新的一天行程）",
-      dateText: "",
-      budgetJPY: "",
-      tickets: { text:"", photos:[] },
-      sections: { morning:[], noon:[], night:[], transport:[], shopping:[] },
-      dayNote: { text:"", photos:[] }
-    };
-    state.days.push(d);
-    ensureDatesFromDay1();
-    ensureLodgingCard(d);
-    renderAll();
-    scheduleSave("已新增一天");
-  }
-
-  function removeLastDay(){
-    if (state.days.length <= 1) return alert("至少要保留一天");
-    state.days.pop();
-    ensureDatesFromDay1();
-    renderAll();
-    scheduleSave("已刪除最後一天");
-  }
-
-  function addCard(dayId, secKey, type){
-    const day = state.days.find(d=>d.id===dayId);
-    if (!day) return;
-
-    if (type === "lodging") return; // prevent manual lodging
-
-    const c = newCard(type);
-    if (type==="spot") c.title="新景點";
-    if (type==="restaurant") c.title="新餐廳";
-    if (type==="transport") c.title="新交通";
-    if (type==="shopping") c.title="新購物";
-
-    day.sections[secKey] ||= [];
-    // if adding into night, keep lodging last
-    if (secKey==="night"){
-      const lodIdx = day.sections.night.findIndex(x=>x.type==="lodging");
-      if (lodIdx>=0) day.sections.night.splice(lodIdx, 0, c);
-      else day.sections.night.push(c);
-    }else{
-      day.sections[secKey].push(c);
-    }
-
-    renderAll(); // structural change OK
-    scheduleSave("已新增卡片");
-  }
-
-  function findCard(dayId, cardId){
-    const day = state.days.find(d=>d.id===dayId);
-    if (!day) return null;
-    for (const k of Object.keys(day.sections)){
-      const list = day.sections[k] || [];
-      const idx = list.findIndex(c=>c.id===cardId);
-      if (idx >= 0) return {day, secKey:k, idx, card:list[idx]};
-    }
-    return null;
-  }
-
-  function deleteCard(dayId, cardId){
-    const info = findCard(dayId, cardId);
-    if (!info) return;
-    if (info.card.type==="lodging"){
-      alert("住宿卡是固定的（不能刪除）。");
-      return;
-    }
-    info.day.sections[info.secKey].splice(info.idx,1);
-    renderAll();
-    scheduleSave("已刪除卡片");
-  }
-
-  function copyCard(dayId, cardId){
-    const info = findCard(dayId, cardId);
-    if (!info) return;
-    if (info.card.type==="lodging"){
-      alert("住宿卡不需要複製。");
-      return;
-    }
-    const clone = deepClone(info.card);
-    clone.id = nowId("c");
-    info.day.sections[info.secKey].splice(info.idx+1, 0, clone);
-    renderAll();
-    scheduleSave("已複製卡片");
-  }
-
-  function moveCardWithin(dayId, cardId, dir){
-    const info = findCard(dayId, cardId);
-    if (!info) return;
-    if (info.card.type==="lodging"){
-      alert("住宿卡固定在底部，不能移動。");
-      return;
-    }
-    const list = info.day.sections[info.secKey];
-    const newIdx = info.idx + dir;
-    if (newIdx < 0 || newIdx >= list.length) return;
-
-    // don't move past lodging if night section
-    if (info.secKey==="night"){
-      const lodIdx = list.findIndex(c=>c.type==="lodging");
-      if (lodIdx>=0){
-        if (newIdx >= lodIdx) return; // keep lodging last
-      }
-    }
-
-    const [c] = list.splice(info.idx,1);
-    list.splice(newIdx,0,c);
-    renderAll();
-    scheduleSave("已移動卡片");
-  }
-
-  function moveCardToOther(dayId, cardId){
-    const info = findCard(dayId, cardId);
-    if (!info) return;
-    if (info.card.type==="lodging"){
-      alert("住宿卡固定，不能移動。");
-      return;
-    }
-
-    const labels = state.days.map((d,i)=> `${i+1}. ${d.dayLabel} (${d.dateText})`).join("\n");
-    const pickDay = prompt("移到哪一天？輸入序號：\n" + labels, "2");
-    const n = parseInt(pickDay||"", 10);
-    if (!n || n<1 || n>state.days.length) return;
-    const toDay = state.days[n-1];
-
-    const pickSec = prompt("移到哪個分區？輸入：morning / noon / night / transport / shopping", "morning");
-    const targetSec = SEC_ORDER.includes(pickSec) ? pickSec : "morning";
-
-    // remove from original
-    info.day.sections[info.secKey].splice(info.idx,1);
-
-    toDay.sections[targetSec] ||= [];
-    if (targetSec==="night"){
-      const lodIdx = toDay.sections.night.findIndex(c=>c.type==="lodging");
-      if (lodIdx>=0) toDay.sections.night.splice(lodIdx,0,info.card);
-      else toDay.sections.night.push(info.card);
-    }else{
-      toDay.sections[targetSec].push(info.card);
-    }
-
-    renderAll();
-    scheduleSave("已移動到其他天");
-  }
-
-  /* =========================================================
-     4) Photos
-  ========================================================= */
+  /* =========================
+     Photos
+  ========================== */
   const photoPicker = $("#photoPicker");
   let photoResolve = null;
-
-  function bindPhotoPicker(){
-    photoPicker.addEventListener("change", () => {
-      const file = photoPicker.files && photoPicker.files[0];
-      if (!file){
-        if (photoResolve) photoResolve(null);
-        photoResolve = null;
-        return;
-      }
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        if (photoResolve) photoResolve(String(e.target.result || ""));
-        photoResolve = null;
-      };
-      reader.readAsDataURL(file);
-    });
-  }
 
   function pickPhoto(){
     return new Promise((resolve) => {
@@ -1549,6 +1193,21 @@
       photoPicker.click();
     });
   }
+
+  photoPicker.addEventListener("change", () => {
+    const file = photoPicker.files && photoPicker.files[0];
+    if (!file){
+      if (photoResolve) photoResolve(null);
+      photoResolve = null;
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      if (photoResolve) photoResolve(String(e.target.result || ""));
+      photoResolve = null;
+    };
+    reader.readAsDataURL(file);
+  });
 
   function renderPhotoStrip(container, list, onChanged){
     container.innerHTML = "";
@@ -1562,17 +1221,19 @@
         list.splice(idx,1);
         renderPhotoStrip(container, list, onChanged);
         onChanged && onChanged();
-        scheduleSave();
+        scheduleSaveTextOnly();
       });
       container.appendChild(img);
     });
   }
 
-  /* =========================================================
-     5) Map modal + routes
-  ========================================================= */
+  /* =========================
+     Modal Map
+  ========================== */
   const modal = $("#mapModal");
   const modalFrame = $("#modalFrame");
+  $("#btnCloseModal").addEventListener("click", closeModal);
+  modal.addEventListener("click", (e)=>{ if (e.target===modal) closeModal(); });
 
   function openMapPreview(query){
     $("#modalTitle").textContent = `地圖預覽：${query}`;
@@ -1590,36 +1251,39 @@
     const origin = (card.origin||"").trim();
     const dest = (card.destination || card.ja || card.title || "").trim();
     if (!dest) return alert("請先填『目的地/地址』");
-
     const vias = (card.vias||[]).map(x=>String(x||"").trim()).filter(Boolean);
-    const ori = origin || state.settings.hotelNameJP || state.settings.hotelName || "上野";
 
+    const ori = origin || state.settings.hotelNameJP || state.settings.hotelName || "上野";
     let url = `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(ori)}&destination=${encodeURIComponent(dest)}`;
     if (vias.length) url += `&waypoints=${encodeURIComponent(vias.join("|"))}`;
     window.open(url, "_blank");
   }
 
-  function flattenDayCards(day){
+  const SEC_ORDER = ["morning","noon","night"];
+  function flattenDayCards(dayObj){
     const arr = [];
-    SEC_ORDER.forEach(k => (day.sections[k]||[]).forEach(c => arr.push(c)));
+    SEC_ORDER.forEach(k=>{
+      (dayObj.sections[k]||[]).forEach(c=>arr.push(c));
+    });
     return arr;
   }
 
-  function openDayRoute(day){
-    const cards = flattenDayCards(day).filter(c=>c.type!=="lodging");
+  function openDayRoute(dayObj){
+    const cards = flattenDayCards(dayObj).filter(c=>c.type!=="lodging");
     const points = [];
     cards.forEach(c=>{
       const q = (c.destination || c.ja || c.title || "").trim();
       if (q) points.push(q);
     });
-    if (!points.length) return alert("這天沒有可導航的目的地（請填目的地/地址）");
+    if (points.length === 0) return alert("這天沒有可導航的目的地（請填目的地/地址）");
 
     const origin = state.settings.hotelNameJP || state.settings.hotelName || "上野";
     const destination = points[points.length-1];
-    const mids = points.slice(0, points.length-1).slice(0, 9);
+    const mids = points.slice(0, points.length-1);
+    const way = mids.slice(0, 9);
 
     let url = `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(destination)}`;
-    if (mids.length) url += `&waypoints=${encodeURIComponent(mids.join("|"))}`;
+    if (way.length) url += `&waypoints=${encodeURIComponent(way.join("|"))}`;
     window.open(url, "_blank");
   }
 
@@ -1637,100 +1301,155 @@
     window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(options[n-1].q)}`, "_blank");
   }
 
-  /* =========================================================
-     6) Totals / Budget
-  ========================================================= */
-  function updateAllTwdDisplays(){
-    const rate = Number(state.settings.rate || 0.22);
-    state.days.forEach(d=>{
-      SEC_ORDER.forEach(k=>{
-        (d.sections[k]||[]).forEach(c=>{
-          const j = parseFloat(c.jpy||"");
-          if (!isNaN(j)){
-            const t = Math.round(j*rate);
-            c.twd = String(t);
-            // update DOM if present
-            const cardEl = document.querySelector(`.spot-card[data-card-id="${c.id}"]`) ||
-                           document.querySelector(`.spot-card[data-cardid="${c.id}"]`);
-            const twdEl = cardEl?.querySelector(".twdText");
-            if (twdEl) twdEl.textContent = String(t);
-          }
-        });
-      });
-    });
-  }
-
-  function updateDayTotalsDOM(dayId){
-    const day = state.days.find(d=>d.id===dayId);
-    if (!day) return;
-
-    const rate = Number(state.settings.rate || 0.22);
-    let dayJPY = 0;
-    let dayTWD = 0;
-
-    flattenDayCards(day).forEach(c=>{
-      const j = parseFloat(c.jpy||"");
-      if (!isNaN(j)) dayJPY += j;
-      // compute twd from jpy
-      if (!isNaN(j)){
-        const t = Math.round(j*rate);
-        dayTWD += t;
-        c.twd = String(t);
-      }
-    });
-
-    const sec = document.querySelector(`.day-section[data-id="${dayId}"]`);
-    const badge = sec?.querySelector(".dayTotalBadge");
-    if (badge){
-      badge.textContent = `當日合計：${Math.round(dayJPY)} JPY / ${Math.round(dayTWD)} TWD`;
-      const bud = parseFloat(day.budgetJPY||"");
-      if (!isNaN(bud) && bud>0 && dayJPY>bud){
-        badge.style.background = "#ffb0a6";
-        badge.style.color = "#7a221b";
-        badge.textContent += "（超出預算⚠️）";
-      }else{
-        badge.style.background = "";
-        badge.style.color = "";
-      }
-    }
-  }
-
-  function updateHeaderTotals(){
-    const rate = Number(state.settings.rate || 0.22);
-    let tripJPY=0, tripTWD=0;
+  /* =========================
+     Totals
+  ========================== */
+  function recalcTotals(){
+    const rate = Number(state.settings.rate||0.22);
+    let tripJPY = 0, tripTWD = 0;
 
     state.days.forEach(d=>{
-      let dayJPY=0;
-      flattenDayCards(d).forEach(c=>{
+      let dayJPY = 0, dayTWD = 0;
+      const cards = flattenDayCards(d);
+      cards.forEach(c=>{
         const j = parseFloat(c.jpy||"");
+        let t = parseFloat(c.twd||"");
         if (!isNaN(j)) dayJPY += j;
+        if (!isNaN(t)) dayTWD += t;
+        if (!isNaN(j) && (isNaN(t) || !c.twd)){
+          t = Math.round(j*rate);
+          c.twd = String(t);
+        }
       });
+
       tripJPY += dayJPY;
-      tripTWD += Math.round(dayJPY * rate);
+      tripTWD += dayTWD;
+
+      const sec = document.querySelector(`.day-section[data-id="${d.id}"]`);
+      if (sec){
+        const badge = sec.querySelector(".dayTotalBadge");
+        if (badge){
+          badge.textContent = `當日合計：${Math.round(dayJPY)} JPY / ${Math.round(dayTWD)} TWD`;
+          const bud = parseFloat(d.budgetJPY||"");
+          if (!isNaN(bud) && bud>0 && dayJPY>bud){
+            badge.classList.add("warn");
+            badge.textContent += "（超出預算⚠️）";
+          }else{
+            badge.classList.remove("warn");
+          }
+        }
+      }
     });
 
-    $("#syncBadge").textContent = `全旅程合計：${Math.round(tripJPY)} JPY / ${Math.round(tripTWD)} TWD（離線可用：已自動保存）`;
+    $("#sumBadge").textContent = `全旅程合計：${Math.round(tripJPY)} JPY / ${Math.round(tripTWD)} TWD（離線可用：已自動保存）`;
   }
 
-  /* =========================================================
-     7) Desktop Drag & Drop
-  ========================================================= */
+  /* =========================
+     Day add/remove
+  ========================== */
+  function addDay(){
+    pushUndo(true);
+    const idx = state.days.length + 1;
+
+    const day = {
+      id: `d_${Date.now()}_${Math.random().toString(16).slice(2)}`,
+      autoDayLabel: true,
+      dayLabel: `Day ${idx}`,
+      subtitle: "（新的一天行程）",
+      dateText: "",
+      budgetJPY: "",
+      tickets: { text:"", photos:[] },
+      sections: { morning:[], noon:[], night:[] },
+      dayNote: { text:"", photos:[] }
+    };
+
+    const lod = newCardTemplate("lodging");
+    lod.title = `住宿：${state.settings.hotelName}`;
+    lod.ja = state.settings.hotelNameJP;
+    lod.meta = "住宿地點（固定在當日備註上方）";
+    lod.pinned = true;
+    day.sections.night.push(lod);
+
+    state.days.push(day);
+    ensureDatesFromDay1();
+    scheduleSaveStructural();
+    render();
+  }
+
+  function removeLastDay(){
+    if (state.days.length <= 1) return alert("至少要保留一天");
+    pushUndo(true);
+    state.days.pop();
+    ensureDatesFromDay1();
+    scheduleSaveStructural();
+    render();
+  }
+
+  function addCard(dayId, secKey, tpl){
+    const d = state.days.find(x=>x.id===dayId);
+    if (!d) return;
+
+    pushUndo(true);
+    const c = newCardTemplate(tpl);
+    c.title = tpl==="restaurant" ? "新餐廳" :
+              tpl==="transport" ? "新交通" :
+              tpl==="shopping" ? "新購物" : "新景點";
+    c.tag = c.tag || "景點";
+
+    d.sections[secKey] = d.sections[secKey] || [];
+    if (secKey==="night"){
+      const lodIdx = d.sections.night.findIndex(x=>x.type==="lodging");
+      if (lodIdx >= 0) d.sections.night.splice(lodIdx,0,c);
+      else d.sections.night.push(c);
+    }else{
+      d.sections[secKey].push(c);
+    }
+
+    scheduleSaveStructural();
+    render();
+  }
+
+  /* =========================
+     Drag reorder
+  ========================== */
   let draggingChip = null;
+  function enableChipDrag(chip){
+    chip.draggable = true;
+    chip.addEventListener("dragstart", (e) => {
+      draggingChip = chip;
+      chip.classList.add("dragging");
+      e.dataTransfer.effectAllowed = "move";
+    });
+    chip.addEventListener("dragend", () => {
+      if (!draggingChip) return;
+      draggingChip.classList.remove("dragging");
+      draggingChip = null;
 
-  function enableDayNavDrag(){
-    const nav = $("#dayNav");
-    nav.addEventListener("dragover", (e) => {
-      const dragging = document.querySelector(".day-chip.dragging");
-      if (!dragging) return;
-      e.preventDefault();
-      const after = getAfterX(nav, e.clientX);
-      if (!after) nav.appendChild(dragging);
-      else nav.insertBefore(dragging, after);
+      const ids = $$(".day-chip").map(x=>x.dataset.id);
+      const newDays = [];
+      ids.forEach(id=>{
+        const d = state.days.find(x=>x.id===id);
+        if (d) newDays.push(d);
+      });
+      state.days = newDays;
+
+      state.days.forEach((d, idx) => { if (d.autoDayLabel) d.dayLabel = `Day ${idx+1}`; });
+      ensureDatesFromDay1();
+
+      scheduleSaveStructural();
+      render();
     });
   }
-  function getAfterX(container, x){
+  $("#dayNav").addEventListener("dragover", (e) => {
+    if (!draggingChip) return;
+    e.preventDefault();
+    const after = getChipAfterX($("#dayNav"), e.clientX);
+    if (!after) $("#dayNav").appendChild(draggingChip);
+    else $("#dayNav").insertBefore(draggingChip, after);
+  });
+  function getChipAfterX(container, x){
     const chips = [...container.querySelectorAll(".day-chip:not(.dragging)")];
-    let closest = { offset:Number.NEGATIVE_INFINITY, el:null };
+    let closest = { offset: Number.NEGATIVE_INFINITY, el:null };
     chips.forEach(c=>{
       const box = c.getBoundingClientRect();
       const offset = x - (box.left + box.width/2);
@@ -1740,7 +1459,6 @@
   }
 
   let draggingCardEl = null;
-
   function enableCardDrag(cardEl){
     cardEl.addEventListener("dragstart", (e) => {
       draggingCardEl = cardEl;
@@ -1749,28 +1467,22 @@
     });
     cardEl.addEventListener("dragend", () => {
       if (!draggingCardEl) return;
-      cardEl.classList.remove("dragging");
+      draggingCardEl.classList.remove("dragging");
       draggingCardEl = null;
-
-      // sync from DOM
       syncCardsFromDOM();
-      pushUndo();
-      renderAll();
-      scheduleSave("已更新卡片順序");
+      scheduleSaveStructural();
     });
   }
-
   function enableDropZone(zoneEl){
     zoneEl.addEventListener("dragover", (e) => {
       if (!draggingCardEl) return;
       e.preventDefault();
-      autoScrollWhileDragging(e.clientY);
-      const after = getAfterY(zoneEl, e.clientY);
+      const after = getCardAfterY(zoneEl, e.clientY);
       if (!after) zoneEl.appendChild(draggingCardEl);
       else zoneEl.insertBefore(draggingCardEl, after);
     });
   }
-  function getAfterY(container, y){
+  function getCardAfterY(container, y){
     const els = [...container.querySelectorAll(".spot-card:not(.dragging)")];
     let closest = { offset:Number.NEGATIVE_INFINITY, el:null };
     els.forEach(el=>{
@@ -1780,199 +1492,73 @@
     });
     return closest.el;
   }
-  function autoScrollWhileDragging(clientY){
-    const margin = 80;
-    const speed = 18;
-    if (clientY < margin) window.scrollBy(0, -speed);
-    else if (clientY > window.innerHeight - margin) window.scrollBy(0, speed);
-  }
-
   function syncCardsFromDOM(){
-    // rebuild section arrays by DOM order for each day
     state.days.forEach(d=>{
+      Object.keys(d.sections).forEach(k=>d.sections[k]=[]);
       const daySec = document.querySelector(`.day-section[data-id="${d.id}"]`);
       if (!daySec) return;
-
-      const newSections = { morning:[], noon:[], night:[], transport:[], shopping:[] };
       const secEls = daySec.querySelectorAll(".sec");
       secEls.forEach(secEl=>{
-        const key = secEl.dataset.sec;
-        const ids = [...secEl.querySelectorAll(".spot-card")].map(x=>x.dataset.cardId);
-        ids.forEach(cid=>{
-          const found = findCardAnywhere(cid);
-          if (found) newSections[key].push(found);
+        const secKey = secEl.dataset.sec;
+        const cards = [...secEl.querySelectorAll(".spot-card")];
+        cards.forEach(cardEl=>{
+          const cid = cardEl.dataset.cardId;
+          const card = findCardById(cid);
+          if (card) d.sections[secKey].push(card);
         });
       });
-
-      d.sections = newSections;
-      ensureLodgingCard(d);
+      const night = d.sections.night || [];
+      const lodIdx = night.findIndex(x=>x.type==="lodging");
+      if (lodIdx>=0 && lodIdx !== night.length-1){
+        const [lod] = night.splice(lodIdx,1);
+        night.push(lod);
+      }
     });
   }
-
-  function findCardAnywhere(cardId){
+  function findCardById(cid){
     for (const d of state.days){
       for (const k of Object.keys(d.sections)){
         for (const c of (d.sections[k]||[])){
-          if (c.id === cardId) return c;
+          if (c.id===cid) return c;
         }
       }
     }
     return null;
   }
 
-  /* =========================================================
-     8) Long-press Context Menu (mobile-friendly actions)
-  ========================================================= */
-  const menu = $("#ctxMenu");
-  let menuInfo = null; // {dayId, cardId}
-
-  function bindContextMenu(){
-    document.addEventListener("click", (e) => {
-      if (menu.classList.contains("show") && !menu.contains(e.target)) closeMenu();
-    });
-
-    $("#mDelete").addEventListener("click", () => {
-      if (!menuInfo) return;
-      pushUndo();
-      deleteCard(menuInfo.dayId, menuInfo.cardId);
-      closeMenu();
-    });
-
-    $("#mCopy").addEventListener("click", () => {
-      if (!menuInfo) return;
-      pushUndo();
-      copyCard(menuInfo.dayId, menuInfo.cardId);
-      closeMenu();
-    });
-
-    $("#mMove").addEventListener("click", () => {
-      if (!menuInfo) return;
-      pushUndo();
-      moveCardToOther(menuInfo.dayId, menuInfo.cardId);
-      closeMenu();
-    });
-
-    $("#mUp").addEventListener("click", () => {
-      if (!menuInfo) return;
-      pushUndo();
-      moveCardWithin(menuInfo.dayId, menuInfo.cardId, -1);
-      closeMenu();
-    });
-
-    $("#mDown").addEventListener("click", () => {
-      if (!menuInfo) return;
-      pushUndo();
-      moveCardWithin(menuInfo.dayId, menuInfo.cardId, +1);
-      closeMenu();
-    });
-  }
-
-  function openMenuForCard(cardEl, x, y){
-    const dayId = cardEl.dataset.dayId;
-    const cardId = cardEl.dataset.cardId;
-
-    const info = findCard(dayId, cardId);
-    if (!info) return;
-
-    menuInfo = {dayId, cardId};
-    $("#ctxTitle").textContent = `卡片：${(info.card.title||"").slice(0, 26)}`;
-
-    // lodging: disable delete/move/up/down
-    const isLod = info.card.type==="lodging";
-    $("#mDelete").disabled = isLod;
-    $("#mMove").disabled = isLod;
-    $("#mUp").disabled = isLod;
-    $("#mDown").disabled = isLod;
-
-    menu.style.left = Math.min(x, window.innerWidth - 250) + "px";
-    menu.style.top  = Math.min(y, window.innerHeight - 280) + "px";
-    menu.classList.add("show");
-  }
-
-  function closeMenu(){
-    menu.classList.remove("show");
-    menuInfo = null;
-  }
-
-  function attachLongPress(cardEl){
-    let pressTimer = null;
-    let start = null;
-
-    const startPress = (x, y) => {
-      start = {x,y};
-      clearTimeout(pressTimer);
-      pressTimer = setTimeout(() => openMenuForCard(cardEl, x, y), 520);
-    };
-    const movePress = (x, y) => {
-      if (!start) return;
-      if (Math.abs(x-start.x) > 12 || Math.abs(y-start.y) > 12){
-        clearTimeout(pressTimer);
-      }
-    };
-    const endPress = () => {
-      clearTimeout(pressTimer);
-      start = null;
-    };
-
-    cardEl.addEventListener("touchstart", (e) => {
-      const t = e.touches[0];
-      startPress(t.clientX, t.clientY);
-    }, {passive:true});
-    cardEl.addEventListener("touchmove", (e) => {
-      const t = e.touches[0];
-      movePress(t.clientX, t.clientY);
-    }, {passive:true});
-    cardEl.addEventListener("touchend", endPress);
-
-    cardEl.addEventListener("mousedown", (e) => {
-      if (e.button !== 0) return;
-      startPress(e.clientX, e.clientY);
-    });
-    cardEl.addEventListener("mousemove", (e) => movePress(e.clientX, e.clientY));
-    cardEl.addEventListener("mouseup", endPress);
-    cardEl.addEventListener("mouseleave", endPress);
-  }
-
-  /* =========================================================
-     9) Import / Export
-  ========================================================= */
-  function exportJson(){
+  /* =========================
+     Import / Export
+  ========================== */
+  $("#btnExport").addEventListener("click", () => {
     const data = { savedAt: new Date().toISOString(), state };
     const blob = new Blob([JSON.stringify(data, null, 2)], {type:"application/json"});
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "NijiTrip_backup.json";
+    a.download = "NijiTrip2026_backup.json";
     document.body.appendChild(a);
     a.click();
     a.remove();
     URL.revokeObjectURL(url);
-  }
+  });
 
-  function importJson(){
+  $("#btnImport").addEventListener("click", () => $("#importFile").click());
+  $("#importFile").addEventListener("change", () => {
     const file = $("#importFile").files && $("#importFile").files[0];
     if (!file) return;
     const reader = new FileReader();
     reader.onload = (e) => {
       try{
         const data = JSON.parse(String(e.target.result||"{}"));
-        if (data?.state){
-          pushUndo();
+        if (data && data.state){
+          pushUndo(true);
           state = data.state;
-          // patch
-          state.settings ||= {};
-          state.days ||= [];
-          state.days.forEach(d=>{
-            d.sections ||= { morning:[], noon:[], night:[], transport:[], shopping:[] };
-            d.tickets ||= { text:"", photos:[] };
-            d.dayNote ||= { text:"", photos:[] };
-            ensureLodgingCard(d);
-          });
+          if (!state.meta) state.meta = { savedAt: Date.now() };
           ensureDatesFromDay1();
-          renderAll();
-          scheduleSave("已匯入備份");
+          scheduleSaveStructural();
+          render();
         }else{
-          alert("匯入失敗：格式不對");
+          alert("匯入失敗：JSON 格式不對");
         }
       }catch(err){
         alert("匯入失敗：JSON 解析錯誤");
@@ -1980,234 +1566,357 @@
     };
     reader.readAsText(file, "utf-8");
     $("#importFile").value = "";
-  }
-
-  /* =========================================================
-     10) Cloud hooks (will be attached by module script)
-  ========================================================= */
-  window.AppBridge = {
-    // called by CloudSync on login state
-    applyRemoteState(remoteState){
-      if (!remoteState || typeof remoteState !== "object") return;
-
-      isApplyingRemote = true;
-      try{
-        state = remoteState;
-        // patch fields
-        state.settings ||= {};
-        state.days ||= [];
-        state.days.forEach(d=>{
-          d.sections ||= { morning:[], noon:[], night:[], transport:[], shopping:[] };
-          d.tickets ||= { text:"", photos:[] };
-          d.dayNote ||= { text:"", photos:[] };
-          ensureLodgingCard(d);
-        });
-        ensureDatesFromDay1();
-
-        // reset undo baseline on remote load
-        undoStack = [];
-        pushUndo();
-        $("#btnUndo").disabled = true;
-
-        // render
-        renderAll();
-        saveLocal(); // cache locally
-        toast("已從雲端載入 ✅");
-      }finally{
-        setTimeout(()=>{ isApplyingRemote = false; }, 50);
-      }
-    },
-    getState(){ return state; },
-    setCloudStatus(text){ $("#cloudStatus").textContent = text; },
-    setAuthBadge(text){ $("#authBadge").textContent = text; },
-    setButtons({loggedIn}){
-      $("#btnLogout").disabled = !loggedIn;
-      $("#btnLogin").disabled = loggedIn;
-      $("#btnSignup").disabled = loggedIn;
-      $("#btnForceCloudLoad").disabled = !loggedIn;
-    }
-  };
-
-  $("#btnForceCloudLoad").addEventListener("click", async () => {
-    if (!window.CloudSync || !window.CloudSync.isReady()) return;
-    if (!confirm("確定要用『雲端資料』覆蓋此裝置目前畫面？")) return;
-    try{
-      $("#cloudStatus").textContent = "雲端：載入中…";
-      const remote = await window.CloudSync.load();
-      if (remote){
-        window.AppBridge.applyRemoteState(remote);
-        $("#cloudStatus").textContent = "雲端：已載入 ✅";
-      }else{
-        $("#cloudStatus").textContent = "雲端：沒有資料（維持本機）";
-      }
-    }catch(e){
-      $("#cloudStatus").textContent = "雲端：載入失敗 ❌";
-      alert("雲端載入失敗，請稍後再試。");
-    }
   });
 
-  /* =========================================================
-     11) Start
-  ========================================================= */
-  init();
+  $("#btnClear").addEventListener("click", () => {
+    if (!confirm("確定清除本機所有資料？（不可復原）")) return;
+    clearLocal();
+    undoStack = [];
+    initState();
+    render();
+  });
+
+  /* =========================
+     Undo
+  ========================== */
+  $("#btnUndo").addEventListener("click", () => {
+    if (undoStack.length <= 1) return;
+    undoStack.pop();
+    const prev = undoStack[undoStack.length-1];
+    if (!prev) return;
+    try{
+      state = JSON.parse(prev);
+      scheduleSaveStructural();
+      render();
+      $("#btnUndo").disabled = undoStack.length <= 1;
+    }catch(e){}
+  });
+
+  $("#btnJumpActive").addEventListener("click", () => {
+    if (!activeDayId) return;
+    const sec = document.querySelector(`.day-section[data-id="${activeDayId}"]`);
+    if (sec) sec.scrollIntoView({behavior:"smooth", block:"start"});
+  });
+
+  /* =========================
+     App title/desc save
+  ========================== */
+  $("#appTitle").addEventListener("input", () => {
+    state.appTitle = $("#appTitle").textContent.trim();
+    scheduleSaveTextOnly();
+  });
+  $("#appDesc").addEventListener("input", () => {
+    state.appDesc = $("#appDesc").textContent;
+    scheduleSaveTextOnly();
+  });
+
+  $("#btnAddDay").addEventListener("click", addDay);
+  $("#btnRemoveDay").addEventListener("click", removeLastDay);
+
+  /* =========================
+     Save scheduler (核心：打字不跳)
+     - TextOnly：不 render
+     - Structural：可能會 render（由呼叫端決定）
+     - Cloud：節流 800ms，避免每個字都打 Firestore
+  ========================== */
+  let localSaveTimer = null;
+  let cloudSaveTimer = null;
+
+  function scheduleSaveTextOnly(){
+    // local (快)
+    clearTimeout(localSaveTimer);
+    localSaveTimer = setTimeout(() => {
+      state.meta = state.meta || {};
+      state.meta.savedAt = Date.now();
+      saveLocal();
+      toastSaved();
+      recalcTotals();
+      // undo：文字類不要每個字推一個，改成比較保守
+      pushUndo(false);
+      queueCloudSave();
+    }, 180);
+  }
+
+  function scheduleSaveStructural(){
+    // 結構改動：立即保存 + 送雲端
+    state.meta = state.meta || {};
+    state.meta.savedAt = Date.now();
+    saveLocal();
+    toastSaved();
+    recalcTotals();
+    pushUndo(true);
+    queueCloudSave(true);
+  }
+
+  function queueCloudSave(force=false){
+    if (!window.CloudSync || !window.CloudSync.isReady()) return;
+
+    clearTimeout(cloudSaveTimer);
+    cloudSaveTimer = setTimeout(async () => {
+      try{
+        await window.CloudSync.saveState(state);
+        setCloudBadge("雲端：已同步 ✅", "good");
+      }catch(e){
+        console.warn(e);
+        setCloudBadge("雲端：同步失敗 ❌（先用本機）", "warn");
+      }
+    }, force ? 0 : 800);
+  }
+
+  function setCloudBadge(text, cls){
+    const b = $("#cloudBadge");
+    b.textContent = text;
+    b.classList.remove("good","warn");
+    if (cls) b.classList.add(cls);
+  }
+
+  /* =========================
+     Cloud apply guard (防止打字被雲端回來打斷)
+  ========================== */
+  let pendingRemote = null;
+  $("#btnApplyRemote").addEventListener("click", () => {
+    if (!pendingRemote) return;
+    // 套用遠端
+    state = pendingRemote;
+    pendingRemote = null;
+    $("#btnApplyRemote").style.display = "none";
+    ensureDatesFromDay1();
+    saveLocal();
+    pushUndo(true);
+    render();
+    setCloudBadge("雲端：已套用更新 ✅", "good");
+  });
+
+  /* =========================
+     Init
+  ========================== */
+  initState();
+  render();
+  if (undoStack.length === 0){
+    pushUndo(true);
+    $("#btnUndo").disabled = true;
+  }
 
 })();
 </script>
 
 <script type="module">
-/* =========================================================
-   Firebase Email+Password + Firestore CloudSync
-   - Doc path: users/{uid}/trips/main
-   - Auto load on login + realtime sync
-========================================================= */
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import {
-  getAuth,
-  onAuthStateChanged,
-  setPersistence,
-  browserLocalPersistence,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  signOut
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import {
-  getFirestore,
-  doc,
-  getDoc,
-  setDoc,
-  onSnapshot,
-  serverTimestamp
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  // =========================
+  // Firebase Auth (Email/Password) + Firestore Sync
+  // =========================
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import {
+    getAuth, onAuthStateChanged,
+    signInWithEmailAndPassword,
+    createUserWithEmailAndPassword,
+    signOut
+  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyAkFpjZVwRDA92YLK-JfDPeoHJ3hbgKVXM",
-  authDomain: "trip-db86d.firebaseapp.com",
-  projectId: "trip-db86d",
-  storageBucket: "trip-db86d.firebasestorage.app",
-  messagingSenderId: "709795426974",
-  appId: "1:709795426974:web:ec3e2f03f2116b68c1418f",
-  measurementId: "G-FD0411E3XH"
-};
+  import {
+    getFirestore, doc, getDoc, setDoc, onSnapshot
+  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+  // ✅ 你的 firebaseConfig（沿用你之前貼的；若已更換請改這裡）
+  const firebaseConfig = {
+    apiKey: "AIzaSyAkFpjZVwRDA92YLK-JfDPeoHJ3hbgKVXM",
+    authDomain: "trip-db86d.firebaseapp.com",
+    projectId: "trip-db86d",
+    storageBucket: "trip-db86d.firebasestorage.app",
+    messagingSenderId: "709795426974",
+    appId: "1:709795426974:web:ec3e2f03f2116b68c1418f",
+    measurementId: "G-FD0411E3XH"
+  };
 
-await setPersistence(auth, browserLocalPersistence);
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
 
-let uid = null;
-let unsub = null;
-let ready = false;
+  // 每台裝置一個 clientId：用來避免「雲端回音」導致 render 跳游標
+  const CLIENT_ID_KEY = "niji_trip_client_id";
+  const clientId = localStorage.getItem(CLIENT_ID_KEY) || `cid_${Date.now()}_${Math.random().toString(16).slice(2)}`;
+  localStorage.setItem(CLIENT_ID_KEY, clientId);
 
-function tripRef(userId){
-  return doc(db, "users", userId, "trips", "main");
-}
+  let unsub = null;
+  let currentUser = null;
+  let localRev = 0;
 
-window.CloudSync = {
-  isReady(){ return ready && !!uid; },
-  async load(){
-    if (!uid) return null;
-    const snap = await getDoc(tripRef(uid));
-    if (!snap.exists()) return null;
-    return snap.data()?.state ?? null;
-  },
-  async save(state){
-    if (!uid) return;
-    await setDoc(tripRef(uid), { state, updatedAt: serverTimestamp() }, { merge:true });
-  },
-  subscribe(cb){
-    if (!uid) return null;
-    if (unsub) unsub();
-    unsub = onSnapshot(tripRef(uid), (snap) => {
-      if (!snap.exists()) return;
-      const remote = snap.data()?.state ?? null;
-      if (remote) cb(remote);
-    });
-    return unsub;
-  }
-};
+  const $ = (sel) => document.querySelector(sel);
 
-const emailInput = document.getElementById("emailInput");
-const pwInput = document.getElementById("pwInput");
-const btnLogin = document.getElementById("btnLogin");
-const btnSignup = document.getElementById("btnSignup");
-const btnLogout = document.getElementById("btnLogout");
-
-btnSignup.addEventListener("click", async () => {
-  const email = (emailInput.value || "").trim();
-  const pw = (pwInput.value || "").trim();
-  if (!email || !pw) return alert("請輸入 Email + Password");
-  try{
-    await createUserWithEmailAndPassword(auth, email, pw);
-  }catch(e){
-    alert("註冊失敗：\n" + (e?.message || e));
-  }
-});
-
-btnLogin.addEventListener("click", async () => {
-  const email = (emailInput.value || "").trim();
-  const pw = (pwInput.value || "").trim();
-  if (!email || !pw) return alert("請輸入 Email + Password");
-  try{
-    await signInWithEmailAndPassword(auth, email, pw);
-  }catch(e){
-    alert("登入失敗：\n" + (e?.message || e));
-  }
-});
-
-btnLogout.addEventListener("click", async () => {
-  try{
-    await signOut(auth);
-  }catch(e){}
-});
-
-onAuthStateChanged(auth, async (user) => {
-  if (!user){
-    uid = null;
-    ready = true;
-    if (unsub){ unsub(); unsub = null; }
-    window.AppBridge?.setAuthBadge("未登入（離線模式）");
-    window.AppBridge?.setCloudStatus("雲端：未登入");
-    window.AppBridge?.setButtons({loggedIn:false});
-    return;
+  function setAuthState(text){
+    $("#authState").textContent = text;
   }
 
-  uid = user.uid;
-  ready = true;
+  function setCloudBadge(text, cls){
+    const b = $("#cloudBadge");
+    b.textContent = text;
+    b.classList.remove("good","warn");
+    if (cls) b.classList.add(cls);
+  }
 
-  window.AppBridge?.setAuthBadge(`已登入：${user.email || "Email 使用者"}`);
-  window.AppBridge?.setButtons({loggedIn:true});
-  window.AppBridge?.setCloudStatus("雲端：載入中…");
+  function isEditingNow(){
+    const el = document.activeElement;
+    if (!el) return false;
+    if (el.tagName === "INPUT" || el.tagName === "TEXTAREA") return true;
+    if (el.isContentEditable) return true;
+    return false;
+  }
 
-  // 1) auto load once
-  try{
-    const remote = await window.CloudSync.load();
-    if (remote){
-      window.AppBridge?.applyRemoteState(remote);
-      window.AppBridge?.setCloudStatus("雲端：已載入 ✅（同步中）");
-    }else{
-      // if no remote data yet, write local state up as initial
-      const local = window.AppBridge?.getState?.();
-      if (local){
-        await window.CloudSync.save(local);
-        window.AppBridge?.setCloudStatus("雲端：已建立初始資料 ✅（同步中）");
-      }else{
-        window.AppBridge?.setCloudStatus("雲端：無資料（同步中）");
-      }
+  // 提供給主程式呼叫
+  window.CloudSync = {
+    isReady: () => !!currentUser,
+    async saveState(state){
+      if (!currentUser) throw new Error("not signed in");
+      localRev += 1;
+      const ref = doc(db, "users", currentUser.uid, "trips", "v2_main");
+      await setDoc(ref, {
+        state,
+        meta: {
+          savedAt: state?.meta?.savedAt || Date.now(),
+          clientId,
+          rev: localRev
+        }
+      }, { merge: true });
     }
-  }catch(e){
-    window.AppBridge?.setCloudStatus("雲端：載入失敗 ❌（仍可離線）");
+  };
+
+  async function loadRemote(uid){
+    const ref = doc(db, "users", uid, "trips", "v2_main");
+    const snap = await getDoc(ref);
+    if (!snap.exists()) return null;
+    const data = snap.data();
+    return data?.state || null;
   }
 
-  // 2) subscribe realtime
-  window.CloudSync.subscribe((remoteState) => {
-    // 這裡交給 AppBridge 做防抖/避免回音覆蓋
-    window.AppBridge?.applyRemoteState(remoteState);
-    window.AppBridge?.setCloudStatus("雲端：同步中 ✅");
+  function subscribeRemote(uid){
+    if (unsub) unsub();
+    const ref = doc(db, "users", uid, "trips", "v2_main");
+
+    unsub = onSnapshot(ref, (snap) => {
+      if (!snap.exists()) return;
+      const data = snap.data();
+      const remoteState = data?.state || null;
+      const meta = data?.meta || {};
+
+      // 1) 雲端回音（自己剛寫的）=> 忽略，不重建 DOM
+      if (meta.clientId === clientId && meta.rev === localRev) return;
+
+      // 2) 使用者正在輸入 => 先暫存，避免游標跳
+      if (isEditingNow()){
+        window.__pendingRemote = remoteState;
+        $("#btnApplyRemote").style.display = "inline-block";
+        setCloudBadge("雲端：有更新（輸入中暫不套用）", "warn");
+        return;
+      }
+
+      // 3) 非輸入中 => 直接套用
+      try{
+        const raw = localStorage.getItem("niji_trip_2026_v2_full");
+        const localState = raw ? JSON.parse(raw) : null;
+
+        const remoteAt = remoteState?.meta?.savedAt || 0;
+        const localAt = localState?.meta?.savedAt || 0;
+
+        // 如果雲端較新才套用
+        if (remoteAt >= localAt){
+          localStorage.setItem("niji_trip_2026_v2_full", JSON.stringify(remoteState));
+          location.reload(); // 乾淨重載：避免局部套用遺漏
+        }
+      }catch(e){
+        console.warn(e);
+      }
+    });
+  }
+
+  // 套用按鈕：交給主程式那段處理（它會讀 pendingRemote）
+  // 這裡只提供暫存位置：
+  Object.defineProperty(window, "__pendingRemote", {
+    value: null, writable: true
   });
-});
 
+  // 覆寫主程式按鈕套用：把 window.__pendingRemote 丟回 localStorage 後重載
+  $("#btnApplyRemote").addEventListener("click", () => {
+    const remote = window.__pendingRemote;
+    if (!remote) return;
+    localStorage.setItem("niji_trip_2026_v2_full", JSON.stringify(remote));
+    window.__pendingRemote = null;
+    location.reload();
+  });
+
+  // Auth buttons
+  $("#btnSignIn").addEventListener("click", async () => {
+    const email = $("#email").value.trim();
+    const password = $("#password").value;
+    if (!email || !password) return alert("請輸入 Email 與密碼");
+    try{
+      await signInWithEmailAndPassword(auth, email, password);
+    }catch(e){
+      alert("登入失敗：" + (e?.message || e));
+    }
+  });
+
+  $("#btnSignUp").addEventListener("click", async () => {
+    const email = $("#email").value.trim();
+    const password = $("#password").value;
+    if (!email || !password) return alert("請輸入 Email 與密碼");
+    try{
+      await createUserWithEmailAndPassword(auth, email, password);
+      alert("註冊成功，已自動登入 ✅");
+    }catch(e){
+      alert("註冊失敗：" + (e?.message || e));
+    }
+  });
+
+  $("#btnSignOut").addEventListener("click", async () => {
+    await signOut(auth);
+  });
+
+  onAuthStateChanged(auth, async (user) => {
+    currentUser = user;
+
+    if (!user){
+      setAuthState("未登入：僅本機保存");
+      $("#btnSignOut").style.display = "none";
+      setCloudBadge("未登入：僅本機保存", "");
+      if (unsub) unsub();
+      unsub = null;
+      return;
+    }
+
+    $("#btnSignOut").style.display = "inline-block";
+    setAuthState("已登入：" + (user.email || user.uid));
+    setCloudBadge("雲端：準備中…", "");
+
+    // 登入後：比對雲端是否較新，自動載入（你要的「開啟就自動載入」）
+    try{
+      const remote = await loadRemote(user.uid);
+      if (remote){
+        const raw = localStorage.getItem("niji_trip_2026_v2_full");
+        const local = raw ? JSON.parse(raw) : null;
+
+        const remoteAt = remote?.meta?.savedAt || 0;
+        const localAt = local?.meta?.savedAt || 0;
+
+        if (remoteAt > localAt){
+          localStorage.setItem("niji_trip_2026_v2_full", JSON.stringify(remote));
+          setCloudBadge("雲端：已自動載入 ✅", "good");
+          location.reload();
+          return;
+        }else{
+          setCloudBadge("雲端：本機較新（將以本機為準）", "good");
+        }
+      }else{
+        setCloudBadge("雲端：尚無資料（將以本機為準）", "good");
+      }
+    }catch(e){
+      console.warn(e);
+      setCloudBadge("雲端：讀取失敗 ❌（先用本機）", "warn");
+    }
+
+    // 即時監聽
+    subscribeRemote(user.uid);
+  });
+
+  console.log("[Auth+CloudSync] ready");
 </script>
-
 </body>
 </html>
