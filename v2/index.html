@@ -32,7 +32,6 @@
     *{box-sizing:border-box;}
     html,body{margin:0;padding:0;font-family:system-ui,-apple-system,"Noto Sans TC","PingFang TC",sans-serif;background:var(--bg);color:var(--brown);}
     body{min-height:100vh;}
-
     .page{max-width:980px;margin:0 auto;padding:14px 12px 96px;}
 
     header{
@@ -42,7 +41,6 @@
       box-shadow:var(--shadow);
       margin-bottom:12px;
     }
-
     .titleRow{display:flex;align-items:center;gap:10px;}
     .titleRow h1{margin:0;font-size:26px;font-weight:1000;letter-spacing:.02em}
     .titleRow .emoji{font-size:24px}
@@ -102,7 +100,6 @@
     }
     .authGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
     @media (max-width:640px){ .authGrid{grid-template-columns:1fr;} }
-
     .inp{
       width:100%;
       border:none;
@@ -230,13 +227,8 @@
     }
     .thumb:active{transform:scale(.98);}
 
-    /* Sections (早/午/晚) */
-    .sections{
-      display:grid;
-      grid-template-columns:1fr;
-      gap:10px;
-      padding:10px 6px 6px;
-    }
+    /* Sections */
+    .sections{display:grid;grid-template-columns:1fr;gap:10px;padding:10px 6px 6px;}
     .sec{
       background:rgba(255,255,255,0.55);
       border-radius:18px;
@@ -246,7 +238,6 @@
     .secHead{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:8px;}
     .secTitle{font-weight:1000;font-size:14px;color:#5c3a1c;display:flex;align-items:center;gap:7px;}
     .dot{width:9px;height:9px;border-radius:50%;background:#ffb85c;box-shadow:var(--shadow);}
-
     .secActions{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;}
     .secActions .btn{background:#ffe7bf;}
 
@@ -420,14 +411,14 @@
         <button class="btn" id="btnExport" type="button">匯出備份（JSON）</button>
         <button class="btn" id="btnImport" type="button">匯入備份</button>
         <button class="btn ghost" id="btnClear" type="button">清除本機資料</button>
-        <button class="btn ghost" id="btnCloudPull" type="button">從雲端覆蓋載入</button>
-        <button class="btn ghost" id="btnCloudPush" type="button">把本機推到雲端</button>
+        <button class="btn ghost" id="btnCloudPull" type="button" disabled>從雲端覆蓋載入</button>
+        <button class="btn ghost" id="btnCloudPush" type="button" disabled>把本機推到雲端</button>
         <span class="badge soft" id="syncBadge">離線可用：已自動保存</span>
       </div>
 
       <div class="search">
         <input class="inp" id="searchInput" placeholder="🔎 搜尋：標題/地址/備註/票券（按 Enter）" />
-        <button class="btn" id="btnSearch" type="button">搜尋</button>
+        <button class="btn" id="btnSearchGlobal" type="button">搜尋</button>
         <span class="badge soft" id="searchResult">尚未搜尋</span>
       </div>
 
@@ -443,18 +434,19 @@
         </div>
 
         <div class="row" style="margin-top:10px;">
-          <button class="btn primary" id="btnEmailSignIn" type="button">Email 登入</button>
-          <button class="btn" id="btnEmailSignUp" type="button">註冊帳號</button>
+          <button class="btn primary" id="btnEmailSignIn" type="button" disabled>Email 登入</button>
+          <button class="btn" id="btnEmailSignUp" type="button" disabled>註冊帳號</button>
           <button class="btn danger" id="btnSignOut" type="button" disabled>登出</button>
           <span class="muted" id="authHint">提示：登入後會自動從雲端載入，並跨裝置同步。</span>
         </div>
       </div>
 
       <div class="muted" style="margin-top:10px;">
-        ✅ 打字不會跳掉（支援中文注音/拼音組字，不會被存檔打斷）。<br>
-        ✅ Day1 日期可編輯；新增/拖拉天數會自動接續日期。<br>
+        ✅ 離線可用：localStorage 自動保存。<br>
+        ✅ Day1 日期可編輯；新增/刪除天數會自動接續日期。<br>
         ✅ 長按卡片可刪除/複製/置頂/移動/上移下移。<br>
         ✅ 圖片「點一下直接刪除」。住宿卡固定（不可刪）。<br>
+        ⚠️ 雲端功能需用 https 網址開啟（GitHub Pages/Netlify）。<br>
       </div>
     </header>
 
@@ -504,19 +496,12 @@
   /* =========================
      Config
   ========================== */
-  const STORAGE_KEY = "niji_trip_2026_A_v3";
-  const UNDO_LIMIT = 10;
+  const STORAGE_KEY = "niji_trip_2026_A_v4";
+  const UNDO_LIMIT = 12;
   const TRIP_ID = "main";
 
   const $ = (sel, root=document) => root.querySelector(sel);
   const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
-
-  /* =========================
-     IME 組字保護：避免打字被跳掉
-  ========================== */
-  let __isComposing = false;
-  document.addEventListener("compositionstart", () => { __isComposing = true; }, true);
-  document.addEventListener("compositionend",   () => { __isComposing = false; }, true);
 
   /* =========================
      UI helpers
@@ -527,25 +512,22 @@
     t.classList.add("show");
     setTimeout(()=>t.classList.remove("show"), 650);
   }
-  function setSyncBadge(text){
-    $("#syncBadge").textContent = text;
-  }
+  function setSyncBadge(text){ $("#syncBadge").textContent = text; }
   function setCloudStatus(text, kind="soft"){
     const el = $("#cloudStatus");
     el.textContent = text;
     el.classList.remove("ok","warn","soft");
     el.classList.add(kind);
   }
-  function setAuthStatus(text){
-    $("#authStatus").textContent = text;
-  }
+  function setAuthStatus(text){ $("#authStatus").textContent = text; }
 
   /* =========================
      State
   ========================== */
   let state = null;
-  let undoStack = [];
+  let undoStack = [];     // JSON string snapshots
   let activeDayId = null;
+  let lastSavedHash = ""; // avoid unnecessary undo snapshots from typing
 
   function defaultState(){
     return {
@@ -556,7 +538,7 @@
         hotelNameJP: "ベッセルイン上野入谷駅前",
       },
       appTitle: "Niji Trip 2026",
-      appDesc: "東京行程・暖色主題。支援拖拉排序、卡片模板、多地點路線、一鍵導航、圖片/票券收納、日幣換算、預算提醒、搜尋、Undo（10步）。",
+      appDesc: "東京行程・暖色主題。支援拖拉排序、卡片模板、多地點路線、一鍵導航、圖片/票券收納、日幣換算、預算提醒、搜尋、Undo。",
       days: []
     };
   }
@@ -604,8 +586,14 @@
   /* =========================
      Local Storage + Undo
   ========================== */
-  function pushUndo(){
-    const snap = JSON.stringify(state);
+  function hashState(obj){
+    // simple stable hash: JSON string (enough for this use)
+    return JSON.stringify(obj);
+  }
+  function pushUndo(force=false){
+    const snap = hashState(state);
+    if (!force && snap === (undoStack[undoStack.length-1] || "")) return;
+
     undoStack.push(snap);
     if (undoStack.length > UNDO_LIMIT) undoStack.shift();
     $("#btnUndo").disabled = undoStack.length <= 1;
@@ -618,18 +606,10 @@
     }catch(e){}
     return null;
   }
-
   function saveLocal(){
-    try{
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-    }catch(e){
-      console.warn("local save failed", e);
-    }
+    try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){}
   }
-
-  function clearLocal(){
-    localStorage.removeItem(STORAGE_KEY);
-  }
+  function clearLocal(){ localStorage.removeItem(STORAGE_KEY); }
 
   /* =========================
      Date helpers
@@ -660,13 +640,11 @@
   }
 
   /* =========================
-     Cloud (Firebase adapter injected later)
+     Cloud adapter (injected by module)
   ========================== */
   let cloud = {
-    ready:false,
     user:null,
     uid:null,
-    tripRefPath:null,
     unsub:null,
     autoLoaded:false,
   };
@@ -684,9 +662,9 @@
         if (overwrite){
           state = remote;
           normalizeState();
-          pushUndo();          // ✅ 雲端覆蓋算一次 Undo
           saveLocal();
           render(true);
+          pushUndo(true);
           toast("已從雲端載入");
         }
         setCloudStatus("雲端：已連線 ✅", "ok");
@@ -696,7 +674,6 @@
         return false;
       }
     }catch(e){
-      console.warn("cloud load failed", e);
       setCloudStatus("雲端：載入失敗 ❌", "warn");
       return false;
     }
@@ -708,7 +685,6 @@
       await window.CloudSync.save(cloud.uid, TRIP_ID, state);
       setCloudStatus("雲端：同步中 ✅", "ok");
     }catch(e){
-      console.warn("cloud save failed", e);
       setCloudStatus("雲端：同步失敗 ❌", "warn");
     }
   }
@@ -719,23 +695,22 @@
 
     cloud.unsub = window.CloudSync.subscribe(cloud.uid, TRIP_ID, (remote) => {
       if (!remote) return;
-      const localStr = JSON.stringify(state);
-      const remoteStr = JSON.stringify(remote);
+      const localStr = hashState(state);
+      const remoteStr = hashState(remote);
       if (localStr === remoteStr) return;
 
       state = remote;
       normalizeState();
       saveLocal();
       render(true);
+      pushUndo(true);
       toast("已同步到雲端變更");
     });
   }
 
   async function autoLoadFromCloudOnce(){
-    if (!canCloud()) return;
-    if (cloud.autoLoaded) return;
+    if (!canCloud() || cloud.autoLoaded) return;
     cloud.autoLoaded = true;
-
     await cloudLoad(true);
     cloudSubscribe();
   }
@@ -761,14 +736,6 @@
         if (d.sections.noon && !d.sections.afternoon){
           d.sections.afternoon = d.sections.noon;
           delete d.sections.noon;
-        }
-        if (d.sections.transport){
-          d.sections.afternoon = (d.sections.afternoon||[]).concat(d.sections.transport);
-          delete d.sections.transport;
-        }
-        if (d.sections.shopping){
-          d.sections.afternoon = (d.sections.afternoon||[]).concat(d.sections.shopping);
-          delete d.sections.shopping;
         }
         if (!d.sections.morning) d.sections.morning = [];
         if (!d.sections.afternoon) d.sections.afternoon = [];
@@ -797,73 +764,43 @@
 
     if (!state.days.length){
       state.days = [newDay(1), newDay(2), newDay(3)];
-      ensureDatesFromDay1();
-    }else{
-      ensureDatesFromDay1();
     }
+    ensureDatesFromDay1();
   }
 
   /* =========================
-     Save scheduling (IME-safe, no undo per keystroke)
+     Save scheduling (typing: no rerender)
   ========================== */
-  let __saveTimer = null;
-  let __pendingRecalc = false;
-  let __pendingCloud = false;
-  let __pendingToast = false;
+  let saveTimer = null;
+  function scheduleSave({pushCloud=true, allowUndo=false} = {}){
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(async () => {
+      saveLocal();
+      recalcTotalsUI();
+      setSyncBadge(buildTotalText());
+      toast("已儲存");
 
-  function scheduleSave(opts = { pushCloud:true, recalc:true, toast:true }){
-    if (opts.recalc) __pendingRecalc = true;
-    if (opts.pushCloud) __pendingCloud = true;
-    if (opts.toast) __pendingToast = true;
+      // Only add undo snapshot after typing settles AND state actually changed since last snapshot
+      const currentHash = hashState(state);
+      if (allowUndo && currentHash !== lastSavedHash){
+        pushUndo();
+        lastSavedHash = currentHash;
+      }
 
-    clearTimeout(__saveTimer);
-
-    // 組字中完全不做存檔/雲端/重算，避免鍵盤跳掉
-    if (__isComposing){
-      __saveTimer = setTimeout(() => {
-        if (__isComposing) return;
-        flushSave();
-      }, 700);
-      return;
-    }
-
-    __saveTimer = setTimeout(() => {
-      if (__isComposing) return;
-      flushSave();
-    }, 700);
+      if (pushCloud) await cloudSave();
+    }, 220);
   }
 
-  function flushSave(){
-    // 本機保存（較重：JSON.stringify）— 已延後到停止打字後
-    saveLocal();
-
-    // 雲端保存（更重）— 也延後，且不要阻塞 UI
-    if (__pendingCloud){
-      __pendingCloud = false;
-      cloudSave(); // no await
-    }
-
-    // totals / badge（輕量 UI 更新）
-    if (__pendingRecalc){
-      __pendingRecalc = false;
-      requestAnimationFrame(() => {
-        recalcTotalsUI();
-        setSyncBadge(buildTotalText());
-      });
-    }else{
-      setSyncBadge(buildTotalText());
-    }
-
-    if (__pendingToast){
-      __pendingToast = false;
-      toast("已儲存");
-    }
+  function markActionUndo(){
+    // For button actions (add/remove/move/delete/copy...), snapshot immediately
+    pushUndo(true);
+    lastSavedHash = hashState(state);
   }
 
   /* =========================
      Rendering
   ========================== */
-  function render(full=false){
+  function render(){
     $("#appTitleText").textContent = state.appTitle || "Niji Trip 2026";
     $("#appDesc").value = state.appDesc || "";
 
@@ -885,18 +822,14 @@
       const chip = document.createElement("div");
       chip.className = "dayChip";
       chip.dataset.id = d.id;
-
-      chip.innerHTML = `
-        <div class="t"></div>
-        <div class="s"></div>
-      `;
+      chip.innerHTML = `<div class="t"></div><div class="s"></div>`;
       chip.querySelector(".t").textContent = d.dayLabel || "Day";
       chip.querySelector(".s").textContent = d.dateText || "";
 
       chip.addEventListener("click", () => {
         activeDayId = d.id;
         setActiveChip(d.id);
-        const sec = document.querySelector(\`.daySection[data-id="\${d.id}"]\`);
+        const sec = document.querySelector(`.daySection[data-id="${d.id}"]`);
         if (sec) sec.scrollIntoView({behavior:"smooth", block:"start"});
       });
 
@@ -916,6 +849,9 @@
   function secLabel(key){
     return key==="morning" ? "☀️ 早上" : key==="afternoon" ? "🌤️ 下午" : "🌙 晚上";
   }
+  function typeLabel(t){
+    return t==="restaurant" ? "餐廳" : t==="transport" ? "交通" : t==="shopping" ? "購物" : t==="lodging" ? "住宿" : "景點";
+  }
 
   function renderDays(){
     const wrap = $("#daysContainer");
@@ -929,12 +865,8 @@
       sec.innerHTML = `
         <div class="dayCard">
           <div class="dayHead">
-            <div class="pill">
-              <input class="dayLabelInp" />
-            </div>
-            <div class="sub">
-              <input class="daySubInp" />
-            </div>
+            <div class="pill"><input class="dayLabelInp" /></div>
+            <div class="sub"><input class="daySubInp" /></div>
           </div>
 
           <div class="meta">
@@ -983,39 +915,37 @@
         </div>
       `;
 
-      // day header inputs (typing-safe)
+      // bind day header inputs (typing = scheduleSave allowUndo)
       const dayLabelInp = sec.querySelector(".dayLabelInp");
       dayLabelInp.value = d.dayLabel || `Day ${idx+1}`;
       dayLabelInp.addEventListener("input", () => {
         d.dayLabel = dayLabelInp.value.trim() || `Day ${idx+1}`;
         d.autoDayLabel = false;
-        const chip = document.querySelector(\`.dayChip[data-id="\${d.id}"] .t\`);
+        const chip = document.querySelector(`.dayChip[data-id="${d.id}"] .t`);
         if (chip) chip.textContent = d.dayLabel;
-        scheduleSave({pushCloud:true, recalc:false, toast:false});
+        scheduleSave({allowUndo:true});
       });
 
       const daySubInp = sec.querySelector(".daySubInp");
       daySubInp.value = d.subtitle || "";
       daySubInp.addEventListener("input", () => {
         d.subtitle = daySubInp.value;
-        scheduleSave({pushCloud:true, recalc:false, toast:false});
+        scheduleSave({allowUndo:true});
       });
 
       const dateInp = sec.querySelector(".dateInp");
       dateInp.value = d.dateText || "";
       dateInp.addEventListener("change", () => {
-        // change 是「完成輸入」才觸發，比 input 更穩
+        d.dateText = dateInp.value.trim() || d.dateText;
         if (idx===0){
-          pushUndo();
-          d.dateText = dateInp.value.trim() || d.dateText;
           ensureDatesFromDay1();
-          scheduleSave({pushCloud:true, recalc:false, toast:true});
-          render(true);
+          saveLocal();
+          render();
+          scheduleSave({allowUndo:true});
         }else{
-          d.dateText = dateInp.value.trim() || d.dateText;
-          scheduleSave({pushCloud:true, recalc:false, toast:true});
-          const chipS = document.querySelector(\`.dayChip[data-id="\${d.id}"] .s\`);
+          const chipS = document.querySelector(`.dayChip[data-id="${d.id}"] .s`);
           if (chipS) chipS.textContent = d.dateText;
+          scheduleSave({allowUndo:true});
         }
       });
 
@@ -1023,7 +953,7 @@
       budgetInp.value = d.budgetJPY || "";
       budgetInp.addEventListener("input", () => {
         d.budgetJPY = budgetInp.value;
-        scheduleSave({pushCloud:true, recalc:true, toast:false});
+        scheduleSave({allowUndo:true});
       });
 
       const rateInp = sec.querySelector(".rateInp");
@@ -1032,7 +962,8 @@
         const v = parseFloat(rateInp.value);
         if (!isNaN(v) && v>0){
           state.settings.rate = v;
-          scheduleSave({pushCloud:true, recalc:true, toast:false});
+          recalcTotalsUI();
+          scheduleSave({allowUndo:true});
         }
       });
 
@@ -1041,19 +972,17 @@
       ticketText.value = d.tickets?.text || "";
       ticketText.addEventListener("input", () => {
         d.tickets.text = ticketText.value;
-        scheduleSave({pushCloud:true, recalc:false, toast:false});
+        scheduleSave({allowUndo:true});
       });
-
       const ticketPhotos = sec.querySelector(".ticketPhotos");
-      renderPhotoStrip(ticketPhotos, d.tickets.photos, () => scheduleSave({pushCloud:true, recalc:false, toast:true}));
-
+      renderPhotoStrip(ticketPhotos, d.tickets.photos, () => scheduleSave({allowUndo:true}));
       sec.querySelector(".btnTicketPhoto").addEventListener("click", async () => {
         const url = await pickPhoto();
         if (!url) return;
-        pushUndo();
+        markActionUndo();
         d.tickets.photos.push(url);
-        renderPhotoStrip(ticketPhotos, d.tickets.photos, () => scheduleSave({pushCloud:true, recalc:false, toast:true}));
-        scheduleSave({pushCloud:true, recalc:false, toast:true});
+        renderPhotoStrip(ticketPhotos, d.tickets.photos, () => scheduleSave({allowUndo:true}));
+        scheduleSave({allowUndo:true});
       });
 
       // day note
@@ -1061,27 +990,25 @@
       dayNoteText.value = d.dayNote?.text || "";
       dayNoteText.addEventListener("input", () => {
         d.dayNote.text = dayNoteText.value;
-        scheduleSave({pushCloud:true, recalc:false, toast:false});
+        scheduleSave({allowUndo:true});
       });
-
       const dayNotePhotos = sec.querySelector(".dayNotePhotos");
-      renderPhotoStrip(dayNotePhotos, d.dayNote.photos, () => scheduleSave({pushCloud:true, recalc:false, toast:true}));
-
+      renderPhotoStrip(dayNotePhotos, d.dayNote.photos, () => scheduleSave({allowUndo:true}));
       sec.querySelector(".btnDayNotePhoto").addEventListener("click", async () => {
         const url = await pickPhoto();
         if (!url) return;
-        pushUndo();
+        markActionUndo();
         d.dayNote.photos.push(url);
-        renderPhotoStrip(dayNotePhotos, d.dayNote.photos, () => scheduleSave({pushCloud:true, recalc:false, toast:true}));
-        scheduleSave({pushCloud:true, recalc:false, toast:true});
+        renderPhotoStrip(dayNotePhotos, d.dayNote.photos, () => scheduleSave({allowUndo:true}));
+        scheduleSave({allowUndo:true});
       });
 
       // route overview
       sec.querySelector(".btnDayRoute").addEventListener("click", () => openDayRoute(d));
 
-      // render cards for each section
+      // render cards
       ["morning","afternoon","night"].forEach(key=>{
-        const body = sec.querySelector(\`.sec[data-sec="\${key}"] .secBody\`);
+        const body = sec.querySelector(`.sec[data-sec="${key}"] .secBody`);
         body.innerHTML = "";
         if (key==="night"){
           const list = d.sections.night || [];
@@ -1127,10 +1054,6 @@
     `;
   }
 
-  function typeLabel(t){
-    return t==="restaurant" ? "餐廳" : t==="transport" ? "交通" : t==="shopping" ? "購物" : t==="lodging" ? "住宿" : "景點";
-  }
-
   function renderCard(card, dayObj, secKey){
     const el = document.createElement("article");
     el.className = "card";
@@ -1153,7 +1076,7 @@
 
       <div class="cardBtns">
         <button class="btn small btnPreview" type="button">地圖預覽</button>
-        <button class="btn small btnSearch" type="button">在地圖上搜尋</button>
+        <button class="btn small btnMapSearch" type="button">在地圖上搜尋</button>
         <button class="btn small btnRoute" type="button">一鍵導航路線</button>
         <button class="btn small btnNearby" type="button">附近搜尋</button>
       </div>
@@ -1211,7 +1134,7 @@
     jpyInp.value = card.jpy || "";
     noteText.value = card.note || "";
 
-    renderPhotoStrip(notePhotos, card.photos, () => scheduleSave({pushCloud:true, recalc:false, toast:true}));
+    renderPhotoStrip(notePhotos, card.photos, () => scheduleSave({allowUndo:true}));
 
     function updateTwd(){
       const rate = Number(state.settings.rate||0.22);
@@ -1222,30 +1145,27 @@
     }
     updateTwd();
 
-    // typing-safe bindings
-    titleInp.addEventListener("input", () => { card.title = titleInp.value; scheduleSave({pushCloud:true, recalc:false, toast:false}); });
+    titleInp.addEventListener("input", () => { card.title = titleInp.value; scheduleSave({allowUndo:true}); });
     jaInp.addEventListener("input", () => {
       card.ja = jaInp.value;
       if (!card.destination){
         card.destination = jaInp.value;
         destInp.value = card.destination;
       }
-      scheduleSave({pushCloud:true, recalc:false, toast:false});
+      scheduleSave({allowUndo:true});
     });
-    metaInp.addEventListener("input", () => { card.meta = metaInp.value; scheduleSave({pushCloud:true, recalc:false, toast:false}); });
-
-    originInp.addEventListener("input", () => { card.origin = originInp.value; scheduleSave({pushCloud:true, recalc:false, toast:false}); });
-    destInp.addEventListener("input", () => { card.destination = destInp.value; scheduleSave({pushCloud:true, recalc:false, toast:false}); });
+    metaInp.addEventListener("input", () => { card.meta = metaInp.value; scheduleSave({allowUndo:true}); });
+    originInp.addEventListener("input", () => { card.origin = originInp.value; scheduleSave({allowUndo:true}); });
+    destInp.addEventListener("input", () => { card.destination = destInp.value; scheduleSave({allowUndo:true}); });
 
     jpyInp.addEventListener("input", () => {
       card.jpy = jpyInp.value;
       updateTwd();
-      scheduleSave({pushCloud:true, recalc:true, toast:false});
+      scheduleSave({allowUndo:true});
     });
 
-    noteText.addEventListener("input", () => { card.note = noteText.value; scheduleSave({pushCloud:true, recalc:false, toast:false}); });
+    noteText.addEventListener("input", () => { card.note = noteText.value; scheduleSave({allowUndo:true}); });
 
-    // vias
     const viasWrap = el.querySelector(".vias");
     function renderVias(){
       viasWrap.innerHTML = "";
@@ -1261,13 +1181,13 @@
         inp.value = v || "";
         inp.addEventListener("input", () => {
           card.vias[idx] = inp.value;
-          scheduleSave({pushCloud:true, recalc:false, toast:false});
+          scheduleSave({allowUndo:true});
         });
         row.querySelector(".btnDelVia").addEventListener("click", () => {
-          pushUndo();
+          markActionUndo();
           card.vias.splice(idx,1);
           renderVias();
-          scheduleSave({pushCloud:true, recalc:false, toast:true});
+          scheduleSave({allowUndo:true});
         });
         viasWrap.appendChild(row);
       });
@@ -1275,30 +1195,28 @@
     renderVias();
 
     el.querySelector(".btnAddVia").addEventListener("click", () => {
-      pushUndo();
+      markActionUndo();
       card.vias = card.vias || [];
       card.vias.push("");
       renderVias();
-      scheduleSave({pushCloud:true, recalc:false, toast:true});
+      scheduleSave({allowUndo:true});
     });
 
-    // note photos
     el.querySelector(".btnNotePhoto").addEventListener("click", async () => {
       const url = await pickPhoto();
       if (!url) return;
-      pushUndo();
+      markActionUndo();
       card.photos.push(url);
-      renderPhotoStrip(notePhotos, card.photos, () => scheduleSave({pushCloud:true, recalc:false, toast:true}));
-      scheduleSave({pushCloud:true, recalc:false, toast:true});
+      renderPhotoStrip(notePhotos, card.photos, () => scheduleSave({allowUndo:true}));
+      scheduleSave({allowUndo:true});
     });
 
-    // map actions
     el.querySelector(".btnPreview").addEventListener("click", () => {
       const q = (card.destination || card.ja || card.title || "").trim();
       if (!q) return alert("請先填『目的地/地址』或『日文名稱』");
       openMapPreview(q);
     });
-    el.querySelector(".btnSearch").addEventListener("click", () => {
+    el.querySelector(".btnMapSearch").addEventListener("click", () => {
       const q = (card.destination || card.ja || card.title || "").trim();
       if (!q) return alert("請先填『目的地/地址』或『日文名稱』");
       window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}`, "_blank");
@@ -1310,8 +1228,7 @@
       openNearbyMenu(q);
     });
 
-    // long-press menu
-    attachLongPress(el, card);
+    attachLongPress(el);
 
     return el;
   }
@@ -1321,7 +1238,7 @@
     if (!d) return;
     if (type==="lodging") return;
 
-    pushUndo();
+    markActionUndo();
     const c = newCard(type);
 
     if (secKey==="night"){
@@ -1332,9 +1249,9 @@
     }else{
       d.sections[secKey].push(c);
     }
-
-    scheduleSave({pushCloud:true, recalc:true, toast:true});
-    render(true);
+    saveLocal();
+    render();
+    scheduleSave({allowUndo:true});
   }
 
   /* =========================
@@ -1350,7 +1267,6 @@
       photoPicker.click();
     });
   }
-
   photoPicker.addEventListener("change", () => {
     const file = photoPicker.files && photoPicker.files[0];
     if (!file){
@@ -1375,7 +1291,7 @@
       img.alt = "photo";
       img.title = "點一下直接刪除";
       img.addEventListener("click", () => {
-        pushUndo();
+        markActionUndo();
         list.splice(idx,1);
         renderPhotoStrip(container, list, onChanged);
         onChanged && onChanged();
@@ -1458,7 +1374,6 @@
   function buildTotalText(){
     const rate = Number(state.settings.rate||0.22);
     let tripJPY = 0;
-
     state.days.forEach(d=>{
       flattenDayCards(d).forEach(c=>{
         const j = parseFloat(c.jpy||"");
@@ -1466,7 +1381,6 @@
       });
     });
     const tripTWD = Math.round(tripJPY * rate);
-
     return `全旅程合計：${Math.round(tripJPY)} JPY / ${tripTWD} TWD（離線可用：已自動保存）`;
   }
 
@@ -1501,22 +1415,23 @@
      Day add/remove
   ========================== */
   function addDay(){
-    pushUndo();
+    markActionUndo();
     const i = state.days.length + 1;
-    const d = newDay(i);
-    state.days.push(d);
+    state.days.push(newDay(i));
     ensureDatesFromDay1();
-    scheduleSave({pushCloud:true, recalc:true, toast:true});
-    render(true);
+    saveLocal();
+    render();
+    scheduleSave({allowUndo:true});
   }
 
   function removeLastDay(){
     if (state.days.length <= 1) return alert("至少要保留一天");
-    pushUndo();
+    markActionUndo();
     state.days.pop();
     ensureDatesFromDay1();
-    scheduleSave({pushCloud:true, recalc:true, toast:true});
-    render(true);
+    saveLocal();
+    render();
+    scheduleSave({allowUndo:true});
   }
 
   /* =========================
@@ -1544,12 +1459,12 @@
       try{
         const data = JSON.parse(String(e.target.result||"{}"));
         if (data && data.state){
-          pushUndo();
+          markActionUndo();
           state = data.state;
           normalizeState();
           saveLocal();
-          scheduleSave({pushCloud:true, recalc:true, toast:true});
-          render(true);
+          render();
+          scheduleSave({allowUndo:true});
           toast("匯入成功");
         }else{
           alert("匯入失敗：JSON 格式不對");
@@ -1565,12 +1480,13 @@
   $("#btnClear").addEventListener("click", () => {
     if (!confirm("確定清除本機所有資料？（不可復原）")) return;
     clearLocal();
-    undoStack = [];
     state = defaultState();
     normalizeState();
     saveLocal();
-    pushUndo();
-    render(true);
+    undoStack = [];
+    pushUndo(true);
+    lastSavedHash = hashState(state);
+    render();
     toast("已清除");
   });
 
@@ -1603,7 +1519,7 @@
       state = JSON.parse(prev);
       normalizeState();
       saveLocal();
-      render(true);
+      render();
       $("#btnUndo").disabled = undoStack.length <= 1;
       toast("已 Undo");
     }catch(e){}
@@ -1637,7 +1553,7 @@
       });
     });
 
-    $("#searchResult").textContent = hits.length ? `找到 ${hits.length} 筆` : "找不到";
+    $("#searchResult").textContent = hits.length ? `找到 ${hits.length} 筆（跳到第一筆）` : "找不到";
     if (!hits.length) return;
 
     const first = hits[0];
@@ -1646,7 +1562,7 @@
     const sec = document.querySelector(`.daySection[data-id="${first.day.id}"]`);
     if (sec) sec.scrollIntoView({behavior:"smooth", block:"start"});
   }
-  $("#btnSearch").addEventListener("click", doSearch);
+  $("#btnSearchGlobal").addEventListener("click", doSearch);
   $("#searchInput").addEventListener("keydown", (e) => {
     if (e.key==="Enter"){
       e.preventDefault();
@@ -1659,7 +1575,7 @@
   ========================== */
   $("#appDesc").addEventListener("input", () => {
     state.appDesc = $("#appDesc").value;
-    scheduleSave({pushCloud:true, recalc:false, toast:false});
+    scheduleSave({allowUndo:true});
   });
 
   /* =========================
@@ -1673,69 +1589,54 @@
   ========================== */
   const menu = $("#ctxMenu");
   let menuCtx = null;
-
   let pressTimer = null;
   let pressStart = null;
 
-  const isInteractiveTarget = (t) => {
-    if (!t || !t.closest) return false;
-    return !!t.closest("input,textarea,select,button,a,[contenteditable='true']");
-  };
-
-  function attachLongPress(cardEl, card){
-    const start = (clientX, clientY, target) => {
-      // ✅ 在輸入框上不要觸發長按（避免失焦/跳掉）
-      if (isInteractiveTarget(target)) return;
-
-      pressStart = { x: clientX, y: clientY };
+  function attachLongPress(cardEl){
+    const onDown = (e) => {
+      if (e.type==="mousedown" && e.button !== 0) return;
+      pressStart = { x: e.clientX, y: e.clientY };
       clearTimeout(pressTimer);
-      pressTimer = setTimeout(() => openMenu(cardEl, clientX, clientY, card), 520);
+      pressTimer = setTimeout(() => openMenu(cardEl, e.clientX, e.clientY), 520);
     };
-
-    const move = (clientX, clientY) => {
+    const onMove = (e) => {
       if (!pressStart) return;
-      const dx = Math.abs(clientX - pressStart.x);
-      const dy = Math.abs(clientY - pressStart.y);
+      const dx = Math.abs(e.clientX - pressStart.x);
+      const dy = Math.abs(e.clientY - pressStart.y);
       if (dx > 12 || dy > 12) clearTimeout(pressTimer);
     };
-
-    const end = () => { clearTimeout(pressTimer); pressStart = null; };
+    const onUp = () => { clearTimeout(pressTimer); pressStart = null; };
 
     cardEl.addEventListener("touchstart", (e) => {
       const t = e.touches[0];
-      start(t.clientX, t.clientY, e.target);
+      onDown({type:"touchstart", clientX:t.clientX, clientY:t.clientY});
     }, {passive:true});
     cardEl.addEventListener("touchmove", (e) => {
       const t = e.touches[0];
-      move(t.clientX, t.clientY);
+      onMove({clientX:t.clientX, clientY:t.clientY});
     }, {passive:true});
-    cardEl.addEventListener("touchend", end);
+    cardEl.addEventListener("touchend", onUp);
 
-    cardEl.addEventListener("mousedown", (e) => {
-      if (e.button !== 0) return;
-      start(e.clientX, e.clientY, e.target);
-    });
-    cardEl.addEventListener("mousemove", (e) => move(e.clientX, e.clientY));
-    cardEl.addEventListener("mouseup", end);
-    cardEl.addEventListener("mouseleave", end);
+    cardEl.addEventListener("mousedown", onDown);
+    cardEl.addEventListener("mousemove", onMove);
+    cardEl.addEventListener("mouseup", onUp);
+    cardEl.addEventListener("mouseleave", onUp);
   }
 
-  function openMenu(cardEl, x, y, card){
-    const dayId = cardEl.dataset.dayId;
-    const secKey = cardEl.dataset.secKey;
-    const cardId = cardEl.dataset.cardId;
-
-    menuCtx = {dayId, secKey, cardId};
-    $("#ctxTitle").textContent = `卡片：${(card.title||"").slice(0, 28)}`;
+  function openMenu(cardEl, x, y){
+    menuCtx = {
+      dayId: cardEl.dataset.dayId,
+      secKey: cardEl.dataset.secKey,
+      cardId: cardEl.dataset.cardId
+    };
+    const found = findCard(menuCtx.dayId, menuCtx.secKey, menuCtx.cardId);
+    $("#ctxTitle").textContent = `卡片：${(found?.card?.title||"").slice(0, 28)}`;
 
     menu.style.left = Math.min(x, window.innerWidth - 240) + "px";
     menu.style.top  = Math.min(y, window.innerHeight - 280) + "px";
     menu.classList.add("show");
   }
-  function closeMenu(){
-    menu.classList.remove("show");
-    menuCtx = null;
-  }
+  function closeMenu(){ menu.classList.remove("show"); menuCtx = null; }
   document.addEventListener("click", (e) => {
     if (menu.classList.contains("show") && !menu.contains(e.target)) closeMenu();
   });
@@ -1749,18 +1650,22 @@
     return {d, list, idx, card:list[idx]};
   }
 
+  function assertNotLodging(card){
+    if (card.type==="lodging"){ alert("住宿卡固定在底部"); return false; }
+    return true;
+  }
+
   $("#mUp").addEventListener("click", () => {
     if (!menuCtx) return;
     const found = findCard(menuCtx.dayId, menuCtx.secKey, menuCtx.cardId);
     if (!found) return closeMenu();
     const {list, idx, card} = found;
-    if (card.type==="lodging") return alert("住宿卡固定在底部");
+    if (!assertNotLodging(card)) return closeMenu();
     if (idx<=0) return closeMenu();
-    pushUndo();
+    markActionUndo();
     list.splice(idx,1);
     list.splice(idx-1,0,card);
-    scheduleSave({pushCloud:true, recalc:true, toast:true});
-    render(true);
+    saveLocal(); render(); scheduleSave({allowUndo:true});
     closeMenu();
   });
 
@@ -1769,13 +1674,12 @@
     const found = findCard(menuCtx.dayId, menuCtx.secKey, menuCtx.cardId);
     if (!found) return closeMenu();
     const {list, idx, card} = found;
-    if (card.type==="lodging") return alert("住宿卡固定在底部");
+    if (!assertNotLodging(card)) return closeMenu();
     if (idx>=list.length-1) return closeMenu();
-    pushUndo();
+    markActionUndo();
     list.splice(idx,1);
     list.splice(idx+1,0,card);
-    scheduleSave({pushCloud:true, recalc:true, toast:true});
-    render(true);
+    saveLocal(); render(); scheduleSave({allowUndo:true});
     closeMenu();
   });
 
@@ -1784,11 +1688,10 @@
     const found = findCard(menuCtx.dayId, menuCtx.secKey, menuCtx.cardId);
     if (!found) return closeMenu();
     const {list, idx, card} = found;
-    if (card.type==="lodging") return alert("住宿卡固定（不能刪除）");
-    pushUndo();
+    if (!assertNotLodging(card)) return closeMenu();
+    markActionUndo();
     list.splice(idx,1);
-    scheduleSave({pushCloud:true, recalc:true, toast:true});
-    render(true);
+    saveLocal(); render(); scheduleSave({allowUndo:true});
     closeMenu();
   });
 
@@ -1797,13 +1700,12 @@
     const found = findCard(menuCtx.dayId, menuCtx.secKey, menuCtx.cardId);
     if (!found) return closeMenu();
     const {list, idx, card} = found;
-    if (card.type==="lodging") return alert("住宿卡固定（不支援複製）");
-    pushUndo();
+    if (!assertNotLodging(card)) return closeMenu();
+    markActionUndo();
     const clone = JSON.parse(JSON.stringify(card));
     clone.id = `c_${Date.now()}_${Math.random().toString(16).slice(2)}`;
     list.splice(idx+1,0,clone);
-    scheduleSave({pushCloud:true, recalc:true, toast:true});
-    render(true);
+    saveLocal(); render(); scheduleSave({allowUndo:true});
     closeMenu();
   });
 
@@ -1812,12 +1714,11 @@
     const found = findCard(menuCtx.dayId, menuCtx.secKey, menuCtx.cardId);
     if (!found) return closeMenu();
     const {list, idx, card} = found;
-    if (card.type==="lodging") return alert("住宿卡已固定在底部");
-    pushUndo();
+    if (!assertNotLodging(card)) return closeMenu();
+    markActionUndo();
     list.splice(idx,1);
     list.unshift(card);
-    scheduleSave({pushCloud:true, recalc:true, toast:true});
-    render(true);
+    saveLocal(); render(); scheduleSave({allowUndo:true});
     closeMenu();
   });
 
@@ -1826,7 +1727,7 @@
     const found = findCard(menuCtx.dayId, menuCtx.secKey, menuCtx.cardId);
     if (!found) return closeMenu();
     const {list, idx, card} = found;
-    if (card.type==="lodging") return alert("住宿卡固定（不能移動）");
+    if (!assertNotLodging(card)) return closeMenu();
 
     const labels = state.days.map((dd,i)=> `${i+1}. ${dd.dayLabel} (${dd.dateText})`).join("\n");
     const pick = prompt("移到哪一天？輸入序號：\n" + labels, "2");
@@ -1837,7 +1738,7 @@
     const secPick = prompt("移到哪個分區？輸入：morning / afternoon / night", "morning");
     const targetSec = ["morning","afternoon","night"].includes(secPick) ? secPick : "morning";
 
-    pushUndo();
+    markActionUndo();
     list.splice(idx,1);
     toDay.sections[targetSec] = toDay.sections[targetSec] || [];
     if (targetSec==="night"){
@@ -1847,8 +1748,7 @@
     }else{
       toDay.sections[targetSec].push(card);
     }
-    scheduleSave({pushCloud:true, recalc:true, toast:true});
-    render(true);
+    saveLocal(); render(); scheduleSave({allowUndo:true});
     closeMenu();
   });
 
@@ -1856,22 +1756,20 @@
      Init local
   ========================== */
   function init(){
-    const s = loadLocal();
-    state = s || defaultState();
+    state = loadLocal() || defaultState();
     normalizeState();
-
     undoStack = [];
-    pushUndo();
+    pushUndo(true);
+    lastSavedHash = hashState(state);
     $("#btnUndo").disabled = true;
-
-    $("#appDesc").value = state.appDesc || "";
-    render(true);
+    render();
+    setCloudStatus("雲端：尚未載入（可離線使用）", "soft");
+    setSyncBadge(buildTotalText());
   }
-
   init();
 
   /* =========================
-     Hook auth & cloud signals
+     Cloud/Auth hooks
   ========================== */
   window.NijiApp = {
     onAuthState(user){
@@ -1882,123 +1780,133 @@
       if (user){
         setAuthStatus(`已登入：${user.email || "(unknown)"}`);
         $("#btnSignOut").disabled = false;
-        setCloudStatus("雲端：準備中…", "soft");
-
         $("#btnCloudPull").disabled = false;
         $("#btnCloudPush").disabled = false;
 
+        setCloudStatus("雲端：準備中…", "soft");
         autoLoadFromCloudOnce().then(()=>{
           setCloudStatus("雲端：已連線 ✅", "ok");
         });
       }else{
         setAuthStatus("尚未登入（可離線使用）");
         $("#btnSignOut").disabled = true;
-
         $("#btnCloudPull").disabled = true;
         $("#btnCloudPush").disabled = true;
-
         if (cloud.unsub){ cloud.unsub(); cloud.unsub = null; }
         setCloudStatus("雲端：未連線", "soft");
       }
     },
-    setCloudReady(ok){
-      if (!ok) setCloudStatus("雲端：未就緒", "soft");
+    setCloudReady(ok, reason=""){
+      if (ok){
+        setCloudStatus("雲端：已就緒", "ok");
+        $("#btnEmailSignIn").disabled = false;
+        $("#btnEmailSignUp").disabled = false;
+      }else{
+        setCloudStatus(`雲端：不可用（${reason||"請用 https 開啟"}）`, "warn");
+        $("#btnEmailSignIn").disabled = true;
+        $("#btnEmailSignUp").disabled = true;
+      }
     }
   };
-
 })();
 </script>
 
 <script type="module">
   // ====== Firebase Auth + Firestore CloudSync (Email/Password) ======
-  import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-  import {
-    getAuth, onAuthStateChanged,
-    createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut
-  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-  import {
-    getFirestore, doc, getDoc, setDoc, onSnapshot, serverTimestamp
-  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  // ⚠️ 必須 https 網址。若你用 file:// 這裡大機率會失敗。
+  const isHttps = location.protocol === "https:" || location.hostname === "localhost" || location.hostname === "127.0.0.1";
+  if (!isHttps){
+    window.NijiApp?.setCloudReady(false, "需要 https（GitHub Pages/Netlify）");
+    console.warn("[Cloud] blocked: not https");
+  }else{
+    try{
+      const { initializeApp, getApps } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js");
+      const {
+        getAuth, onAuthStateChanged,
+        createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut
+      } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js");
+      const {
+        getFirestore, doc, getDoc, setDoc, onSnapshot, serverTimestamp
+      } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyAkFpjZVwRDA92YLK-JfDPeoHJ3hbgKVXM",
-    authDomain: "trip-db86d.firebaseapp.com",
-    projectId: "trip-db86d",
-    storageBucket: "trip-db86d.firebasestorage.app",
-    messagingSenderId: "709795426974",
-    appId: "1:709795426974:web:ec3e2f03f2116b68c1418f",
-    measurementId: "G-FD0411E3XH"
-  };
+      const firebaseConfig = {
+        apiKey: "AIzaSyAkFpjZVwRDA92YLK-JfDPeoHJ3hbgKVXM",
+        authDomain: "trip-db86d.firebaseapp.com",
+        projectId: "trip-db86d",
+        storageBucket: "trip-db86d.firebasestorage.app",
+        messagingSenderId: "709795426974",
+        appId: "1:709795426974:web:ec3e2f03f2116b68c1418f",
+        measurementId: "G-FD0411E3XH"
+      };
 
-  const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db = getFirestore(app);
+      const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
+      const auth = getAuth(app);
+      const db = getFirestore(app);
 
-  window.CloudSync = {
-    _ref(uid, tripId){
-      return doc(db, "users", uid, "trips", tripId);
-    },
-    async load(uid, tripId){
-      const ref = this._ref(uid, tripId);
-      const snap = await getDoc(ref);
-      return snap.exists() ? (snap.data()?.state ?? null) : null;
-    },
-    async save(uid, tripId, state){
-      const ref = this._ref(uid, tripId);
-      await setDoc(ref, { state, updatedAt: serverTimestamp() }, { merge: true });
-    },
-    subscribe(uid, tripId, onState){
-      const ref = this._ref(uid, tripId);
-      return onSnapshot(ref, (snap) => {
-        if (!snap.exists()) return;
-        const remote = snap.data()?.state ?? null;
-        if (remote) onState(remote);
+      // CloudSync API: users/{uid}/trips/{tripId}
+      window.CloudSync = {
+        _ref(uid, tripId){ return doc(db, "users", uid, "trips", tripId); },
+        async load(uid, tripId){
+          const ref = this._ref(uid, tripId);
+          const snap = await getDoc(ref);
+          return snap.exists() ? (snap.data()?.state ?? null) : null;
+        },
+        async save(uid, tripId, state){
+          const ref = this._ref(uid, tripId);
+          await setDoc(ref, { state, updatedAt: serverTimestamp() }, { merge: true });
+        },
+        subscribe(uid, tripId, onState){
+          const ref = this._ref(uid, tripId);
+          return onSnapshot(ref, (snap) => {
+            if (!snap.exists()) return;
+            const remote = snap.data()?.state ?? null;
+            if (remote) onState(remote);
+          });
+        }
+      };
+
+      // UI wiring
+      const $ = (s)=>document.querySelector(s);
+      const email = $("#email");
+      const pw = $("#password");
+
+      $("#btnEmailSignUp").addEventListener("click", async () => {
+        try{
+          if (!email.value || !pw.value) return alert("請輸入 Email 與 Password");
+          await createUserWithEmailAndPassword(auth, email.value.trim(), pw.value);
+          alert("註冊成功 ✅");
+        }catch(e){
+          alert("註冊失敗：" + (e?.message || e));
+        }
       });
+
+      $("#btnEmailSignIn").addEventListener("click", async () => {
+        try{
+          if (!email.value || !pw.value) return alert("請輸入 Email 與 Password");
+          await signInWithEmailAndPassword(auth, email.value.trim(), pw.value);
+        }catch(e){
+          alert("登入失敗：" + (e?.message || e));
+        }
+      });
+
+      $("#btnSignOut").addEventListener("click", async () => {
+        try{ await signOut(auth); }
+        catch(e){ alert("登出失敗：" + (e?.message || e)); }
+      });
+
+      onAuthStateChanged(auth, (user) => {
+        if (window.NijiApp && typeof window.NijiApp.onAuthState === "function"){
+          window.NijiApp.onAuthState(user);
+        }
+      });
+
+      window.NijiApp?.setCloudReady(true);
+      console.log("[Firebase] ready");
+    }catch(err){
+      console.error("[Firebase] failed", err);
+      window.NijiApp?.setCloudReady(false, "Firebase 載入失敗");
     }
-  };
-
-  // --- UI wiring ---
-  const $ = (s)=>document.querySelector(s);
-  const email = $("#email");
-  const pw = $("#password");
-
-  $("#btnEmailSignUp").addEventListener("click", async () => {
-    try{
-      if (!email.value || !pw.value) return alert("請輸入 Email 與 Password");
-      await createUserWithEmailAndPassword(auth, email.value.trim(), pw.value);
-      alert("註冊成功 ✅");
-    }catch(e){
-      console.error(e);
-      alert("註冊失敗：" + (e?.message || e));
-    }
-  });
-
-  $("#btnEmailSignIn").addEventListener("click", async () => {
-    try{
-      if (!email.value || !pw.value) return alert("請輸入 Email 與 Password");
-      await signInWithEmailAndPassword(auth, email.value.trim(), pw.value);
-    }catch(e){
-      console.error(e);
-      alert("登入失敗：" + (e?.message || e));
-    }
-  });
-
-  $("#btnSignOut").addEventListener("click", async () => {
-    try{
-      await signOut(auth);
-    }catch(e){
-      console.error(e);
-      alert("登出失敗：" + (e?.message || e));
-    }
-  });
-
-  onAuthStateChanged(auth, (user) => {
-    if (window.NijiApp && typeof window.NijiApp.onAuthState === "function"){
-      window.NijiApp.onAuthState(user);
-    }
-  });
-
-  console.log("[Firebase] ready");
+  }
 </script>
 
 </body>
