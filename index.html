@@ -118,74 +118,80 @@
     }
     .inp:focus{border-color:var(--focus); box-shadow:0 0 0 3px rgba(255,184,92,.18), var(--shadow);}
 
-    /* Sticky Day Nav */
-    .sticky{
-      position:sticky;top:0;z-index:30;
-      padding-top:10px;
-      background:linear-gradient(to bottom, rgba(252,224,179,0.97), rgba(252,224,179,0.74), rgba(252,224,179,0));
-      backdrop-filter: blur(6px);
-    }.dayNav{
+    /* Sticky Day Nav (NEW: fixed size + editable like screenshot) */
+.sticky{
+  position:sticky;top:0;z-index:30;
+  padding-top:10px;
+  background:linear-gradient(to bottom, rgba(252,224,179,0.97), rgba(252,224,179,0.74), rgba(252,224,179,0));
+  backdrop-filter: blur(6px);
+}
+
+.dayNav{
   background:var(--soft);
-  border-radius:24px;
-  padding:8px 10px;              /* ✅ 稍微縮小高度 */
+  border-radius:28px;
+  padding:12px 12px;
   display:flex;
-  gap:10px;
+  gap:14px;
   overflow-x:auto;
   box-shadow:var(--shadow);
-  align-items:center;            /* ✅ 避免因內容高度不同而撐開 */
 }
 
 .dayChip{
   flex:0 0 auto;
-  min-width:92px;
-
-  background:var(--chip);
-  border-radius:var(--r2);
-
-  height:56px;                   /* ✅ 固定高度（你想更扁可改 52px / 48px） */
-  padding:8px 10px;              /* ✅ 保持內距但不讓它無限長高 */
+  /* ✅ 固定外觀尺寸（不因文字變形） */
+  width: min(240px, 44vw);
+  height: 92px;
+  border-radius: 999px;
+  background: #fff3da;
+  border: 1px solid rgba(122,74,38,0.18);
+  box-shadow:var(--shadow);
   display:flex;
   flex-direction:column;
+  align-items:center;
   justify-content:center;
-
-  box-shadow:var(--shadow);
-  border:1px solid transparent;
-  cursor:pointer;
+  gap:6px;
+  padding:10px 14px;
   user-select:none;
-
-  overflow:hidden;               /* ✅ 內容不准撐破 */
 }
 
 .dayChip.active{
-  background:var(--chipOn);
-  border-color:rgba(122,74,38,0.22);
+  background:#fff;
+  border-color:rgba(122,74,38,0.28);
 }
 
-.dayChip .t,
-.dayChip .s{
-  white-space:nowrap;            /* ✅ 不換行 */
-  overflow:hidden;               /* ✅ 超出隱藏 */
-  text-overflow:ellipsis;        /* ✅ 超出顯示 … */
+.dayChip input{
+  width: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  text-align: center;
+  color: #5c3a1c;
+  font-weight: 1000;
+  padding: 0;
+  margin: 0;
+
+  /* ✅ 文字太長不撐高，改省略號 */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.dayChip .t{
-  font-weight:1000;
-  font-size:15px;
-  line-height:1.15;
+.dayChip .dayChipTitle{
+  font-size: 28px;
+  line-height: 1.1;
 }
 
-.dayChip .s{
-  font-size:12px;
-  color:var(--brown2);
-  line-height:1.1;
-  margin-top:2px;
+.dayChip .dayChipDate{
+  font-size: 18px;
+  line-height: 1.1;
+  color: var(--brown2);
+  font-weight: 900;
 }
-      font-weight:900;
-    }
-    .dayChip:focus-within{
-      border-color:rgba(122,74,38,0.22);
-      box-shadow:0 0 0 3px rgba(255,184,92,.12), var(--shadow);
-    }
+
+/* ✅ 編輯時也不要長歪 */
+.dayChip input:focus{
+  box-shadow:none;
+}
 
     /* Day */
     .daySection{margin-top:12px;margin-bottom:16px;}
@@ -1049,72 +1055,61 @@
 
   /* ✅ 標記4：day chip 內可編輯 */
   function renderDayNav(){
-    const nav = $("#dayNav");
-    nav.innerHTML = "";
+  const nav = $("#dayNav");
+  nav.innerHTML = "";
 
-    state.days.forEach((d, idx) => {
-      const chip = document.createElement("div");
-      chip.className = "dayChip";
-      chip.dataset.id = d.id;
+  state.days.forEach((d, idx) => {
+    const chip = document.createElement("div");
+    chip.className = "dayChip";
+    chip.dataset.id = d.id;
 
-      chip.innerHTML = `
-        <input class="chipInp t" data-kind="label" value="" />
-        <input class="chipInp s" data-kind="date" value="" inputmode="numeric" placeholder="5/8" />
-      `;
+    chip.innerHTML = `
+      <input class="dayChipTitle" value="" />
+      <input class="dayChipDate" value="" inputmode="numeric" placeholder="5/8" />
+    `;
 
-      const inpLabel = chip.querySelector('[data-kind="label"]');
-      const inpDate  = chip.querySelector('[data-kind="date"]');
+    const titleInp = chip.querySelector(".dayChipTitle");
+    const dateInp  = chip.querySelector(".dayChipDate");
 
-      inpLabel.value = d.dayLabel || `Day ${idx+1}`;
-      inpDate.value  = d.dateText || "";
+    titleInp.value = d.dayLabel || `Day ${idx+1}`;
+    dateInp.value  = d.dateText || "";
 
-      // 點 chip（非輸入）＝跳轉
-      chip.addEventListener("click", (e) => {
-        if (e.target === inpLabel || e.target === inpDate) return;
-        activeDayId = d.id;
-        setActiveChip(d.id);
-        const sec = document.querySelector(`.daySection[data-id="${d.id}"]`);
-        if (sec) sec.scrollIntoView({behavior:"smooth", block:"start"});
-      });
-
-      // 防止點 input 也觸發 chip click
-      [inpLabel, inpDate].forEach(inp=>{
-        inp.addEventListener("click", (e)=>e.stopPropagation());
-        inp.addEventListener("focus", (e)=>{ e.stopPropagation(); markTyping(); });
-      });
-
-      inpLabel.addEventListener("input", () => {
-        d.dayLabel = inpLabel.value.trim() || `Day ${idx+1}`;
-        d.autoDayLabel = false;
-
-        // 同步到 Day 內容區的 dayLabelInp（不 rerender）
-        const daySec = document.querySelector(`.daySection[data-id="${d.id}"]`);
-        const dl = daySec?.querySelector(".dayLabelInp");
-        if (dl) dl.value = d.dayLabel;
-
-        scheduleSave();
-      });
-
-      inpDate.addEventListener("change", () => {
-        d.dateText = inpDate.value.trim() || d.dateText;
-
-        const dayIndex = state.days.findIndex(x=>x.id===d.id);
-        if (dayIndex === 0){
-          ensureDatesFromDay1();
-          scheduleSave();
-          render(true);
-        }else{
-          // 同步到 Day 內容區 dateInp
-          const daySec = document.querySelector(`.daySection[data-id="${d.id}"]`);
-          const di = daySec?.querySelector(".dateInp");
-          if (di) di.value = d.dateText;
-          scheduleSave();
-        }
-      });
-
-      nav.appendChild(chip);
+    // ✅ 點 chip（但不是點到 input）才跳轉到該 Day
+    chip.addEventListener("click", (e) => {
+      if (e.target && (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA")) return;
+      activeDayId = d.id;
+      setActiveChip(d.id);
+      const sec = document.querySelector(`.daySection[data-id="${d.id}"]`);
+      if (sec) sec.scrollIntoView({behavior:"smooth", block:"start"});
     });
-  }
+
+    // ✅ 直接編輯 Day 標籤名稱（固定大小，太長會省略號）
+    titleInp.addEventListener("input", () => {
+      d.dayLabel = titleInp.value.trim() || `Day ${idx+1}`;
+      d.autoDayLabel = false;
+      scheduleSave();
+    });
+
+    // ✅ 直接編輯日期（同樣固定大小）
+    // Day1 改日期 → 後面照你原本規則自動延伸
+    dateInp.addEventListener("change", () => {
+      d.dateText = dateInp.value.trim() || d.dateText;
+      if (idx === 0){
+        ensureDatesFromDay1();
+        scheduleSave();
+        render(true); // 同步刷新 day card 內日期顯示
+      }else{
+        scheduleSave();
+      }
+    });
+
+    // ✅ 防止輸入時誤觸造成跳轉
+    titleInp.addEventListener("click", (e) => e.stopPropagation());
+    dateInp.addEventListener("click", (e) => e.stopPropagation());
+
+    nav.appendChild(chip);
+  });
+}
 
   function setActiveChip(id){
     $$(".dayChip").forEach(c=>c.classList.toggle("active", c.dataset.id===id));
