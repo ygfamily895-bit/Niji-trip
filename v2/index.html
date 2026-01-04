@@ -230,8 +230,13 @@
     }
     .thumb:active{transform:scale(.98);}
 
-    /* Sections */
-    .sections{display:grid;grid-template-columns:1fr;gap:10px;padding:10px 6px 6px;}
+    /* Sections (早/午/晚) */
+    .sections{
+      display:grid;
+      grid-template-columns:1fr;
+      gap:10px;
+      padding:10px 6px 6px;
+    }
     .sec{
       background:rgba(255,255,255,0.55);
       border-radius:18px;
@@ -241,6 +246,7 @@
     .secHead{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:8px;}
     .secTitle{font-weight:1000;font-size:14px;color:#5c3a1c;display:flex;align-items:center;gap:7px;}
     .dot{width:9px;height:9px;border-radius:50%;background:#ffb85c;box-shadow:var(--shadow);}
+
     .secActions{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;}
     .secActions .btn{background:#ffe7bf;}
 
@@ -254,12 +260,6 @@
       position:relative;
     }
     .cardTop{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;}
-    .tag{
-      font-size:12px;font-weight:1000;
-      padding:4px 10px;border-radius:var(--pill);
-      background:#fff3da;border:1px solid rgba(122,74,38,0.10);
-      color:#5c3a1c;white-space:nowrap;
-    }
     .titleInp{width:100%;border:none;outline:none;background:#fff;border-radius:14px;
       padding:10px 12px;font-size:15px;font-weight:1000;color:#5c3a1c;box-shadow:var(--shadow);
       border:1px solid rgba(122,74,38,0.10);
@@ -274,6 +274,7 @@
     .miniInp:focus{border-color:var(--focus); box-shadow:0 0 0 3px rgba(255,184,92,.18), var(--shadow);}
 
     .cardBtns{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 8px;}
+
     .locBox{
       border-radius:14px;
       border:1px dashed var(--border);
@@ -281,36 +282,13 @@
       padding:8px 9px;
       margin-top:8px;
     }
-    .locLine{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:6px 0;}
-    .locLabel{font-size:12px;font-weight:1000;color:var(--brown2);width:54px;}
-    .locInp{
-      flex:1 1 180px;border:none;outline:none;
-      padding:9px 12px;border-radius:999px;background:#fff3da;
-      font-weight:900;color:#5a351e;border:1px solid rgba(122,74,38,0.10);
-    }
-    .locInp:focus{border-color:var(--focus); box-shadow:0 0 0 3px rgba(255,184,92,.18);}
+    .locLine{display:flex;gap:8px;align-items:flex-start;flex-wrap:wrap;margin:6px 0;}
+    .locLabel{font-size:12px;font-weight:1000;color:var(--brown2);width:54px;padding-top:10px;}
 
     .vias{display:flex;flex-direction:column;gap:6px;margin-top:6px;}
-    .viaRow{display:flex;gap:8px;align-items:center;}
+    .viaRow{display:flex;gap:8px;align-items:flex-start;}
     .viaRow .locLabel{width:54px;}
-    .viaRow .btn{box-shadow:none;}
-
-    .expense{
-      display:flex;gap:10px;flex-wrap:wrap;align-items:center;
-      margin-top:10px;
-      padding:8px 9px;
-      border-radius:14px;
-      background:#fff3da;
-      border:1px solid rgba(122,74,38,0.10);
-    }
-    .expense .lab{font-size:12px;font-weight:1000;color:var(--brown2);}
-    .expense input{
-      width:130px;border:none;outline:none;background:#fff;border-radius:999px;
-      padding:8px 10px;font-weight:1000;color:#5c3a1c;box-shadow:var(--shadow);
-      border:1px solid rgba(122,74,38,0.10);
-    }
-    .expense input:focus{border-color:var(--focus); box-shadow:0 0 0 3px rgba(255,184,92,.18), var(--shadow);}
-    .expense .calc{font-size:12px;font-weight:1000;color:#5c3a1c;}
+    .viaRow .btn{box-shadow:none;margin-top:4px;}
 
     .note{
       border-radius:14px;border:1px dashed var(--border);
@@ -318,20 +296,6 @@
       padding:8px 9px;margin-top:10px;
     }
     .noteHead{display:flex;justify-content:space-between;align-items:center;gap:10px;font-weight:1000;color:var(--brown2);font-size:12px;}
-    .note textarea{
-      width:100%;
-      margin-top:8px;
-      border-radius:14px;
-      border:1px dashed rgba(122,74,38,0.18);
-      background:#fff;
-      padding:10px 10px;
-      font-size:13px;
-      outline:none;
-      resize:vertical;
-      min-height:44px;
-      color:#5c3a1c;
-    }
-    .note textarea:focus{border-color:var(--focus); box-shadow:0 0 0 3px rgba(255,184,92,.18);}
 
     /* Day Note bottom */
     .dayNoteCard{
@@ -393,6 +357,71 @@
       display:flex;gap:8px;flex-wrap:wrap;align-items:center;
     }
     .search input{flex:1 1 220px;}
+
+    /* ======= Auto-grow textareas that look like inputs ======= */
+    .taLikeInp{
+      width:100%;
+      border:none;
+      outline:none;
+      background:#fff3da;
+      border-radius:999px;
+      padding:10px 12px;
+      font-weight:900;
+      color:#5a351e;
+      border:1px solid rgba(122,74,38,0.10);
+      resize:none;
+      overflow:hidden;
+      line-height:1.35;
+      min-height:42px;
+    }
+    .taLikeInp:focus{border-color:var(--focus); box-shadow:0 0 0 3px rgba(255,184,92,.18);}
+
+    .taBox{
+      width:100%;
+      border-radius:14px;
+      border:1px dashed var(--border);
+      background:#fffdf6;
+      padding:10px 10px;
+    }
+
+    /* note box: keep photos INSIDE the same dashed area */
+    .noteInner{
+      border-radius:14px;
+      border:1px dashed rgba(122,74,38,0.18);
+      background:#fff;
+      padding:10px;
+      margin-top:8px;
+    }
+    .noteInner textarea{
+      width:100%;
+      border:none;
+      outline:none;
+      background:transparent;
+      resize:none;
+      overflow:hidden;
+      min-height:44px;
+      line-height:1.5;
+      font-size:13px;
+      color:#5c3a1c;
+    }
+    .noteInner:focus-within{
+      border-color:var(--focus);
+      box-shadow:0 0 0 3px rgba(255,184,92,.18);
+    }
+
+    /* clickable tag */
+    .tagBtn{
+      font-size:12px;
+      font-weight:1000;
+      padding:6px 10px;
+      border-radius:999px;
+      background:#fff3da;
+      border:1px solid rgba(122,74,38,0.10);
+      color:#5c3a1c;
+      cursor:pointer;
+      white-space:nowrap;
+    }
+    .tagBtn:active{transform:translateY(1px);}
   </style>
 </head>
 
@@ -414,13 +443,13 @@
         <button class="btn" id="btnExport" type="button">匯出備份（JSON）</button>
         <button class="btn" id="btnImport" type="button">匯入備份</button>
         <button class="btn ghost" id="btnClear" type="button">清除本機資料</button>
-        <button class="btn ghost" id="btnCloudPull" type="button">從雲端覆蓋載入</button>
-        <button class="btn ghost" id="btnCloudPush" type="button">把本機推到雲端</button>
+        <button class="btn ghost" id="btnCloudPull" type="button" disabled>從雲端覆蓋載入</button>
+        <button class="btn ghost" id="btnCloudPush" type="button" disabled>把本機推到雲端</button>
         <span class="badge soft" id="syncBadge">離線可用：已自動保存</span>
       </div>
 
       <div class="search">
-        <input class="inp" id="searchInput" placeholder="🔎 搜尋：標題/地址/備註/票券（按 Enter）" />
+        <input class="inp" id="searchInput" placeholder="🔎 搜尋：標題/地址/備註/票券文字（按 Enter）" />
         <button class="btn" id="btnSearch" type="button">搜尋</button>
         <span class="badge soft" id="searchResult">尚未搜尋</span>
       </div>
@@ -428,7 +457,7 @@
       <div class="auth">
         <div class="row" style="justify-content:space-between;">
           <span class="badge soft" id="authStatus">尚未登入（可離線使用）</span>
-          <span class="badge" id="cloudStatus">雲端：未連線</span>
+          <span class="badge soft" id="cloudStatus">雲端：未連線</span>
         </div>
 
         <div class="authGrid" style="margin-top:10px;">
@@ -440,15 +469,16 @@
           <button class="btn primary" id="btnEmailSignIn" type="button">Email 登入</button>
           <button class="btn" id="btnEmailSignUp" type="button">註冊帳號</button>
           <button class="btn danger" id="btnSignOut" type="button" disabled>登出</button>
-          <span class="muted" id="authHint">提示：登入後會自動從雲端載入，並跨裝置同步。</span>
+          <span class="muted" id="authHint">提示：登入後可跨裝置同步（打字不會被雲端儲存打斷）。</span>
         </div>
       </div>
 
       <div class="muted" style="margin-top:10px;">
-        ✅ 交通/購物會新增在原本分區內（不會跳出另一張獨立卡片）。<br>
-        ✅ 打字時不會因雲端同步而跳焦點（已修好）。<br>
-        ✅ Day1 日期可編輯；新增/刪除天數會自動接續日期。<br>
-        ✅ 長按卡片可刪除/複製/置頂/移動/上移下移。圖片點一下直接刪除。住宿卡固定（不可刪）。<br>
+        ✅ 新增「交通/購物」不跳新卡片：都在同一張行程卡內完成。<br>
+        ✅ 標籤可切換（景點/餐廳/交通/購物）。<br>
+        ✅ 出發/目的/途經/交通路線/備註：會自動長高；備註圖片放在備註框內。<br>
+        ✅ 長按卡片可刪除/複製/置頂/移動/上移下移；住宿卡固定不可刪。<br>
+        ✅ 離線自動保存 + 雲端同步（不搶焦點）。<br>
       </div>
     </header>
 
@@ -498,14 +528,9 @@
   /* =========================
      Config
   ========================== */
-  const STORAGE_KEY = "niji_trip_2026_A_v4_fixed_focus";
+  const STORAGE_KEY = "niji_trip_2026_A_full";
   const UNDO_LIMIT = 10;
   const TRIP_ID = "main";
-
-  // ✅ 關鍵：雲端儲存延遲（避免每打 1 字就上雲）
-  const CLOUD_SAVE_DEBOUNCE_MS = 1500;
-  // ✅ 關鍵：輸入後多久算「還在打字中」
-  const TYPING_GRACE_MS = 1200;
 
   const $ = (sel, root=document) => root.querySelector(sel);
   const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
@@ -519,17 +544,52 @@
     t.classList.add("show");
     setTimeout(()=>t.classList.remove("show"), 650);
   }
-  function setSyncBadge(text){
-    $("#syncBadge").textContent = text;
-  }
+  function setSyncBadge(text){ $("#syncBadge").textContent = text; }
   function setCloudStatus(text, kind="soft"){
     const el = $("#cloudStatus");
     el.textContent = text;
     el.classList.remove("ok","warn","soft");
     el.classList.add(kind);
   }
-  function setAuthStatus(text){
-    $("#authStatus").textContent = text;
+  function setAuthStatus(text){ $("#authStatus").textContent = text; }
+
+  /* =========================
+     Prevent cloud snapshot stealing focus while typing
+  ========================== */
+  const CLIENT_ID = (() => {
+    const k = "niji_client_id";
+    const v = localStorage.getItem(k) || ("c_" + Math.random().toString(16).slice(2));
+    localStorage.setItem(k, v);
+    return v;
+  })();
+
+  let isUserTyping = false;
+  let pendingRemote = null;
+
+  function markTyping(){
+    isUserTyping = true;
+    clearTimeout(markTyping._t);
+    markTyping._t = setTimeout(()=>isUserTyping=false, 900);
+  }
+
+  document.addEventListener("input", (e)=>{
+    const t = e.target;
+    if (t && (t.tagName==="INPUT" || t.tagName==="TEXTAREA")) markTyping();
+  }, true);
+
+  /* =========================
+     Auto-grow helpers
+  ========================== */
+  function autoGrow(el){
+    if (!el) return;
+    el.style.height = "auto";
+    el.style.height = Math.min(el.scrollHeight, 520) + "px";
+  }
+  function bindAutoGrow(el){
+    if (!el) return;
+    const run = ()=>autoGrow(el);
+    el.addEventListener("input", run);
+    requestAnimationFrame(run);
   }
 
   /* =========================
@@ -538,27 +598,6 @@
   let state = null;
   let undoStack = [];
   let activeDayId = null;
-
-  // ✅ 打字/焦點保護
-  let lastTypingAt = 0;
-  let pendingRemote = null;
-  let applyingRemote = false;
-
-  function isEditingNow(){
-    const ae = document.activeElement;
-    if (!ae) return false;
-    const tag = (ae.tagName||"").toLowerCase();
-    const editable = tag==="input" || tag==="textarea" || ae.isContentEditable;
-    if (!editable) return false;
-    // 在 appRoot 裡才算
-    if (!$("#appRoot").contains(ae)) return false;
-    // 近期有輸入
-    return (Date.now() - lastTypingAt) < TYPING_GRACE_MS;
-  }
-
-  function markTyping(){
-    lastTypingAt = Date.now();
-  }
 
   function defaultState(){
     return {
@@ -588,6 +627,7 @@
       origin: "",
       destination: "",
       vias: [],
+      routeText: "",        // ★ 標記3：交通路線大欄位
       note: "",
       photos: [],
       jpy: "",
@@ -608,6 +648,7 @@
       sections: { morning:[], afternoon:[], night:[] },
       dayNote: { text:"", photos:[] }
     };
+    // fixed lodging in night
     const lod = newCard("lodging");
     lod.meta = "住宿地點（固定在當日備註上方）";
     d.sections.night.push(lod);
@@ -633,16 +674,11 @@
   }
 
   function saveLocal(){
-    try{
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-    }catch(e){
-      console.warn("local save failed", e);
-    }
+    try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+    catch(e){ console.warn("local save failed", e); }
   }
 
-  function clearLocal(){
-    localStorage.removeItem(STORAGE_KEY);
-  }
+  function clearLocal(){ localStorage.removeItem(STORAGE_KEY); }
 
   /* =========================
      Date helpers
@@ -673,18 +709,11 @@
   }
 
   /* =========================
-     Cloud
+     Cloud (Firebase adapter injected later)
   ========================== */
-  let cloud = {
-    user:null,
-    uid:null,
-    unsub:null,
-    autoLoaded:false,
-  };
+  let cloud = { user:null, uid:null, unsub:null, autoLoaded:false };
 
-  function canCloud(){
-    return !!window.CloudSync && !!cloud.uid;
-  }
+  function canCloud(){ return !!window.CloudSync && !!cloud.uid; }
 
   async function cloudLoad(overwrite=true){
     if (!canCloud()) return false;
@@ -713,71 +742,48 @@
     }
   }
 
-  // ✅ 雲端儲存：更慢 debounce + 避免正在套用遠端時又觸發
-  let cloudSaveTimer = null;
-  function cloudSaveDebounced(){
+  async function cloudSave(){
     if (!canCloud()) return;
-    if (applyingRemote) return;
-
-    clearTimeout(cloudSaveTimer);
-    cloudSaveTimer = setTimeout(async () => {
-      try{
-        await window.CloudSync.save(cloud.uid, TRIP_ID, state);
-        setCloudStatus("雲端：已同步 ✅", "ok");
-      }catch(e){
-        console.warn("cloud save failed", e);
-        setCloudStatus("雲端：同步失敗 ❌", "warn");
-      }
-    }, CLOUD_SAVE_DEBOUNCE_MS);
+    try{
+      await window.CloudSync.save(cloud.uid, TRIP_ID, state, { clientId: CLIENT_ID });
+      setCloudStatus("雲端：同步中 ✅", "ok");
+    }catch(e){
+      console.warn("cloud save failed", e);
+      setCloudStatus("雲端：同步失敗 ❌", "warn");
+    }
   }
 
   function cloudSubscribe(){
     if (!canCloud()) return;
     if (cloud.unsub) cloud.unsub();
 
-    cloud.unsub = window.CloudSync.subscribe(cloud.uid, TRIP_ID, (remote) => {
+    cloud.unsub = window.CloudSync.subscribe(cloud.uid, TRIP_ID, (remote, meta) => {
       if (!remote) return;
-      const remoteStr = JSON.stringify(remote);
-      const localStr  = JSON.stringify(state);
-      if (remoteStr === localStr) return;
 
-      // ✅ 關鍵：你正在打字/編輯 -> 不覆蓋，不 render，不搶焦點
-      if (isEditingNow()){
-        pendingRemote = remote;
-        setCloudStatus("雲端：有更新（你在編輯中，稍後套用）", "soft");
+      // ignore own echo
+      if (meta && meta.clientId && meta.clientId === CLIENT_ID) return;
+
+      const apply = () => {
+        const localStr = JSON.stringify(state);
+        const remoteStr = JSON.stringify(remote);
+        if (localStr === remoteStr) return;
+
+        state = remote;
+        normalizeState();
+        saveLocal();
+        render(true);
+        toast("已同步到雲端變更");
+      };
+
+      // typing -> do not steal focus
+      const ae = document.activeElement;
+      if (isUserTyping || (ae && (ae.tagName==="INPUT" || ae.tagName==="TEXTAREA"))){
+        pendingRemote = { remote, meta };
         return;
       }
-
-      applyRemoteNow(remote);
+      apply();
     });
   }
-
-  function applyRemoteNow(remote){
-    applyingRemote = true;
-    try{
-      state = remote;
-      normalizeState();
-      saveLocal();
-      render(true);
-      toast("已同步雲端變更");
-      setCloudStatus("雲端：已連線 ✅", "ok");
-    }finally{
-      applyingRemote = false;
-      pendingRemote = null;
-    }
-  }
-
-  // ✅ 你停止打字後，若有 pendingRemote 就套用（不干擾輸入）
-  function maybeApplyPendingRemote(){
-    if (!pendingRemote) return;
-    if (isEditingNow()) return;
-    applyRemoteNow(pendingRemote);
-  }
-
-  // 監聽 focusout（離開輸入框時）→ 套用 pending
-  document.addEventListener("focusout", () => {
-    setTimeout(maybeApplyPendingRemote, 60);
-  });
 
   async function autoLoadFromCloudOnce(){
     if (!canCloud()) return;
@@ -787,6 +793,23 @@
     await cloudLoad(true);
     cloudSubscribe();
   }
+
+  // apply pending remote when user stops typing
+  setInterval(()=>{
+    if (!pendingRemote) return;
+    if (isUserTyping) return;
+    const ae = document.activeElement;
+    if (ae && (ae.tagName==="INPUT" || ae.tagName==="TEXTAREA")) return;
+
+    const { remote } = pendingRemote;
+    pendingRemote = null;
+
+    state = remote;
+    normalizeState();
+    saveLocal();
+    render(true);
+    toast("已套用雲端更新");
+  }, 600);
 
   /* =========================
      Normalize
@@ -810,7 +833,6 @@
           d.sections.afternoon = d.sections.noon;
           delete d.sections.noon;
         }
-        // 舊版 transport/shopping section 合併到 afternoon
         if (d.sections.transport){
           d.sections.afternoon = (d.sections.afternoon||[]).concat(d.sections.transport);
           delete d.sections.transport;
@@ -830,7 +852,7 @@
       if (!d.dayLabel) d.dayLabel = `Day ${idx+1}`;
       if (typeof d.autoDayLabel !== "boolean") d.autoDayLabel = true;
 
-      // Ensure lodging exists in night section, last
+      // Ensure lodging exists
       const night = d.sections.night;
       const lodIdx = night.findIndex(c=>c && c.type==="lodging");
       if (lodIdx < 0){
@@ -838,11 +860,20 @@
         lod.meta = "住宿地點（固定在當日備註上方）";
         night.push(lod);
       }
+      // move lodging to end
       const lodIdx2 = night.findIndex(c=>c && c.type==="lodging");
       if (lodIdx2 >= 0 && lodIdx2 !== night.length-1){
         const [lod] = night.splice(lodIdx2,1);
         night.push(lod);
       }
+
+      // ensure new card fields
+      ["morning","afternoon","night"].forEach(k=>{
+        (d.sections[k]||[]).forEach(c=>{
+          if (typeof c.routeText !== "string") c.routeText = "";
+          if (!Array.isArray(c.vias)) c.vias = [];
+        });
+      });
     });
 
     if (!state.days.length){
@@ -854,93 +885,25 @@
   }
 
   /* =========================
-     Focus/Caret preserve (for render(true))
-  ========================== */
-  function captureFocus(){
-    const ae = document.activeElement;
-    if (!ae) return null;
-    const tag = (ae.tagName||"").toLowerCase();
-    if (!(tag==="input" || tag==="textarea")) return null;
-    if (!$("#appRoot").contains(ae)) return null;
-
-    // 用 data attributes 定位（day/card/section）
-    const holder = ae.closest("[data-id], .card, .daySection");
-    const info = {
-      tag,
-      id: ae.id || "",
-      cls: ae.className || "",
-      name: ae.getAttribute("name") || "",
-      dataDay: ae.closest(".daySection")?.dataset?.id || "",
-      dataCard: ae.closest(".card")?.dataset?.cardId || "",
-      dataSec: ae.closest(".card")?.dataset?.secKey || "",
-      selStart: (typeof ae.selectionStart==="number") ? ae.selectionStart : null,
-      selEnd: (typeof ae.selectionEnd==="number") ? ae.selectionEnd : null,
-    };
-    return info;
-  }
-
-  function restoreFocus(info){
-    if (!info) return;
-    let el = null;
-
-    // 優先找 id
-    if (info.id) el = document.getElementById(info.id);
-
-    // 其次用「day + card + class」找回來
-    if (!el && info.dataDay && info.dataCard){
-      const daySec = document.querySelector(`.daySection[data-id="${info.dataDay}"]`);
-      if (daySec){
-        const card = daySec.querySelector(`.card[data-card-id="${info.dataCard}"]`);
-        if (card){
-          el = card.querySelector(`.${info.cls.split(" ").filter(Boolean).join(".")}`);
-        }
-      }
-    }
-
-    // 再不行：用 day + class
-    if (!el && info.dataDay){
-      const daySec = document.querySelector(`.daySection[data-id="${info.dataDay}"]`);
-      if (daySec){
-        const clsSel = info.cls ? `.${info.cls.split(" ").filter(Boolean).join(".")}` : null;
-        if (clsSel) el = daySec.querySelector(clsSel);
-      }
-    }
-
-    if (!el) return;
-    if (typeof el.focus === "function") el.focus({preventScroll:true});
-    if (info.selStart!=null && typeof el.setSelectionRange==="function"){
-      try{ el.setSelectionRange(info.selStart, info.selEnd ?? info.selStart); }catch(e){}
-    }
-  }
-
-  /* =========================
-     Save scheduling
-     ✅ 本機存快（不 rerender）
-     ✅ 雲端存慢（debounce）
+     Save scheduling (NO re-render while typing)
   ========================== */
   let saveTimer = null;
-  function scheduleSave(){
-    markTyping();
+  function scheduleSave(pushCloud=true){
     clearTimeout(saveTimer);
-    saveTimer = setTimeout(() => {
+    saveTimer = setTimeout(async () => {
       saveLocal();
+      if (pushCloud) await cloudSave();
       pushUndo();
       recalcTotalsUI();
       setSyncBadge(buildTotalText());
       toast("已儲存");
-      // 雲端延後存
-      cloudSaveDebounced();
-      // 若有 pending remote，而你已停止打字，套用它
-      setTimeout(maybeApplyPendingRemote, 20);
-    }, 220);
+    }, 260);
   }
 
   /* =========================
      Rendering
   ========================== */
-  function render(full=false){
-    const focusInfo = captureFocus();
-
+  function render(){
     $("#appTitleText").textContent = state.appTitle || "Niji Trip 2026";
     $("#appDesc").value = state.appDesc || "";
 
@@ -952,31 +915,24 @@
 
     setSyncBadge(buildTotalText());
     recalcTotalsUI();
-
-    // ✅ render 後把焦點/游標盡量還原
-    restoreFocus(focusInfo);
   }
 
   function renderDayNav(){
     const nav = $("#dayNav");
     nav.innerHTML = "";
-
     state.days.forEach((d) => {
       const chip = document.createElement("div");
       chip.className = "dayChip";
       chip.dataset.id = d.id;
-
       chip.innerHTML = `<div class="t"></div><div class="s"></div>`;
       chip.querySelector(".t").textContent = d.dayLabel || "Day";
       chip.querySelector(".s").textContent = d.dateText || "";
-
       chip.addEventListener("click", () => {
         activeDayId = d.id;
         setActiveChip(d.id);
-        const sec = document.querySelector(`.daySection[data-id="${d.id}"]`);
+        const sec = document.querySelector(\`.daySection[data-id="\${d.id}"]\`);
         if (sec) sec.scrollIntoView({behavior:"smooth", block:"start"});
       });
-
       nav.appendChild(chip);
     });
   }
@@ -1056,23 +1012,20 @@
         </div>
       `;
 
-      // bind day header inputs (NO rerender while typing)
+      // day header binds (no rerender while typing)
       const dayLabelInp = sec.querySelector(".dayLabelInp");
       dayLabelInp.value = d.dayLabel || `Day ${idx+1}`;
       dayLabelInp.addEventListener("input", () => {
         d.dayLabel = dayLabelInp.value.trim() || `Day ${idx+1}`;
         d.autoDayLabel = false;
-        const chip = document.querySelector(`.dayChip[data-id="${d.id}"] .t`);
+        const chip = document.querySelector(\`.dayChip[data-id="\${d.id}"] .t\`);
         if (chip) chip.textContent = d.dayLabel;
         scheduleSave();
       });
 
       const daySubInp = sec.querySelector(".daySubInp");
       daySubInp.value = d.subtitle || "";
-      daySubInp.addEventListener("input", () => {
-        d.subtitle = daySubInp.value;
-        scheduleSave();
-      });
+      daySubInp.addEventListener("input", () => { d.subtitle = daySubInp.value; scheduleSave(); });
 
       const dateInp = sec.querySelector(".dateInp");
       dateInp.value = d.dateText || "";
@@ -1081,20 +1034,17 @@
         if (idx===0){
           ensureDatesFromDay1();
           scheduleSave();
-          render(true);
+          render();
         }else{
           scheduleSave();
-          const chipS = document.querySelector(`.dayChip[data-id="${d.id}"] .s`);
+          const chipS = document.querySelector(\`.dayChip[data-id="\${d.id}"] .s\`);
           if (chipS) chipS.textContent = d.dateText;
         }
       });
 
       const budgetInp = sec.querySelector(".budgetInp");
       budgetInp.value = d.budgetJPY || "";
-      budgetInp.addEventListener("input", () => {
-        d.budgetJPY = budgetInp.value;
-        scheduleSave();
-      });
+      budgetInp.addEventListener("input", () => { d.budgetJPY = budgetInp.value; scheduleSave(); });
 
       const rateInp = sec.querySelector(".rateInp");
       rateInp.value = String(state.settings.rate ?? 0.22);
@@ -1103,16 +1053,15 @@
         if (!isNaN(v) && v>0){
           state.settings.rate = v;
           scheduleSave();
+          recalcTotalsUI();
+          setSyncBadge(buildTotalText());
         }
       });
 
       // tickets
       const ticketText = sec.querySelector(".ticketText");
       ticketText.value = d.tickets?.text || "";
-      ticketText.addEventListener("input", () => {
-        d.tickets.text = ticketText.value;
-        scheduleSave();
-      });
+      ticketText.addEventListener("input", () => { d.tickets.text = ticketText.value; scheduleSave(); });
 
       const ticketPhotos = sec.querySelector(".ticketPhotos");
       renderPhotoStrip(ticketPhotos, d.tickets.photos, () => scheduleSave());
@@ -1128,13 +1077,11 @@
       // day note
       const dayNoteText = sec.querySelector(".dayNoteText");
       dayNoteText.value = d.dayNote?.text || "";
-      dayNoteText.addEventListener("input", () => {
-        d.dayNote.text = dayNoteText.value;
-        scheduleSave();
-      });
+      dayNoteText.addEventListener("input", () => { d.dayNote.text = dayNoteText.value; scheduleSave(); });
 
       const dayNotePhotos = sec.querySelector(".dayNotePhotos");
       renderPhotoStrip(dayNotePhotos, d.dayNote.photos, () => scheduleSave());
+
       sec.querySelector(".btnDayNotePhoto").addEventListener("click", async () => {
         const url = await pickPhoto();
         if (!url) return;
@@ -1148,8 +1095,9 @@
 
       // render cards for each section
       ["morning","afternoon","night"].forEach(key=>{
-        const body = sec.querySelector(`.sec[data-sec="${key}"] .secBody`);
+        const body = sec.querySelector(\`.sec[data-sec="\${key}"] .secBody\`);
         body.innerHTML = "";
+
         // ensure lodging last in night
         if (key==="night"){
           const list = d.sections.night || [];
@@ -1159,6 +1107,7 @@
             list.push(lod);
           }
         }
+
         (d.sections[key]||[]).forEach(card => body.appendChild(renderCard(card, d, key)));
       });
 
@@ -1195,10 +1144,9 @@
     `;
   }
 
-  function typeLabel(t){
-    return t==="restaurant" ? "餐廳" : t==="transport" ? "交通" : t==="shopping" ? "購物" : t==="lodging" ? "住宿" : "景點";
-  }
-
+  /* =========================
+     Card rendering (includes marker 1/2/3)
+  ========================== */
   function renderCard(card, dayObj, secKey){
     const el = document.createElement("article");
     el.className = "card";
@@ -1206,15 +1154,21 @@
     el.dataset.dayId = dayObj.id;
     el.dataset.secKey = secKey;
 
+    if (typeof card.routeText !== "string") card.routeText = "";
+    if (!card.vias) card.vias = [];
+
+    const typeCycle = ["spot","restaurant","transport","shopping","lodging"];
+    const typeName = (t)=> t==="restaurant"?"餐廳":t==="transport"?"交通":t==="shopping"?"購物":t==="lodging"?"住宿":"景點";
+
     el.innerHTML = `
       <div class="cardTop">
         <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:8px;">
-          <input class="titleInp" placeholder="標題（例如：MILK SHOP LUCK 酪 秋葉原店）" />
+          <input class="titleInp" placeholder="標題（例如：東京大神宮）" />
           <input class="miniInp jaInp" placeholder="日文名稱 / 地址（建議填日文或地址）" />
-          <input class="miniInp metaInp" placeholder="地區・說明（例如：秋葉原、注意事項…）" />
+          <input class="miniInp metaInp" placeholder="地區・說明（例如：御守、注意事項…）" />
         </div>
         <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end;">
-          <div class="tag">${typeLabel(card.type)}</div>
+          <button class="tagBtn" type="button" title="點一下切換類型"></button>
           ${card.type==="lodging" ? `<span class="badge soft">住宿卡</span>` : ``}
         </div>
       </div>
@@ -1229,12 +1183,14 @@
       <div class="locBox">
         <div class="locLine">
           <div class="locLabel">出發</div>
-          <input class="locInp originInp" placeholder="出發地（可空）" />
+          <textarea class="taLikeInp originTa" rows="1" placeholder="出發地（可空）"></textarea>
         </div>
+
         <div class="locLine">
           <div class="locLabel">目的</div>
-          <input class="locInp destInp" placeholder="目的地 / 地址（建議填日文或地址）" />
+          <textarea class="taLikeInp destTa" rows="1" placeholder="目的地 / 地址（建議填日文或地址）"></textarea>
         </div>
+
         <div class="locLine" style="justify-content:space-between;">
           <div class="locLabel">途經</div>
           <div style="flex:1;display:flex;gap:8px;justify-content:flex-end;align-items:center;">
@@ -1243,12 +1199,21 @@
           </div>
         </div>
         <div class="vias"></div>
+
+        <div style="margin-top:10px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+          <span class="muted" style="font-size:12px;font-weight:1000;">花費 JPY</span>
+          <input class="miniInp jpyInp" inputmode="numeric" placeholder="例如 1200" style="max-width:160px;" />
+          <span class="muted" style="font-size:12px;font-weight:1000;">→ TWD：<span class="twdText">0</span></span>
+        </div>
       </div>
 
-      <div class="expense">
-        <span class="lab">花費 JPY</span>
-        <input class="jpyInp" inputmode="numeric" placeholder="例如 1200" />
-        <span class="calc">→ TWD：<span class="twdText">0</span></span>
+      <div class="taBox" style="margin-top:10px;">
+        <div class="noteHead" style="margin:0;">
+          <span>交通路線（可貼上/可多行）</span>
+        </div>
+        <div class="noteInner">
+          <textarea class="routeText" placeholder="例：入谷（日比谷線）➡ 秋葉原（日比谷線）/ 轉乘 / ..."></textarea>
+        </div>
       </div>
 
       <div class="note">
@@ -1256,31 +1221,63 @@
           <span>備註</span>
           <button class="btn small btnNotePhoto" type="button">📷</button>
         </div>
-        <textarea class="noteText" placeholder="可寫：排隊、注意事項、順遊、訂位…"></textarea>
-        <div class="photoStrip notePhotos"></div>
+
+        <div class="noteInner">
+          <textarea class="noteText" placeholder="可寫：排隊、注意事項、順遊、訂位、交通細節…"></textarea>
+          <div class="photoStrip notePhotos" style="margin-top:10px;"></div>
+        </div>
       </div>
     `;
 
     const titleInp = el.querySelector(".titleInp");
     const jaInp = el.querySelector(".jaInp");
     const metaInp = el.querySelector(".metaInp");
-    const originInp = el.querySelector(".originInp");
-    const destInp = el.querySelector(".destInp");
+    const tagBtn = el.querySelector(".tagBtn");
+
+    const originTa = el.querySelector(".originTa");
+    const destTa = el.querySelector(".destTa");
+    const viasWrap = el.querySelector(".vias");
+
     const jpyInp = el.querySelector(".jpyInp");
     const twdText = el.querySelector(".twdText");
+
+    const routeText = el.querySelector(".routeText");
     const noteText = el.querySelector(".noteText");
     const notePhotos = el.querySelector(".notePhotos");
 
+    // fill
     titleInp.value = card.title || "";
     jaInp.value = card.ja || "";
     metaInp.value = card.meta || "";
-    originInp.value = card.origin || "";
-    destInp.value = (card.destination || card.ja || "") || "";
+
+    originTa.value = card.origin || "";
+    destTa.value = (card.destination || card.ja || "") || "";
     jpyInp.value = card.jpy || "";
+
+    routeText.value = card.routeText || "";
     noteText.value = card.note || "";
+
+    tagBtn.textContent = typeName(card.type || "spot");
+
+    bindAutoGrow(originTa);
+    bindAutoGrow(destTa);
+    bindAutoGrow(routeText);
+    bindAutoGrow(noteText);
 
     renderPhotoStrip(notePhotos, card.photos, () => scheduleSave());
 
+    // type toggle (marker 1)
+    tagBtn.addEventListener("click", () => {
+      const cur = card.type || "spot";
+      if (cur === "lodging") return; // lodging fixed
+      const idx = typeCycle.indexOf(cur);
+      const next = typeCycle[(idx + 1 + typeCycle.length) % typeCycle.length];
+      card.type = next;
+      tagBtn.textContent = typeName(next);
+      scheduleSave();
+    });
+
+    // calc
     function updateTwd(){
       const rate = Number(state.settings.rate||0.22);
       const j = parseFloat(card.jpy||"");
@@ -1290,28 +1287,32 @@
     }
     updateTwd();
 
-    // bind inputs (NO rerender)
-    const bindInput = (node, fn) => {
-      node.addEventListener("input", () => { markTyping(); fn(); scheduleSave(); });
-      node.addEventListener("focus", markTyping);
-    };
-
-    bindInput(titleInp, () => { card.title = titleInp.value; });
-    bindInput(jaInp, () => {
+    // binds
+    titleInp.addEventListener("input", () => { card.title = titleInp.value; scheduleSave(); });
+    jaInp.addEventListener("input", () => {
       card.ja = jaInp.value;
       if (!card.destination){
         card.destination = jaInp.value;
-        destInp.value = card.destination;
+        destTa.value = card.destination;
+        autoGrow(destTa);
       }
+      scheduleSave();
     });
-    bindInput(metaInp, () => { card.meta = metaInp.value; });
-    bindInput(originInp, () => { card.origin = originInp.value; });
-    bindInput(destInp, () => { card.destination = destInp.value; });
-    bindInput(jpyInp, () => { card.jpy = jpyInp.value; updateTwd(); });
-    bindInput(noteText, () => { card.note = noteText.value; });
+    metaInp.addEventListener("input", () => { card.meta = metaInp.value; scheduleSave(); });
+
+    originTa.addEventListener("input", () => { card.origin = originTa.value; scheduleSave(); });
+    destTa.addEventListener("input", () => { card.destination = destTa.value; scheduleSave(); });
+
+    jpyInp.addEventListener("input", () => {
+      card.jpy = jpyInp.value;
+      updateTwd();
+      scheduleSave();
+    });
+
+    routeText.addEventListener("input", () => { card.routeText = routeText.value; scheduleSave(); });
+    noteText.addEventListener("input", () => { card.note = noteText.value; scheduleSave(); });
 
     // vias
-    const viasWrap = el.querySelector(".vias");
     function renderVias(){
       viasWrap.innerHTML = "";
       (card.vias||[]).forEach((v, idx) => {
@@ -1319,12 +1320,16 @@
         row.className = "viaRow";
         row.innerHTML = `
           <div class="locLabel">途經${idx+1}</div>
-          <input class="locInp viaInp" placeholder="途經地點/地址" />
+          <textarea class="taLikeInp viaTa" rows="1" placeholder="途經地點/地址"></textarea>
           <button class="btn small btnDelVia" type="button">刪</button>
         `;
-        const inp = row.querySelector(".viaInp");
-        inp.value = v || "";
-        bindInput(inp, () => { card.vias[idx] = inp.value; });
+        const ta = row.querySelector(".viaTa");
+        ta.value = v || "";
+        bindAutoGrow(ta);
+        ta.addEventListener("input", () => {
+          card.vias[idx] = ta.value;
+          scheduleSave();
+        });
         row.querySelector(".btnDelVia").addEventListener("click", () => {
           card.vias.splice(idx,1);
           renderVias();
@@ -1342,7 +1347,7 @@
       scheduleSave();
     });
 
-    // note photos
+    // note photo add (photos stay inside note box)
     el.querySelector(".btnNotePhoto").addEventListener("click", async () => {
       const url = await pickPhoto();
       if (!url) return;
@@ -1369,7 +1374,9 @@
       openNearbyMenu(q);
     });
 
-    attachLongPress(el, card);
+    // long press menu
+    attachLongPress(el);
+
     return el;
   }
 
@@ -1390,10 +1397,8 @@
       d.sections[secKey].push(c);
     }
 
-    saveLocal();
-    cloudSaveDebounced();
-    render(true);
-    toast("已新增");
+    scheduleSave();
+    render();
   }
 
   /* =========================
@@ -1563,10 +1568,8 @@
     const d = newDay(i);
     state.days.push(d);
     ensureDatesFromDay1();
-    saveLocal();
-    cloudSaveDebounced();
-    render(true);
-    toast("已新增一天");
+    scheduleSave();
+    render();
   }
 
   function removeLastDay(){
@@ -1574,10 +1577,8 @@
     pushUndo();
     state.days.pop();
     ensureDatesFromDay1();
-    saveLocal();
-    cloudSaveDebounced();
-    render(true);
-    toast("已刪除最後一天");
+    scheduleSave();
+    render();
   }
 
   /* =========================
@@ -1609,8 +1610,8 @@
           state = data.state;
           normalizeState();
           saveLocal();
-          cloudSaveDebounced();
-          render(true);
+          scheduleSave();
+          render();
           toast("匯入成功");
         }else{
           alert("匯入失敗：JSON 格式不對");
@@ -1631,7 +1632,7 @@
     normalizeState();
     saveLocal();
     pushUndo();
-    render(true);
+    render();
     toast("已清除");
   });
 
@@ -1648,8 +1649,8 @@
   $("#btnCloudPush").addEventListener("click", async () => {
     if (!canCloud()) return alert("請先登入，才能推送到雲端。");
     if (!confirm("確定要把『本機資料』推到雲端？（會覆蓋雲端同一份行程）")) return;
-    cloudSaveDebounced();
-    toast("已排程推送到雲端");
+    await cloudSave();
+    toast("已推送到雲端");
   });
 
   /* =========================
@@ -1664,11 +1665,9 @@
       state = JSON.parse(prev);
       normalizeState();
       saveLocal();
-      render(true);
+      render();
       $("#btnUndo").disabled = undoStack.length <= 1;
       toast("已 Undo");
-      // 不要立刻推雲端，讓你先調整完
-      cloudSaveDebounced();
     }catch(e){}
   });
 
@@ -1695,7 +1694,7 @@
       if ((d.tickets?.text||"").includes(q)) hits.push({day:d, where:"票券文字"});
       if ((d.dayNote?.text||"").includes(q)) hits.push({day:d, where:"當日備註"});
       flattenDayCards(d).forEach(c=>{
-        const blob = `${c.title||""} ${c.ja||""} ${c.meta||""} ${c.note||""} ${c.origin||""} ${c.destination||""} ${(c.vias||[]).join(" ")}`;
+        const blob = `${c.title||""} ${c.ja||""} ${c.meta||""} ${c.note||""} ${c.origin||""} ${c.destination||""} ${(c.vias||[]).join(" ")} ${c.routeText||""}`;
         if (blob.includes(q)) hits.push({day:d, card:c, where:"行程卡"});
       });
     });
@@ -1721,7 +1720,6 @@
      App desc
   ========================== */
   $("#appDesc").addEventListener("input", () => {
-    markTyping();
     state.appDesc = $("#appDesc").value;
     scheduleSave();
   });
@@ -1733,19 +1731,19 @@
   $("#btnRemoveDay").addEventListener("click", removeLastDay);
 
   /* =========================
-     Long press menu
+     Long press menu (Delete/Copy/Pin/Move/Up/Down)
   ========================== */
   const menu = $("#ctxMenu");
-  let menuCtx = null;
+  let menuCtx = null; // {dayId, secKey, cardId}
   let pressTimer = null;
   let pressStart = null;
 
-  function attachLongPress(cardEl, card){
+  function attachLongPress(cardEl){
     const onDown = (e) => {
       if (e.type==="mousedown" && e.button !== 0) return;
       pressStart = { x: e.clientX, y: e.clientY };
       clearTimeout(pressTimer);
-      pressTimer = setTimeout(() => openMenu(cardEl, e.clientX, e.clientY, card), 520);
+      pressTimer = setTimeout(() => openMenu(cardEl, e.clientX, e.clientY), 520);
     };
     const onMove = (e) => {
       if (!pressStart) return;
@@ -1771,13 +1769,14 @@
     cardEl.addEventListener("mouseleave", onUp);
   }
 
-  function openMenu(cardEl, x, y, card){
+  function openMenu(cardEl, x, y){
     const dayId = cardEl.dataset.dayId;
     const secKey = cardEl.dataset.secKey;
     const cardId = cardEl.dataset.cardId;
 
     menuCtx = {dayId, secKey, cardId};
-    $("#ctxTitle").textContent = `卡片：${(card.title||"").slice(0, 28)}`;
+    const found = findCard(dayId, secKey, cardId);
+    $("#ctxTitle").textContent = found?.card?.title ? `卡片：${(found.card.title||"").slice(0, 28)}` : "卡片操作";
 
     menu.style.left = Math.min(x, window.innerWidth - 240) + "px";
     menu.style.top  = Math.min(y, window.innerHeight - 280) + "px";
@@ -1810,8 +1809,8 @@
     pushUndo();
     list.splice(idx,1);
     list.splice(idx-1,0,card);
-    saveLocal(); cloudSaveDebounced();
-    render(true);
+    scheduleSave();
+    render();
     closeMenu();
   });
 
@@ -1825,8 +1824,8 @@
     pushUndo();
     list.splice(idx,1);
     list.splice(idx+1,0,card);
-    saveLocal(); cloudSaveDebounced();
-    render(true);
+    scheduleSave();
+    render();
     closeMenu();
   });
 
@@ -1838,8 +1837,8 @@
     if (card.type==="lodging") return alert("住宿卡固定（不能刪除）");
     pushUndo();
     list.splice(idx,1);
-    saveLocal(); cloudSaveDebounced();
-    render(true);
+    scheduleSave();
+    render();
     closeMenu();
   });
 
@@ -1853,8 +1852,8 @@
     const clone = JSON.parse(JSON.stringify(card));
     clone.id = `c_${Date.now()}_${Math.random().toString(16).slice(2)}`;
     list.splice(idx+1,0,clone);
-    saveLocal(); cloudSaveDebounced();
-    render(true);
+    scheduleSave();
+    render();
     closeMenu();
   });
 
@@ -1867,8 +1866,8 @@
     pushUndo();
     list.splice(idx,1);
     list.unshift(card);
-    saveLocal(); cloudSaveDebounced();
-    render(true);
+    scheduleSave();
+    render();
     closeMenu();
   });
 
@@ -1876,7 +1875,7 @@
     if (!menuCtx) return;
     const found = findCard(menuCtx.dayId, menuCtx.secKey, menuCtx.cardId);
     if (!found) return closeMenu();
-    const {d:fromDay, list, idx, card} = found;
+    const {list, idx, card} = found;
     if (card.type==="lodging") return alert("住宿卡固定（不能移動）");
 
     const labels = state.days.map((dd,i)=> `${i+1}. ${dd.dayLabel} (${dd.dateText})`).join("\n");
@@ -1898,13 +1897,13 @@
     }else{
       toDay.sections[targetSec].push(card);
     }
-    saveLocal(); cloudSaveDebounced();
-    render(true);
+    scheduleSave();
+    render();
     closeMenu();
   });
 
   /* =========================
-     Init local
+     Init
   ========================== */
   function init(){
     const s = loadLocal();
@@ -1915,13 +1914,12 @@
     pushUndo();
     $("#btnUndo").disabled = true;
 
-    $("#appDesc").value = state.appDesc || "";
-    render(true);
+    render();
   }
   init();
 
   /* =========================
-     Hook auth & cloud signals
+     Wire auth hooks from module
   ========================== */
   window.NijiApp = {
     onAuthState(user){
@@ -1932,18 +1930,21 @@
       if (user){
         setAuthStatus(`已登入：${user.email || "(unknown)"}`);
         $("#btnSignOut").disabled = false;
-        setCloudStatus("雲端：準備中…", "soft");
+
         $("#btnCloudPull").disabled = false;
         $("#btnCloudPush").disabled = false;
 
+        setCloudStatus("雲端：準備中…", "soft");
         autoLoadFromCloudOnce().then(()=>{
           setCloudStatus("雲端：已連線 ✅", "ok");
         });
       }else{
         setAuthStatus("尚未登入（可離線使用）");
         $("#btnSignOut").disabled = true;
+
         $("#btnCloudPull").disabled = true;
         $("#btnCloudPush").disabled = true;
+
         if (cloud.unsub){ cloud.unsub(); cloud.unsub = null; }
         setCloudStatus("雲端：未連線", "soft");
       }
@@ -1987,16 +1988,21 @@
       const snap = await getDoc(ref);
       return snap.exists() ? (snap.data()?.state ?? null) : null;
     },
-    async save(uid, tripId, state){
+    async save(uid, tripId, state, meta={}){
       const ref = this._ref(uid, tripId);
-      await setDoc(ref, { state, updatedAt: serverTimestamp() }, { merge: true });
+      await setDoc(ref, {
+        state,
+        updatedAt: serverTimestamp(),
+        meta: { ...(meta||{}), updatedAtMs: Date.now() }
+      }, { merge: true });
     },
     subscribe(uid, tripId, onState){
       const ref = this._ref(uid, tripId);
       return onSnapshot(ref, (snap) => {
         if (!snap.exists()) return;
         const remote = snap.data()?.state ?? null;
-        if (remote) onState(remote);
+        const meta = snap.data()?.meta ?? null;
+        if (remote) onState(remote, meta);
       });
     }
   };
@@ -2028,12 +2034,8 @@
   });
 
   $("#btnSignOut").addEventListener("click", async () => {
-    try{
-      await signOut(auth);
-    }catch(e){
-      console.error(e);
-      alert("登出失敗：" + (e?.message || e));
-    }
+    try{ await signOut(auth); }
+    catch(e){ console.error(e); alert("登出失敗：" + (e?.message || e)); }
   });
 
   onAuthStateChanged(auth, (user) => {
