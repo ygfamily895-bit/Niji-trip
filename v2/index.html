@@ -135,7 +135,7 @@
     }
     .dayChip{
       flex:0 0 auto;
-      min-width:24px;
+      min-width:92px;
       background:var(--chip);
       border-radius:var(--r2);
       padding:8px 10px;
@@ -143,10 +143,41 @@
       border:1px solid transparent;
       cursor:pointer;
       user-select:none;
+
+      /* ✅ 固定尺寸：避免被文字撐大 */
+      width: 116px;
     }
     .dayChip.active{background:var(--chipOn);border-color:rgba(122,74,38,0.22);}
-    .dayChip .t{font-weight:1000;font-size:15px;}
-    .dayChip .s{font-size:12px;color:var(--brown2);margin-top:2px;}
+
+    /* ✅ Day Chip 標題：可編輯＋省略號＋高度固定 */
+    .dayChip .t{
+      font-weight:1000;
+      font-size:15px;
+      line-height:18px;
+      height:18px;                 /* 固定高度 */
+      display:block;
+      overflow:hidden;
+      white-space:nowrap;
+      text-overflow:ellipsis;
+      outline:none;
+      padding:0;
+      margin:0;
+    }
+    /* ✅ 編輯中仍維持單行，不出現換行 */
+    .dayChip .t[contenteditable="true"]{ -webkit-user-modify: read-write-plaintext-only; }
+
+    .dayChip .s{
+      font-size:12px;
+      color:var(--brown2);
+      margin-top:2px;
+
+      /* ✅ 日期也避免撐高 */
+      line-height:14px;
+      height:14px;
+      overflow:hidden;
+      white-space:nowrap;
+      text-overflow:ellipsis;
+    }
 
     /* Day */
     .daySection{margin-top:12px;margin-bottom:16px;}
@@ -216,10 +247,9 @@
       padding:10px 10px;
       font-size:13px;
       outline:none;
-      resize:none;               /* ✅ 改：自動長高就不需要手拉 */
+      resize:vertical;
       min-height:44px;
       color:#5c3a1c;
-      overflow:hidden;           /* ✅ 改：搭配 auto-grow */
     }
     .tickets textarea:focus{border-color:var(--focus); box-shadow:0 0 0 3px rgba(255,184,92,.18);}
     .photoStrip{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
@@ -255,22 +285,12 @@
       position:relative;
     }
     .cardTop{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;}
-
-    /* ✅ 新增：右上角標籤下拉（標記1） */
-    .tagSelect{
+    .tag{
       font-size:12px;font-weight:1000;
-      padding:6px 12px;border-radius:var(--pill);
+      padding:4px 10px;border-radius:var(--pill);
       background:#fff3da;border:1px solid rgba(122,74,38,0.10);
       color:#5c3a1c;white-space:nowrap;
-      outline:none;
-      cursor:pointer;
-      appearance:none;
-      -webkit-appearance:none;
-      box-shadow:var(--shadow);
     }
-    .tagSelect:focus{border-color:var(--focus); box-shadow:0 0 0 3px rgba(255,184,92,.18), var(--shadow);}
-    .tagSelect:disabled{opacity:.75;cursor:default;}
-
     .titleInp{width:100%;border:none;outline:none;background:#fff;border-radius:14px;
       padding:10px 12px;font-size:15px;font-weight:1000;color:#5c3a1c;box-shadow:var(--shadow);
       border:1px solid rgba(122,74,38,0.10);
@@ -338,11 +358,8 @@
       padding:10px 10px;
       font-size:13px;
       outline:none;
-
-      /* ✅ 標記2：備註自動長高 */
-      resize:none;
+      resize:vertical;
       min-height:44px;
-      overflow:hidden;
       color:#5c3a1c;
     }
     .note textarea:focus{border-color:var(--focus); box-shadow:0 0 0 3px rgba(255,184,92,.18);}
@@ -365,11 +382,8 @@
       padding:10px 10px;
       font-size:13px;
       outline:none;
-
-      /* ✅ 一併做自動長高（更順手） */
-      resize:none;
+      resize:vertical;
       min-height:54px;
-      overflow:hidden;
       color:#5c3a1c;
     }
     .dayNoteCard textarea:focus{border-color:var(--focus); box-shadow:0 0 0 3px rgba(255,184,92,.18);}
@@ -466,7 +480,7 @@
         ✅ 打字時不會因雲端同步而跳焦點（已修好）。<br>
         ✅ Day1 日期可編輯；新增/刪除天數會自動接續日期。<br>
         ✅ 長按卡片可刪除/複製/置頂/移動/上移下移。圖片點一下直接刪除。住宿卡固定（不可刪）。<br>
-        ✅（新增）卡片右上角標籤可下拉切換；備註可自動長高，圖片可直接拖到備註內。<br>
+        ✅ 票券/備註支援：多選圖片 + 貼上圖片 + textarea自動長高。<br>
       </div>
     </header>
 
@@ -509,7 +523,8 @@
   <div class="toast" id="saveToast">已儲存</div>
 
   <input type="file" id="importFile" accept="application/json" style="display:none" />
-  <input type="file" id="photoPicker" accept="image/*" style="display:none" />
+  <!-- ✅ 多選 -->
+  <input type="file" id="photoPicker" accept="image/*" multiple style="display:none" />
 
 <script>
 (() => {
@@ -549,12 +564,44 @@
   }
 
   /* =========================
-     ✅ 新增：textarea 自動長高（標記2）
+     ✅ textarea auto grow
   ========================== */
   function autoGrowTextarea(ta){
     if (!ta) return;
-    ta.style.height = "auto";
-    ta.style.height = ta.scrollHeight + "px";
+    ta.style.height = "1px";
+    requestAnimationFrame(() => {
+      ta.style.height = (ta.scrollHeight + 2) + "px";
+    });
+  }
+
+  /* =========================
+     ✅ paste images helper
+  ========================== */
+  function attachPasteImages(targetEl, onUrls){
+    targetEl.addEventListener("paste", async (e) => {
+      const items = Array.from(e.clipboardData?.items || []);
+      const files = items
+        .filter(it => it.kind==="file")
+        .map(it => it.getAsFile())
+        .filter(f => f && (f.type||"").startsWith("image/"));
+
+      if (!files.length) return;
+
+      e.preventDefault();
+
+      const toDataURL = (file) => new Promise((res) => {
+        const reader = new FileReader();
+        reader.onload = (ev) => res(String(ev.target?.result || ""));
+        reader.readAsDataURL(file);
+      });
+
+      const urls = [];
+      for (const f of files){
+        const u = await toDataURL(f);
+        if (u) urls.push(u);
+      }
+      if (urls.length) onUrls(urls);
+    });
   }
 
   /* =========================
@@ -564,6 +611,7 @@
   let undoStack = [];
   let activeDayId = null;
 
+  // ✅ 打字/焦點保護
   let lastTypingAt = 0;
   let pendingRemote = null;
   let applyingRemote = false;
@@ -577,10 +625,7 @@
     if (!$("#appRoot").contains(ae)) return false;
     return (Date.now() - lastTypingAt) < TYPING_GRACE_MS;
   }
-
-  function markTyping(){
-    lastTypingAt = Date.now();
-  }
+  function markTyping(){ lastTypingAt = Date.now(); }
 
   function defaultState(){
     return {
@@ -599,7 +644,7 @@
   function newCard(type="spot"){
     return {
       id: `c_${Date.now()}_${Math.random().toString(16).slice(2)}`,
-      type, // spot/restaurant/transport/shopping/lodging
+      type,
       title: type==="lodging" ? `住宿：${state?.settings?.hotelName||"住宿"}`
             : type==="restaurant" ? "新餐廳"
             : type==="transport" ? "新交通"
@@ -662,9 +707,7 @@
     }
   }
 
-  function clearLocal(){
-    localStorage.removeItem(STORAGE_KEY);
-  }
+  function clearLocal(){ localStorage.removeItem(STORAGE_KEY); }
 
   /* =========================
      Date helpers
@@ -697,16 +740,9 @@
   /* =========================
      Cloud
   ========================== */
-  let cloud = {
-    user:null,
-    uid:null,
-    unsub:null,
-    autoLoaded:false,
-  };
+  let cloud = { user:null, uid:null, unsub:null, autoLoaded:false };
 
-  function canCloud(){
-    return !!window.CloudSync && !!cloud.uid;
-  }
+  function canCloud(){ return !!window.CloudSync && !!cloud.uid; }
 
   async function cloudLoad(overwrite=true){
     if (!canCloud()) return false;
@@ -767,7 +803,6 @@
         setCloudStatus("雲端：有更新（你在編輯中，稍後套用）", "soft");
         return;
       }
-
       applyRemoteNow(remote);
     });
   }
@@ -792,10 +827,7 @@
     if (isEditingNow()) return;
     applyRemoteNow(pendingRemote);
   }
-
-  document.addEventListener("focusout", () => {
-    setTimeout(maybeApplyPendingRemote, 60);
-  });
+  document.addEventListener("focusout", () => { setTimeout(maybeApplyPendingRemote, 60); });
 
   async function autoLoadFromCloudOnce(){
     if (!canCloud()) return;
@@ -870,27 +902,25 @@
   }
 
   /* =========================
-     Focus/Caret preserve
+     Focus/Caret preserve (for render(true))
   ========================== */
   function captureFocus(){
     const ae = document.activeElement;
     if (!ae) return null;
+
     const tag = (ae.tagName||"").toLowerCase();
     if (!(tag==="input" || tag==="textarea")) return null;
     if (!$("#appRoot").contains(ae)) return null;
 
-    const info = {
+    return {
       tag,
       id: ae.id || "",
       cls: ae.className || "",
-      name: ae.getAttribute("name") || "",
       dataDay: ae.closest(".daySection")?.dataset?.id || "",
       dataCard: ae.closest(".card")?.dataset?.cardId || "",
-      dataSec: ae.closest(".card")?.dataset?.secKey || "",
       selStart: (typeof ae.selectionStart==="number") ? ae.selectionStart : null,
       selEnd: (typeof ae.selectionEnd==="number") ? ae.selectionEnd : null,
     };
-    return info;
   }
 
   function restoreFocus(info){
@@ -906,14 +936,6 @@
         if (card){
           el = card.querySelector(`.${info.cls.split(" ").filter(Boolean).join(".")}`);
         }
-      }
-    }
-
-    if (!el && info.dataDay){
-      const daySec = document.querySelector(`.daySection[data-id="${info.dataDay}"]`);
-      if (daySec){
-        const clsSel = info.cls ? `.${info.cls.split(" ").filter(Boolean).join(".")}` : null;
-        if (clsSel) el = daySec.querySelector(clsSel);
       }
     }
 
@@ -961,8 +983,13 @@
     recalcTotalsUI();
 
     restoreFocus(focusInfo);
+
+    requestAnimationFrame(() => {
+      document.querySelectorAll("#appRoot textarea").forEach(autoGrowTextarea);
+    });
   }
 
+  /* ✅ Day Chip 編輯：只改這裡 */
   function renderDayNav(){
     const nav = $("#dayNav");
     nav.innerHTML = "";
@@ -972,11 +999,64 @@
       chip.className = "dayChip";
       chip.dataset.id = d.id;
 
-      chip.innerHTML = `<div class="t"></div><div class="s"></div>`;
-      chip.querySelector(".t").textContent = d.dayLabel || "Day";
-      chip.querySelector(".s").textContent = d.dateText || "";
+      /* ✅ .t 變成 contenteditable，但尺寸不變 + 省略號由 CSS 處理 */
+      chip.innerHTML = `<div class="t" contenteditable="true" spellcheck="false"></div><div class="s"></div>`;
+      const tEl = chip.querySelector(".t");
+      const sEl = chip.querySelector(".s");
 
-      chip.addEventListener("click", () => {
+      tEl.textContent = d.dayLabel || "Day";
+      sEl.textContent = d.dateText || "";
+
+      /* ✅ 防止 Enter 產生換行（維持高度固定） */
+      tEl.addEventListener("keydown", (e) => {
+        if (e.key === "Enter"){
+          e.preventDefault();
+          tEl.blur();
+        }
+      });
+
+      /* ✅ 編輯時不要誤觸 chip click 跳轉 */
+      tEl.addEventListener("pointerdown", (e) => {
+        e.stopPropagation();
+      });
+
+      /* ✅ 編輯：同步回 state + 同步 dayHead 的 input + 關閉 autoDayLabel */
+      const commitChipLabel = () => {
+        markTyping();
+        const txt = (tEl.textContent || "").replace(/\s+/g," ").trim();
+        d.dayLabel = txt || d.dayLabel || "Day";
+        d.autoDayLabel = false;
+
+        /* 同步 day section header 的 input（若存在） */
+        const sec = document.querySelector(`.daySection[data-id="${d.id}"]`);
+        const inp = sec?.querySelector(".dayLabelInp");
+        if (inp) inp.value = d.dayLabel;
+
+        /* 同步 chip 顯示（避免空字） */
+        tEl.textContent = d.dayLabel;
+
+        scheduleSave();
+      };
+
+      tEl.addEventListener("input", () => {
+        markTyping();
+        // 不做 render，避免搶焦點；只先更新 state（省略號由 CSS 生效）
+        const txt = (tEl.textContent || "").replace(/\s+/g," ").trim();
+        d.dayLabel = txt || d.dayLabel || "Day";
+        d.autoDayLabel = false;
+
+        const sec = document.querySelector(`.daySection[data-id="${d.id}"]`);
+        const inp = sec?.querySelector(".dayLabelInp");
+        if (inp) inp.value = d.dayLabel;
+
+        scheduleSave();
+      });
+      tEl.addEventListener("blur", commitChipLabel);
+
+      chip.addEventListener("click", (e) => {
+        // 若正在編輯文字，click 不切換
+        if (document.activeElement === tEl) return;
+
         activeDayId = d.id;
         setActiveChip(d.id);
         const sec = document.querySelector(`.daySection[data-id="${d.id}"]`);
@@ -1067,8 +1147,11 @@
       dayLabelInp.addEventListener("input", () => {
         d.dayLabel = dayLabelInp.value.trim() || `Day ${idx+1}`;
         d.autoDayLabel = false;
-        const chip = document.querySelector(`.dayChip[data-id="${d.id}"] .t`);
-        if (chip) chip.textContent = d.dayLabel;
+
+        /* ✅ 同步 Chip 文字（不 render） */
+        const chipT = document.querySelector(`.dayChip[data-id="${d.id}"] .t`);
+        if (chipT) chipT.textContent = d.dayLabel;
+
         scheduleSave();
       });
 
@@ -1111,7 +1194,6 @@
         }
       });
 
-      // tickets
       const ticketText = sec.querySelector(".ticketText");
       ticketText.value = d.tickets?.text || "";
       autoGrowTextarea(ticketText);
@@ -1121,18 +1203,23 @@
         scheduleSave();
       });
 
-      const ticketPhotos = sec.querySelector(".ticketPhotos");
-      renderPhotoStrip(ticketPhotos, d.tickets.photos, () => scheduleSave());
-
-      sec.querySelector(".btnTicketPhoto").addEventListener("click", async () => {
-        const url = await pickPhoto();
-        if (!url) return;
-        d.tickets.photos.push(url);
+      attachPasteImages(ticketText, (urls) => {
+        d.tickets.photos.push(...urls);
         renderPhotoStrip(ticketPhotos, d.tickets.photos, () => scheduleSave());
         scheduleSave();
       });
 
-      // day note
+      const ticketPhotos = sec.querySelector(".ticketPhotos");
+      renderPhotoStrip(ticketPhotos, d.tickets.photos, () => scheduleSave());
+
+      sec.querySelector(".btnTicketPhoto").addEventListener("click", async () => {
+        const urls = await pickPhotos();
+        if (!urls.length) return;
+        d.tickets.photos.push(...urls);
+        renderPhotoStrip(ticketPhotos, d.tickets.photos, () => scheduleSave());
+        scheduleSave();
+      });
+
       const dayNoteText = sec.querySelector(".dayNoteText");
       dayNoteText.value = d.dayNote?.text || "";
       autoGrowTextarea(dayNoteText);
@@ -1142,20 +1229,24 @@
         scheduleSave();
       });
 
-      const dayNotePhotos = sec.querySelector(".dayNotePhotos");
-      renderPhotoStrip(dayNotePhotos, d.dayNote.photos, () => scheduleSave());
-      sec.querySelector(".btnDayNotePhoto").addEventListener("click", async () => {
-        const url = await pickPhoto();
-        if (!url) return;
-        d.dayNote.photos.push(url);
+      attachPasteImages(dayNoteText, (urls) => {
+        d.dayNote.photos.push(...urls);
         renderPhotoStrip(dayNotePhotos, d.dayNote.photos, () => scheduleSave());
         scheduleSave();
       });
 
-      // route overview
+      const dayNotePhotos = sec.querySelector(".dayNotePhotos");
+      renderPhotoStrip(dayNotePhotos, d.dayNote.photos, () => scheduleSave());
+      sec.querySelector(".btnDayNotePhoto").addEventListener("click", async () => {
+        const urls = await pickPhotos();
+        if (!urls.length) return;
+        d.dayNote.photos.push(...urls);
+        renderPhotoStrip(dayNotePhotos, d.dayNote.photos, () => scheduleSave());
+        scheduleSave();
+      });
+
       sec.querySelector(".btnDayRoute").addEventListener("click", () => openDayRoute(d));
 
-      // render cards for each section
       ["morning","afternoon","night"].forEach(key=>{
         const body = sec.querySelector(`.sec[data-sec="${key}"] .secBody`);
         body.innerHTML = "";
@@ -1170,7 +1261,6 @@
         (d.sections[key]||[]).forEach(card => body.appendChild(renderCard(card, d, key)));
       });
 
-      // add buttons
       $$("[data-add]", sec).forEach(btn=>{
         btn.addEventListener("click", () => {
           const secKey = btn.dataset.add;
@@ -1207,17 +1297,6 @@
     return t==="restaurant" ? "餐廳" : t==="transport" ? "交通" : t==="shopping" ? "購物" : t==="lodging" ? "住宿" : "景點";
   }
 
-  /* ✅ 標記1：下拉選單 options */
-  function typeOptionsHTML(){
-    return `
-      <option value="spot">景點</option>
-      <option value="restaurant">餐廳</option>
-      <option value="transport">交通</option>
-      <option value="shopping">購物</option>
-      <option value="lodging">住宿</option>
-    `;
-  }
-
   function renderCard(card, dayObj, secKey){
     const el = document.createElement("article");
     el.className = "card";
@@ -1233,10 +1312,7 @@
           <input class="miniInp metaInp" placeholder="地區・說明（例如：秋葉原、注意事項…）" />
         </div>
         <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end;">
-          <!-- ✅ 標記1：tag 改成下拉 -->
-          <select class="tagSelect" ${card.type==="lodging" ? "disabled" : ""}>
-            ${typeOptionsHTML()}
-          </select>
+          <div class="tag">${typeLabel(card.type)}</div>
           ${card.type==="lodging" ? `<span class="badge soft">住宿卡</span>` : ``}
         </div>
       </div>
@@ -1275,11 +1351,10 @@
 
       <div class="note">
         <div class="noteHead">
-          <span>備註（可拖圖片到輸入框）</span>
+          <span>備註</span>
           <button class="btn small btnNotePhoto" type="button">📷</button>
         </div>
-        <!-- ✅ 標記2：備註自動長高 + 支援拖圖片 -->
-        <textarea class="noteText" placeholder="可寫：排隊、注意事項、順遊、訂位…（也可直接拖圖片進來）"></textarea>
+        <textarea class="noteText" placeholder="可寫：排隊、注意事項、順遊、訂位…"></textarea>
         <div class="photoStrip notePhotos"></div>
       </div>
     `;
@@ -1301,17 +1376,9 @@
     destInp.value = (card.destination || card.ja || "") || "";
     jpyInp.value = card.jpy || "";
     noteText.value = card.note || "";
+    autoGrowTextarea(noteText);
 
     renderPhotoStrip(notePhotos, card.photos, () => scheduleSave());
-
-    /* ✅ 標記1：下拉切換類型 */
-    const tagSel = el.querySelector(".tagSelect");
-    tagSel.value = card.type || "spot";
-    tagSel.addEventListener("change", () => {
-      if (card.type==="lodging") return;
-      card.type = tagSel.value;
-      scheduleSave();
-    });
 
     function updateTwd(){
       const rate = Number(state.settings.rate||0.22);
@@ -1322,14 +1389,8 @@
     }
     updateTwd();
 
-    // bind inputs
     const bindInput = (node, fn) => {
-      node.addEventListener("input", () => {
-        markTyping();
-        fn();
-        if ((node.tagName||"").toLowerCase()==="textarea") autoGrowTextarea(node); // ✅ 自動長高
-        scheduleSave();
-      });
+      node.addEventListener("input", () => { markTyping(); fn(); scheduleSave(); });
       node.addEventListener("focus", markTyping);
     };
 
@@ -1345,35 +1406,22 @@
     bindInput(originInp, () => { card.origin = originInp.value; });
     bindInput(destInp, () => { card.destination = destInp.value; });
     bindInput(jpyInp, () => { card.jpy = jpyInp.value; updateTwd(); });
-    bindInput(noteText, () => { card.note = noteText.value; });
 
-    // ✅ 初次渲染也做一次自動長高
-    autoGrowTextarea(noteText);
-
-    /* ✅ 標記2：拖圖片進備註 textarea（加入同卡片 photos） */
-    noteText.addEventListener("dragover", (e) => {
-      e.preventDefault();
+    noteText.addEventListener("input", () => {
+      markTyping();
+      card.note = noteText.value;
+      autoGrowTextarea(noteText);
+      scheduleSave();
     });
-    noteText.addEventListener("drop", (e) => {
-      e.preventDefault();
-      const files = Array.from(e.dataTransfer?.files || []).filter(f => (f.type||"").startsWith("image/"));
-      if (!files.length) return;
+    noteText.addEventListener("focus", markTyping);
 
-      files.forEach(file => {
-        const reader = new FileReader();
-        reader.onload = (ev) => {
-          const url = String(ev.target?.result || "");
-          if (!url) return;
-          card.photos = card.photos || [];
-          card.photos.push(url);
-          renderPhotoStrip(notePhotos, card.photos, () => scheduleSave());
-          scheduleSave();
-        };
-        reader.readAsDataURL(file);
-      });
+    attachPasteImages(noteText, (urls) => {
+      card.photos = card.photos || [];
+      card.photos.push(...urls);
+      renderPhotoStrip(notePhotos, card.photos, () => scheduleSave());
+      scheduleSave();
     });
 
-    // vias
     const viasWrap = el.querySelector(".vias");
     function renderVias(){
       viasWrap.innerHTML = "";
@@ -1405,16 +1453,14 @@
       scheduleSave();
     });
 
-    // note photos button
     el.querySelector(".btnNotePhoto").addEventListener("click", async () => {
-      const url = await pickPhoto();
-      if (!url) return;
-      card.photos.push(url);
+      const urls = await pickPhotos();
+      if (!urls.length) return;
+      card.photos.push(...urls);
       renderPhotoStrip(notePhotos, card.photos, () => scheduleSave());
       scheduleSave();
     });
 
-    // map actions
     el.querySelector(".btnPreview").addEventListener("click", () => {
       const q = (card.destination || card.ja || card.title || "").trim();
       if (!q) return alert("請先填『目的地/地址』或『日文名稱』");
@@ -1460,12 +1506,12 @@
   }
 
   /* =========================
-     Photos
+     Photos (multi)
   ========================== */
   const photoPicker = $("#photoPicker");
   let photoResolve = null;
 
-  function pickPhoto(){
+  function pickPhotos(){
     return new Promise((resolve) => {
       photoResolve = resolve;
       photoPicker.value = "";
@@ -1473,19 +1519,28 @@
     });
   }
 
-  photoPicker.addEventListener("change", () => {
-    const file = photoPicker.files && photoPicker.files[0];
-    if (!file){
-      if (photoResolve) photoResolve(null);
+  photoPicker.addEventListener("change", async () => {
+    const files = Array.from(photoPicker.files || []).filter(f => (f.type||"").startsWith("image/"));
+    if (!files.length){
+      if (photoResolve) photoResolve([]);
       photoResolve = null;
       return;
     }
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      if (photoResolve) photoResolve(String(e.target.result || ""));
-      photoResolve = null;
-    };
-    reader.readAsDataURL(file);
+
+    const toDataURL = (file) => new Promise((res) => {
+      const reader = new FileReader();
+      reader.onload = (e) => res(String(e.target?.result || ""));
+      reader.readAsDataURL(file);
+    });
+
+    const urls = [];
+    for (const f of files){
+      const u = await toDataURL(f);
+      if (u) urls.push(u);
+    }
+
+    if (photoResolve) photoResolve(urls);
+    photoResolve = null;
   });
 
   function renderPhotoStrip(container, list, onChanged){
@@ -1785,6 +1840,7 @@
   $("#appDesc").addEventListener("input", () => {
     markTyping();
     state.appDesc = $("#appDesc").value;
+    autoGrowTextarea($("#appDesc"));
     scheduleSave();
   });
 
@@ -1938,7 +1994,7 @@
     if (!menuCtx) return;
     const found = findCard(menuCtx.dayId, menuCtx.secKey, menuCtx.cardId);
     if (!found) return closeMenu();
-    const {d:fromDay, list, idx, card} = found;
+    const {list, idx, card} = found;
     if (card.type==="lodging") return alert("住宿卡固定（不能移動）");
 
     const labels = state.days.map((dd,i)=> `${i+1}. ${dd.dayLabel} (${dd.dateText})`).join("\n");
@@ -1979,6 +2035,8 @@
 
     $("#appDesc").value = state.appDesc || "";
     render(true);
+
+    requestAnimationFrame(() => autoGrowTextarea($("#appDesc")));
   }
   init();
 
@@ -2015,7 +2073,6 @@
 </script>
 
 <script type="module">
-  // ====== Firebase Auth + Firestore CloudSync (Email/Password) ======
   import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
   import {
     getAuth, onAuthStateChanged,
@@ -2039,7 +2096,6 @@
   const auth = getAuth(app);
   const db = getFirestore(app);
 
-  // CloudSync API: users/{uid}/trips/{tripId}
   window.CloudSync = {
     _ref(uid, tripId){
       return doc(db, "users", uid, "trips", tripId);
