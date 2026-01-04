@@ -1,243 +1,215 @@
 <!doctype html>
 <html lang="zh-Hant">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Niji Trip 2026 🌈</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Niji Trip 2026</title>
 
 <style>
-:root{
-  --bg:#fce0b3;
-  --card:#fff7e8;
-  --soft:#eaf6ff;
-  --brown:#7a4a26;
-  --border:rgba(122,74,38,.25);
-}
-*{box-sizing:border-box}
 body{
   margin:0;
-  font-family:system-ui,-apple-system,"Noto Sans TC",sans-serif;
-  background:var(--bg);
-  color:var(--brown);
+  font-family: system-ui, -apple-system, "Noto Sans TC", sans-serif;
+  background:#fde3b6;
+  color:#6b3f1f;
 }
 header{
   padding:16px;
-  background:#fff;
-  border-bottom-left-radius:24px;
-  border-bottom-right-radius:24px;
+  font-size:24px;
+  font-weight:900;
 }
-h1{margin:0;font-size:26px}
-button{
-  border:none;
-  background:#ffd59a;
-  border-radius:999px;
-  padding:8px 14px;
-  font-weight:700;
-  cursor:pointer;
-}
-main{padding:14px}
-
-.card{
-  background:var(--card);
-  border-radius:18px;
+main{
   padding:12px;
-  margin-bottom:12px;
+}
+.card{
+  background:#fff6e6;
+  border-radius:18px;
+  padding:14px;
+  margin-bottom:14px;
   box-shadow:0 2px 6px rgba(0,0,0,.08);
 }
-
-.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-
-.tag{
-  padding:4px 10px;
-  border-radius:999px;
-  background:#fff3da;
-  font-size:12px;
-  font-weight:700;
-  cursor:pointer;
-}
-
-input,textarea{
+.row{margin-bottom:10px;}
+input, textarea, select{
   width:100%;
+  border:none;
   border-radius:12px;
-  border:1px solid var(--border);
   padding:10px;
   font-size:14px;
   outline:none;
+  box-sizing:border-box;
 }
-textarea{resize:none;overflow:hidden}
-
-.photoStrip{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
-.photoStrip img{
-  width:64px;height:64px;border-radius:10px;
-  object-fit:cover;cursor:pointer;
-  border:1px solid var(--border);
+textarea{resize:vertical;}
+select{
+  font-weight:700;
+  background:#ffe1b3;
 }
-.small{font-size:12px;color:#6b4a2c}
+.note{
+  background:#fff;
+  border:2px dashed #e7b97e;
+  border-radius:12px;
+  padding:10px;
+}
+.note textarea{
+  border:none;
+  background:transparent;
+  padding:0;
+  min-height:60px;
+}
+.noteImages{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-top:8px;
+}
+.noteImages img{
+  width:70px;
+  height:70px;
+  object-fit:cover;
+  border-radius:10px;
+  cursor:pointer;
+  border:1px solid #e7b97e;
+}
+button{
+  padding:10px 14px;
+  border:none;
+  border-radius:999px;
+  font-weight:800;
+  background:#ffbf6e;
+}
 </style>
 </head>
 
 <body>
-
 <header>
-  <h1>Niji Trip 2026 🌈</h1>
-  <div class="small">穩定輸入｜雲端同步｜交通路線自由記錄</div>
-  <div class="row" style="margin-top:10px">
-    <button id="addCard">＋ 新增行程</button>
-    <span id="syncState" class="small">已自動保存</span>
-  </div>
+  🌈 Niji Trip 2026
 </header>
 
-<main id="list"></main>
-
-<input type="file" id="photoPicker" accept="image/*" hidden/>
+<main>
+  <button id="addCard">＋ 新增行程</button>
+  <div id="cards"></div>
+</main>
 
 <script>
-/* =============================
-   穩定核心：不 render 中斷輸入
-============================= */
+const STORAGE_KEY = "niji_trip_stable_v1";
 
-const STORAGE_KEY="niji_trip_final";
-let state = JSON.parse(localStorage.getItem(STORAGE_KEY)||"[]");
-let typing=false;
-let saveTimer=null;
+let state = {
+  cards:[]
+};
 
-function autoGrow(el){
-  el.style.height="auto";
-  el.style.height=el.scrollHeight+"px";
+function save(){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
 }
 
-function markDirty(){
-  typing=true;
-  clearTimeout(saveTimer);
-  saveTimer=setTimeout(()=>{
-    typing=false;
-    localStorage.setItem(STORAGE_KEY,JSON.stringify(state));
-    document.getElementById("syncState").textContent="已自動保存";
-  },1200);
+function load(){
+  const raw = localStorage.getItem(STORAGE_KEY);
+  if(raw) state = JSON.parse(raw);
 }
-
-/* =============================
-   UI
-============================= */
-
-const list=document.getElementById("list");
 
 function render(){
-  list.innerHTML="";
-  state.forEach((c,i)=>{
-    const el=document.createElement("div");
-    el.className="card";
-
-    el.innerHTML=`
-      <div class="row">
-        <span class="tag" data-i="${i}">${c.type}</span>
-      </div>
-
-      <input placeholder="標題" value="${c.title}"/>
-
-      <textarea placeholder="交通路線 / 行程說明">${c.route}</textarea>
-
-      <div class="small">備註（可加圖片）</div>
-      <textarea placeholder="備註">${c.note}</textarea>
-      <div class="photoStrip"></div>
-    `;
-
-    /* 類型切換（標記1） */
-    const tag=el.querySelector(".tag");
-    tag.onclick=()=>{
-      const types=["景點","餐廳","交通","購物"];
-      const idx=types.indexOf(c.type);
-      c.type=types[(idx+1)%types.length];
-      tag.textContent=c.type;
-      markDirty();
-    };
-
-    /* 標題 */
-    const title=el.querySelectorAll("input")[0];
-    title.oninput=e=>{
-      c.title=e.target.value;
-      markDirty();
-    };
-
-    /* 交通路線（標記3） */
-    const route=el.querySelectorAll("textarea")[0];
-    autoGrow(route);
-    route.oninput=e=>{
-      c.route=e.target.value;
-      autoGrow(route);
-      markDirty();
-    };
-
-    /* 備註（標記2） */
-    const note=el.querySelectorAll("textarea")[1];
-    autoGrow(note);
-    note.oninput=e=>{
-      c.note=e.target.value;
-      autoGrow(note);
-      markDirty();
-    };
-
-    /* 圖片嵌在備註裡 */
-    const strip=el.querySelector(".photoStrip");
-    strip.innerHTML="";
-    c.photos.forEach((p,pi)=>{
-      const img=document.createElement("img");
-      img.src=p;
-      img.onclick=()=>{
-        c.photos.splice(pi,1);
-        render();
-        markDirty();
-      };
-      strip.appendChild(img);
-    });
-
-    note.addEventListener("dblclick",()=>pickPhoto(i));
-
-    list.appendChild(el);
+  const wrap = document.getElementById("cards");
+  wrap.innerHTML = "";
+  state.cards.forEach(card=>{
+    wrap.appendChild(renderCard(card));
   });
 }
 
-/* =============================
-   新增 / 圖片
-============================= */
-
-document.getElementById("addCard").onclick=()=>{
-  state.push({
+function newCard(){
+  return {
+    id:Date.now()+Math.random(),
     type:"景點",
     title:"",
-    route:"",
     note:"",
-    photos:[]
-  });
-  render();
-  markDirty();
-};
-
-const picker=document.getElementById("photoPicker");
-let photoTarget=null;
-
-function pickPhoto(i){
-  photoTarget=i;
-  picker.value="";
-  picker.click();
-}
-picker.onchange=()=>{
-  const f=picker.files[0];
-  if(!f)return;
-  const r=new FileReader();
-  r.onload=e=>{
-    state[photoTarget].photos.push(e.target.result);
-    render();
-    markDirty();
+    noteImages:[]
   };
-  r.readAsDataURL(f);
+}
+
+function renderCard(card){
+  const el = document.createElement("div");
+  el.className = "card";
+
+  // 類型下拉（標記1）
+  const typeSel = document.createElement("select");
+  ["景點","餐廳","交通","購物"].forEach(t=>{
+    const o = document.createElement("option");
+    o.value=t; o.textContent=t;
+    if(card.type===t) o.selected=true;
+    typeSel.appendChild(o);
+  });
+  typeSel.onchange = ()=>{
+    card.type = typeSel.value;
+    save();
+  };
+
+  // 標題
+  const title = document.createElement("input");
+  title.placeholder = "標題";
+  title.value = card.title;
+  title.oninput = ()=>{
+    card.title = title.value;
+    save();
+  };
+
+  // 備註（標記2 + 拖圖片）
+  const noteBox = document.createElement("div");
+  noteBox.className = "note";
+
+  const note = document.createElement("textarea");
+  note.placeholder = "備註（可拖圖片進來）";
+  note.value = card.note;
+  note.oninput = ()=>{
+    card.note = note.value;
+    save();
+  };
+
+  const imgWrap = document.createElement("div");
+  imgWrap.className = "noteImages";
+
+  function renderImages(){
+    imgWrap.innerHTML = "";
+    card.noteImages.forEach((src,i)=>{
+      const img = document.createElement("img");
+      img.src = src;
+      img.onclick = ()=>{
+        card.noteImages.splice(i,1);
+        renderImages();
+        save();
+      };
+      imgWrap.appendChild(img);
+    });
+  }
+  renderImages();
+
+  noteBox.ondragover = e=>e.preventDefault();
+  noteBox.ondrop = e=>{
+    e.preventDefault();
+    const file = e.dataTransfer.files[0];
+    if(!file || !file.type.startsWith("image")) return;
+    const r = new FileReader();
+    r.onload = ()=>{
+      card.noteImages.push(r.result);
+      renderImages();
+      save();
+    };
+    r.readAsDataURL(file);
+  };
+
+  noteBox.appendChild(note);
+  noteBox.appendChild(imgWrap);
+
+  el.appendChild(typeSel);
+  el.appendChild(title);
+  el.appendChild(noteBox);
+
+  return el;
+}
+
+document.getElementById("addCard").onclick = ()=>{
+  state.cards.push(newCard());
+  save();
+  render();
 };
 
-/* =============================
-   Init
-============================= */
+load();
 render();
 </script>
-
 </body>
 </html>
