@@ -1,1078 +1,179 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-Hant">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>Niji Trip Planner 🌈</title>
-  <meta name="theme-color" content="#ffcf8f"/>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Niji Trip 2026</title>
 
-  <style>
-    :root{
-      --bg0:#fff6e8;
-      --bg1:#ffe7c2;
-      --bg2:#ffd6a1;
-      --card:#ffffffcc;
-      --stroke:#ffffff88;
-      --text:#2a2a2a;
-      --muted:#6b6b6b;
-      --shadow: 0 12px 30px rgba(0,0,0,.08);
-      --shadow2: 0 8px 18px rgba(0,0,0,.06);
-      --radius: 18px;
-      --radius2: 14px;
-      --focus: 0 0 0 3px rgba(255, 153, 66, .25);
-      --chip:#fff;
-      --chipStroke:#00000014;
-
-      --c-spot: #ff8a65;
-      --c-food: #ffb74d;
-      --c-hotel:#64b5f6;
-      --c-traffic:#81c784;
-      --c-shop:#ba68c8;
-      --c-other:#90a4ae;
-    }
-
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{
-      margin:0;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", Arial, sans-serif;
-      color:var(--text);
-      background: radial-gradient(1200px 800px at 20% 10%, var(--bg2), transparent 55%),
-                  radial-gradient(900px 700px at 80% 20%, #ffd1dc, transparent 55%),
-                  radial-gradient(900px 700px at 50% 90%, #d9f7ff, transparent 55%),
-                  linear-gradient(180deg, var(--bg0), #fff);
-      padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
-    }
-
-    a{color:inherit}
-    button, input, textarea, select{font:inherit}
-    .wrap{max-width: 1200px; margin: 0 auto; padding: 18px 16px 28px;}
-    .topbar{
-      display:flex; align-items:center; justify-content:space-between;
-      gap:12px; margin-bottom: 14px;
-    }
-
-    .brand{
-      display:flex; align-items:center; gap:10px;
-      background: linear-gradient(180deg, rgba(255,255,255,.7), rgba(255,255,255,.35));
-      border: 1px solid var(--stroke);
-      border-radius: 999px;
-      padding: 10px 14px;
-      box-shadow: var(--shadow2);
-      backdrop-filter: blur(10px);
-    }
-    .brand .logo{
-      width:38px; height:38px; border-radius: 14px;
-      background: conic-gradient(from 180deg, #ffb74d, #ff8a65, #ba68c8, #64b5f6, #81c784, #ffb74d);
-      box-shadow: 0 10px 20px rgba(0,0,0,.10);
-    }
-    .brand .title{line-height:1.15}
-    .brand .title b{font-size:14px}
-    .brand .title small{display:block; color:var(--muted); font-size:12px; margin-top:2px}
-
-    .actions{
-      display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end;
-    }
-    .btn{
-      border:1px solid var(--stroke);
-      background: rgba(255,255,255,.7);
-      border-radius: 999px;
-      padding: 10px 12px;
-      box-shadow: var(--shadow2);
-      backdrop-filter: blur(10px);
-      cursor:pointer;
-      transition: transform .06s ease, filter .15s ease;
-      display:flex; align-items:center; gap:8px;
-      user-select:none;
-    }
-    .btn:active{transform: translateY(1px)}
-    .btn:hover{filter: brightness(1.02)}
-    .btn.primary{
-      background: linear-gradient(180deg, rgba(255, 207, 143, .95), rgba(255, 207, 143, .70));
-    }
-    .btn.danger{
-      background: linear-gradient(180deg, rgba(255, 138, 101, .18), rgba(255,255,255,.65));
-      border-color: rgba(255, 138, 101, .25);
-    }
-    .btn .icon{width:18px;height:18px; display:inline-block}
-    .btn.small{padding:8px 10px; font-size:13px}
-
-    .grid{
-      display:grid;
-      grid-template-columns: 360px 1fr;
-      gap: 14px;
-    }
-    @media (max-width: 980px){
-      .grid{grid-template-columns: 1fr; }
-    }
-
-    .panel{
-      background: rgba(255,255,255,.55);
-      border: 1px solid var(--stroke);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(12px);
-      overflow:hidden;
-    }
-    .panel .hd{
-      padding: 14px 14px 10px;
-      border-bottom: 1px solid rgba(0,0,0,.05);
-      display:flex;
-      gap:10px;
-      align-items:flex-end;
-      justify-content:space-between;
-    }
-    .panel .hd h2{
-      margin:0;
-      font-size:14px;
-      letter-spacing:.2px;
-    }
-    .panel .hd p{
-      margin:4px 0 0;
-      color:var(--muted);
-      font-size:12px;
-    }
-    .panel .bd{padding: 12px 14px 14px}
-
-    .field{
-      display:grid;
-      gap:8px;
-      margin-bottom:10px;
-    }
-    .field label{font-size:12px; color:var(--muted)}
-    .input, .textarea, .select{
-      width:100%;
-      border:1px solid rgba(0,0,0,.08);
-      background: rgba(255,255,255,.82);
-      border-radius: 14px;
-      padding: 10px 12px;
-      outline: none;
-    }
-    .textarea{min-height: 80px; resize: vertical}
-    .input:focus, .textarea:focus, .select:focus{box-shadow: var(--focus); border-color: rgba(255,153,66,.35)}
-
-    .row{display:flex; gap:10px; align-items:center}
-    .row > *{flex:1}
-    .row .fit{flex:0 0 auto}
-
-    .days{
-      display:flex; flex-direction:column; gap:10px;
-      padding-bottom:8px;
-    }
-    .day{
-      background: rgba(255,255,255,.78);
-      border: 1px solid rgba(0,0,0,.06);
-      border-radius: 16px;
-      padding: 10px 10px;
-      box-shadow: 0 8px 18px rgba(0,0,0,.05);
-      cursor:pointer;
-      transition: transform .06s ease, background .12s ease;
-    }
-    .day:hover{filter: brightness(1.01)}
-    .day:active{transform: translateY(1px)}
-    .day.active{
-      background: linear-gradient(180deg, rgba(255, 214, 161, .70), rgba(255,255,255,.80));
-      border-color: rgba(255,153,66,.22);
-      box-shadow: 0 14px 28px rgba(0,0,0,.08);
-    }
-    .day .top{
-      display:flex; align-items:center; justify-content:space-between; gap:10px;
-    }
-    .day .name{
-      font-weight: 700;
-      font-size: 13px;
-      display:flex; align-items:center; gap:8px;
-      min-width: 0;
-    }
-    .badge{
-      width:9px; height:9px; border-radius:999px; background:#ffb74d;
-      box-shadow: 0 0 0 3px rgba(255,183,77,.18);
-      flex: 0 0 auto;
-    }
-    .day .meta{color:var(--muted); font-size:12px; margin-top:6px}
-    .count{
-      font-size:12px; color:var(--muted);
-      background: rgba(0,0,0,.04);
-      padding: 6px 10px;
-      border-radius: 999px;
-      border: 1px solid rgba(0,0,0,.04);
-      flex: 0 0 auto;
-    }
-
-    .toolbar{
-      display:flex; gap:10px; flex-wrap:wrap;
-      padding: 12px 14px 12px;
-      border-bottom: 1px solid rgba(0,0,0,.05);
-      align-items:center;
-      justify-content:space-between;
-    }
-    .toolbar .left, .toolbar .right{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
-    .chips{display:flex; gap:8px; flex-wrap:wrap}
-    .chip{
-      border: 1px solid var(--chipStroke);
-      background: rgba(255,255,255,.85);
-      border-radius: 999px;
-      padding: 8px 10px;
-      font-size: 12px;
-      cursor:pointer;
-      user-select:none;
-      display:flex; gap:8px; align-items:center;
-    }
-    .chip.active{
-      background: rgba(255, 214, 161, .75);
-      border-color: rgba(255,153,66,.22);
-    }
-    .dot{width:10px;height:10px;border-radius:999px;flex:0 0 auto}
-    .dot.spot{background:var(--c-spot)}
-    .dot.food{background:var(--c-food)}
-    .dot.hotel{background:var(--c-hotel)}
-    .dot.traffic{background:var(--c-traffic)}
-    .dot.shop{background:var(--c-shop)}
-    .dot.other{background:var(--c-other)}
-
-    .list{
-      padding: 12px 14px 18px;
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-      min-height: 220px;
-    }
-    .empty{
-      color:var(--muted);
-      font-size:13px;
-      padding: 24px 14px;
-      text-align:center;
-      border: 1px dashed rgba(0,0,0,.12);
-      border-radius: 16px;
-      background: rgba(255,255,255,.55);
-    }
-
-    .item{
-      background: rgba(255,255,255,.85);
-      border: 1px solid rgba(0,0,0,.06);
-      border-radius: 16px;
-      padding: 12px 12px;
-      box-shadow: 0 10px 22px rgba(0,0,0,.05);
-      display:grid;
-      grid-template-columns: 1fr auto;
-      gap:12px;
-    }
-    .item.dragging{opacity:.65}
-    .item .main{min-width:0}
-    .item .t{
-      display:flex; align-items:center; gap:10px;
-      font-weight: 800; font-size:14px; margin:0 0 6px;
-      min-width:0;
-    }
-    .item .t .catPill{
-      font-size:11px; font-weight:700;
-      padding: 6px 8px;
-      border-radius: 999px;
-      border: 1px solid rgba(0,0,0,.06);
-      background: rgba(255,255,255,.9);
-      flex:0 0 auto;
-    }
-    .item .sub{
-      display:flex; flex-wrap:wrap; gap:8px;
-      color:var(--muted); font-size:12px;
-    }
-    .kv{
-      display:inline-flex; gap:6px; align-items:center;
-      padding: 6px 8px; border-radius: 999px;
-      background: rgba(0,0,0,.035);
-      border:1px solid rgba(0,0,0,.04);
-    }
-    .kv b{color:#333; font-weight:700}
-    .item .notes{
-      margin-top:8px;
-      font-size:13px;
-      line-height:1.45;
-      color:#333;
-      white-space: pre-wrap;
-      word-break: break-word;
-    }
-    .item .controls{
-      display:flex; flex-direction:column; gap:8px; align-items:flex-end;
-    }
-    .handle{
-      cursor:grab;
-      border: 1px solid rgba(0,0,0,.07);
-      background: rgba(255,255,255,.8);
-      border-radius: 12px;
-      padding: 8px 10px;
-      font-size:12px;
-      color:var(--muted);
-      user-select:none;
-    }
-    .handle:active{cursor:grabbing}
-    .miniBtns{display:flex; gap:8px}
-    .mini{
-      border: 1px solid rgba(0,0,0,.07);
-      background: rgba(255,255,255,.8);
-      border-radius: 12px;
-      padding: 8px 10px;
-      cursor:pointer;
-      font-size:12px;
-      user-select:none;
-    }
-    .mini:hover{filter:brightness(1.02)}
-    .mini.danger{
-      border-color: rgba(255, 138, 101, .25);
-      background: rgba(255, 138, 101, .10);
-    }
-
-    dialog{
-      border:none;
-      border-radius: 20px;
-      box-shadow: var(--shadow);
-      width: min(520px, calc(100vw - 24px));
-      background: rgba(255,255,255,.92);
-      backdrop-filter: blur(12px);
-    }
-    dialog::backdrop{
-      background: rgba(20,20,20,.35);
-      backdrop-filter: blur(4px);
-    }
-    .dlgHd{
-      padding: 14px 14px 0;
-      display:flex; align-items:center; justify-content:space-between; gap:10px;
-    }
-    .dlgHd h3{margin:0; font-size:14px}
-    .dlgBd{padding: 12px 14px 14px}
-    .dlgFt{
-      padding: 0 14px 14px;
-      display:flex; gap:10px; justify-content:flex-end; flex-wrap:wrap;
-    }
-    .kbd{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace}
-    .hint{font-size:12px;color:var(--muted); margin-top:6px}
-  </style>
+<style>
+body{
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC",sans-serif;
+  background:#ffe0b3;
+  color:#6b3f1d;
+}
+.page{max-width:900px;margin:auto;padding:12px 12px 120px}
+.card{
+  background:#fff7e8;
+  border-radius:20px;
+  padding:14px;
+  margin-bottom:14px;
+  box-shadow:0 2px 8px rgba(0,0,0,.08);
+}
+input,textarea,select{
+  width:100%;
+  border:none;
+  border-radius:14px;
+  padding:10px 12px;
+  font-size:14px;
+  box-shadow:0 2px 6px rgba(0,0,0,.08);
+  outline:none;
+}
+textarea{
+  resize:none;
+  overflow:hidden;
+}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.btn{
+  border:none;
+  border-radius:999px;
+  padding:8px 14px;
+  background:#ffd28a;
+  font-weight:700;
+}
+.tagSelect{
+  font-weight:700;
+}
+.photo{
+  width:72px;height:72px;
+  border-radius:10px;
+  object-fit:cover;
+  margin:4px;
+}
+.notePhotos{display:flex;flex-wrap:wrap}
+</style>
 </head>
+
 <body>
-  <div class="wrap">
-    <div class="topbar">
-      <div class="brand" role="banner" aria-label="Niji Trip Planner">
-        <div class="logo" aria-hidden="true"></div>
-        <div class="title">
-          <b>Niji Trip Planner 🌈</b>
-          <small>暖色系行程管理｜自動保存｜拖曳排序｜匯出備份</small>
-        </div>
-      </div>
-      <div class="actions">
-        <button class="btn" id="btnExport" title="匯出 JSON">
-          <span class="icon" aria-hidden="true">⤓</span><span>匯出</span>
-        </button>
-        <button class="btn" id="btnImport" title="匯入 JSON">
-          <span class="icon" aria-hidden="true">⤒</span><span>匯入</span>
-        </button>
-        <button class="btn danger" id="btnReset" title="清空全部資料">
-          <span class="icon" aria-hidden="true">🧹</span><span>清空</span>
-        </button>
-        <button class="btn primary" id="btnAddDay" title="新增一天">
-          <span class="icon" aria-hidden="true">＋</span><span>新增天</span>
-        </button>
-      </div>
-    </div>
+<div class="page">
 
-    <div class="grid" role="main">
-      <!-- Left: days -->
-      <section class="panel" aria-label="天數清單">
-        <div class="hd">
-          <div>
-            <h2>天數</h2>
-            <p>點選一天 → 右側管理該天行程</p>
-          </div>
-          <div class="count" id="daysCount">0 天</div>
-        </div>
-        <div class="bd">
-          <div class="field">
-            <label for="tripName">旅程名稱</label>
-            <input class="input" id="tripName" placeholder="例如：東京 8 天自由行" />
-          </div>
+<h1>Niji Trip 2026 🌈</h1>
 
-          <div class="field">
-            <label for="tripNote">旅程備註</label>
-            <textarea class="textarea" id="tripNote" placeholder="例如：住宿、換匯、注意事項..."></textarea>
-          </div>
+<div id="cards"></div>
 
-          <div class="days" id="days"></div>
+<button class="btn" onclick="addCard()">＋ 新增卡片</button>
 
-          <div class="hint">
-            小技巧：拖曳排序只在右側「同一天」內生效；資料會自動保存到本機。
-          </div>
-        </div>
-      </section>
+</div>
 
-      <!-- Right: items -->
-      <section class="panel" aria-label="行程管理">
-        <div class="toolbar">
-          <div class="left">
-            <div>
-              <div style="font-weight:800; font-size:14px" id="activeDayTitle">請先選擇一天</div>
-              <div style="color:var(--muted); font-size:12px" id="activeDayMeta">—</div>
-            </div>
-          </div>
-          <div class="right">
-            <button class="btn primary" id="btnAddItem" disabled>
-              <span class="icon" aria-hidden="true">＋</span><span>新增行程</span>
-            </button>
-          </div>
-        </div>
+<input type="file" id="imgPick" accept="image/*" hidden>
 
-        <div class="toolbar" style="border-bottom: 1px solid rgba(0,0,0,.05);">
-          <div class="left" style="flex:1; min-width: 240px;">
-            <input class="input" id="search" placeholder="搜尋：標題 / 地點 / 備註" disabled />
-          </div>
-          <div class="right chips" id="chips" aria-label="類別篩選">
-            <div class="chip active" data-filter="all"><span class="dot other"></span>全部</div>
-            <div class="chip" data-filter="spot"><span class="dot spot"></span>景點</div>
-            <div class="chip" data-filter="food"><span class="dot food"></span>餐飲</div>
-            <div class="chip" data-filter="hotel"><span class="dot hotel"></span>住宿</div>
-            <div class="chip" data-filter="traffic"><span class="dot traffic"></span>交通</div>
-            <div class="chip" data-filter="shop"><span class="dot shop"></span>購物</div>
-            <div class="chip" data-filter="other"><span class="dot other"></span>其他</div>
-          </div>
-        </div>
+<script>
+const cardsEl = document.getElementById("cards");
+const imgPick = document.getElementById("imgPick");
+let imgTarget = null;
 
-        <div class="list" id="list"></div>
-      </section>
-    </div>
-  </div>
+let state = JSON.parse(localStorage.getItem("niji_final")) || {
+  cards:[]
+};
 
-  <!-- Item Dialog -->
-  <dialog id="dlgItem">
-    <form method="dialog" id="itemForm">
-      <div class="dlgHd">
-        <h3 id="dlgTitle">新增行程</h3>
-        <button class="mini" value="cancel" aria-label="關閉">✕</button>
-      </div>
-      <div class="dlgBd">
-        <input type="hidden" id="editId" />
+function save(){
+  localStorage.setItem("niji_final",JSON.stringify(state));
+}
 
-        <div class="row">
-          <div class="field">
-            <label for="itemTime">時間</label>
-            <input class="input" id="itemTime" placeholder="例如：09:30 / 早上 / 晚上" />
-          </div>
-          <div class="field">
-            <label for="itemCat">類別</label>
-            <select class="select" id="itemCat">
-              <option value="spot">景點</option>
-              <option value="food">餐飲</option>
-              <option value="hotel">住宿</option>
-              <option value="traffic">交通</option>
-              <option value="shop">購物</option>
-              <option value="other">其他</option>
-            </select>
-          </div>
-        </div>
+function autoGrow(t){
+  t.style.height="auto";
+  t.style.height=t.scrollHeight+"px";
+}
 
-        <div class="field">
-          <label for="itemTitle">標題（必填）</label>
-          <input class="input" id="itemTitle" required placeholder="例如：淺草寺 / 迪士尼 / 機場到市區" />
-        </div>
+function addCard(){
+  state.cards.push({
+    type:"景點",
+    title:"",
+    route:"",
+    note:"",
+    photos:[]
+  });
+  render();
+  save();
+}
 
-        <div class="field">
-          <label for="itemPlace">地點 / 地址（可空）</label>
-          <input class="input" id="itemPlace" placeholder="例如：Asakusa / 1 Chome-1-2 Oshiage..." />
-          <div class="hint">填了地點就會出現「開地圖」按鈕。</div>
-        </div>
+function render(){
+  cardsEl.innerHTML="";
+  state.cards.forEach((c,i)=>{
+    const el=document.createElement("div");
+    el.className="card";
+    el.innerHTML=`
+      <select class="tagSelect">
+        <option>景點</option>
+        <option>餐廳</option>
+        <option>交通</option>
+        <option>購物</option>
+      </select>
 
-        <div class="field">
-          <label for="itemCost">預算（可空）</label>
-          <input class="input" id="itemCost" inputmode="decimal" placeholder="例如：¥1800 / NT$300 / 免" />
-        </div>
+      <input placeholder="標題">
 
-        <div class="field">
-          <label for="itemNote">備註</label>
-          <textarea class="textarea" id="itemNote" placeholder="例如：門票、排隊、注意事項、想買的東西..."></textarea>
-        </div>
+      <textarea placeholder="交通路線（自由輸入）"></textarea>
 
-        <div class="hint kbd">拖曳排序：在卡片右側抓住「↕ 拖曳」即可。</div>
-      </div>
-      <div class="dlgFt">
-        <button class="btn" value="cancel">取消</button>
-        <button class="btn primary" id="btnSaveItem" value="default">儲存</button>
-      </div>
-    </form>
-  </dialog>
+      <textarea placeholder="備註（可拖圖片）"></textarea>
 
-  <!-- Import Dialog -->
-  <dialog id="dlgImport">
-    <form method="dialog" id="importForm">
-      <div class="dlgHd">
-        <h3>匯入 JSON</h3>
-        <button class="mini" value="cancel" aria-label="關閉">✕</button>
-      </div>
-      <div class="dlgBd">
-        <div class="field">
-          <label for="importText">貼上匯出的 JSON</label>
-          <textarea class="textarea" id="importText" placeholder="在這裡貼上 JSON..."></textarea>
-        </div>
-        <div class="hint">匯入會覆蓋目前資料（建議先匯出備份）。</div>
-      </div>
-      <div class="dlgFt">
-        <button class="btn" value="cancel">取消</button>
-        <button class="btn primary" id="btnDoImport" value="default">確認匯入</button>
-      </div>
-    </form>
-  </dialog>
+      <div class="notePhotos"></div>
 
-  <script>
-    /**************
-     * Data Model *
-     **************/
-    const STORAGE_KEY = "niji_trip_planner_v1";
+      <button class="btn small">📷 加圖片</button>
+    `;
 
-    /** @type {{trip:{name:string,note:string}, days:Array<{id:string,name:string,date:string,items:Array<Item>}> , ui:{activeDayId:string|null, filter:string, search:string}}} */
-    let state = loadState();
+    const sel=el.querySelector("select");
+    const title=el.querySelectorAll("input")[0];
+    const route=el.querySelectorAll("textarea")[0];
+    const note=el.querySelectorAll("textarea")[1];
+    const photos=el.querySelector(".notePhotos");
+    const btn=el.querySelector("button");
 
-    /** @typedef {{id:string,time:string,cat:string,title:string,place:string,cost:string,note:string,createdAt:number}} Item */
+    sel.value=c.type;
+    title.value=c.title;
+    route.value=c.route;
+    note.value=c.note;
 
-    function uid(prefix="id"){
-      return prefix + "_" + Math.random().toString(16).slice(2) + "_" + Date.now().toString(16);
+    autoGrow(route);
+    autoGrow(note);
+
+    sel.onchange=()=>{c.type=sel.value;save();}
+    title.oninput=()=>{c.title=title.value;save();}
+    route.oninput=()=>{c.route=route.value;autoGrow(route);save();}
+    note.oninput=()=>{c.note=note.value;autoGrow(note);save();}
+
+    btn.onclick=()=>{
+      imgTarget=c;
+      imgPick.click();
     }
 
-    function defaultState(){
-      const d1 = { id: uid("day"), name:"Day 1", date:"", items:[] };
-      return {
-        trip: { name: "我的旅程", note: "" },
-        days: [d1],
-        ui: { activeDayId: d1.id, filter:"all", search:"" }
-      };
-    }
-
-    function loadState(){
-      try{
-        const raw = localStorage.getItem(STORAGE_KEY);
-        if(!raw) return defaultState();
-        const parsed = JSON.parse(raw);
-        // basic sanity
-        if(!parsed || !Array.isArray(parsed.days)) return defaultState();
-        if(!parsed.ui) parsed.ui = { activeDayId: parsed.days[0]?.id ?? null, filter:"all", search:"" };
-        if(!parsed.trip) parsed.trip = { name:"我的旅程", note:"" };
-        if(parsed.days.length === 0){
-          const d = { id: uid("day"), name:"Day 1", date:"", items:[] };
-          parsed.days = [d];
-          parsed.ui.activeDayId = d.id;
-        }
-        return parsed;
-      }catch(e){
-        return defaultState();
+    photos.innerHTML="";
+    c.photos.forEach((p,pi)=>{
+      const img=document.createElement("img");
+      img.src=p;
+      img.className="photo";
+      img.onclick=()=>{
+        c.photos.splice(pi,1);
+        render();save();
       }
-    }
-
-    function saveState(){
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-    }
-
-    /*****************
-     * DOM Utilities *
-     *****************/
-    const $ = (sel, root=document) => root.querySelector(sel);
-    const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
-
-    function escapeHtml(s=""){
-      return String(s)
-        .replaceAll("&","&amp;")
-        .replaceAll("<","&lt;")
-        .replaceAll(">","&gt;")
-        .replaceAll('"',"&quot;")
-        .replaceAll("'","&#039;");
-    }
-
-    function catLabel(cat){
-      switch(cat){
-        case "spot": return "景點";
-        case "food": return "餐飲";
-        case "hotel": return "住宿";
-        case "traffic": return "交通";
-        case "shop": return "購物";
-        default: return "其他";
-      }
-    }
-
-    function catDotClass(cat){
-      return ["spot","food","hotel","traffic","shop","other"].includes(cat) ? cat : "other";
-    }
-
-    function buildMapUrl(place){
-      const q = encodeURIComponent(place.trim());
-      return "https://www.google.com/maps/search/?api=1&query=" + q;
-    }
-
-    function activeDay(){
-      return state.days.find(d => d.id === state.ui.activeDayId) || null;
-    }
-
-    /***************
-     * Render Days *
-     ***************/
-    function renderDays(){
-      const daysEl = $("#days");
-      daysEl.innerHTML = "";
-
-      $("#daysCount").textContent = `${state.days.length} 天`;
-
-      state.days.forEach((d, idx) => {
-        const isActive = d.id === state.ui.activeDayId;
-        const el = document.createElement("div");
-        el.className = "day" + (isActive ? " active" : "");
-        el.dataset.dayId = d.id;
-
-        const itemCount = d.items?.length ?? 0;
-        const dateText = d.date ? `📅 ${escapeHtml(d.date)}` : "📅 未設定日期";
-        el.innerHTML = `
-          <div class="top">
-            <div class="name" title="${escapeHtml(d.name)}">
-              <span class="badge" aria-hidden="true"></span>
-              <span style="min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${escapeHtml(d.name || ("Day " + (idx+1)))}</span>
-            </div>
-            <div class="count">${itemCount} 項</div>
-          </div>
-          <div class="meta">${dateText}</div>
-        `;
-        daysEl.appendChild(el);
-      });
-    }
-
-    function renderActiveDayHeader(){
-      const d = activeDay();
-      const hasDay = !!d;
-      $("#btnAddItem").disabled = !hasDay;
-      $("#search").disabled = !hasDay;
-
-      if(!hasDay){
-        $("#activeDayTitle").textContent = "請先選擇一天";
-        $("#activeDayMeta").textContent = "—";
-        return;
-      }
-      $("#activeDayTitle").textContent = d.name || "未命名";
-      $("#activeDayMeta").textContent = d.date ? `日期：${d.date}` : "日期：未設定";
-    }
-
-    /****************
-     * Render Items *
-     ****************/
-    function itemMatches(item, filter, search){
-      if(filter && filter !== "all" && item.cat !== filter) return false;
-      if(search){
-        const s = search.trim().toLowerCase();
-        if(!s) return true;
-        const hay = (item.title + " " + item.place + " " + item.note).toLowerCase();
-        return hay.includes(s);
-      }
-      return true;
-    }
-
-    function renderItems(){
-      const list = $("#list");
-      const d = activeDay();
-      list.innerHTML = "";
-
-      if(!d){
-        list.innerHTML = `<div class="empty">先在左側選一天，或新增一天開始規劃。</div>`;
-        return;
-      }
-
-      const filter = state.ui.filter;
-      const search = state.ui.search;
-
-      const items = (d.items || []).filter(it => itemMatches(it, filter, search));
-
-      if(items.length === 0){
-        list.innerHTML = `
-          <div class="empty">
-            目前沒有符合的行程。<br/>
-            你可以按右上角「新增行程」開始加入。
-          </div>`;
-        return;
-      }
-
-      items.forEach((it) => {
-        const el = document.createElement("div");
-        el.className = "item";
-        el.draggable = true;
-        el.dataset.itemId = it.id;
-
-        const time = it.time ? escapeHtml(it.time) : "未填";
-        const place = it.place ? escapeHtml(it.place) : "";
-        const cost = it.cost ? escapeHtml(it.cost) : "";
-        const note = it.note ? escapeHtml(it.note) : "";
-        const showMap = !!it.place?.trim();
-
-        el.innerHTML = `
-          <div class="main">
-            <div class="t">
-              <span class="dot ${catDotClass(it.cat)}" aria-hidden="true"></span>
-              <span style="min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
-                ${escapeHtml(it.title)}
-              </span>
-              <span class="catPill">${catLabel(it.cat)}</span>
-            </div>
-
-            <div class="sub">
-              <span class="kv">🕒 <b>${time}</b></span>
-              ${place ? `<span class="kv">📍 <b>${place}</b></span>` : ``}
-              ${cost ? `<span class="kv">💰 <b>${cost}</b></span>` : ``}
-            </div>
-
-            ${note ? `<div class="notes">${note}</div>` : ``}
-          </div>
-
-          <div class="controls">
-            <div class="handle" title="拖曳排序">↕ 拖曳</div>
-            <div class="miniBtns">
-              ${showMap ? `<button class="mini" data-act="map" title="用 Google Maps 開啟">🗺️</button>` : ``}
-              <button class="mini" data-act="edit" title="編輯">✏️</button>
-              <button class="mini danger" data-act="del" title="刪除">🗑️</button>
-            </div>
-          </div>
-        `;
-        list.appendChild(el);
-      });
-    }
-
-    /**********************
-     * Init / Event Hooks *
-     **********************/
-    function hydrateTripFields(){
-      $("#tripName").value = state.trip?.name ?? "";
-      $("#tripNote").value = state.trip?.note ?? "";
-    }
-
-    function init(){
-      hydrateTripFields();
-      syncChipsUI();
-      renderDays();
-      renderActiveDayHeader();
-      renderItems();
-      saveState();
-    }
-
-    // Avoid re-render while typing in inputs by only saving (no DOM rebuild)
-    $("#tripName").addEventListener("input", (e) => {
-      state.trip.name = e.target.value;
-      saveState();
-    });
-    $("#tripNote").addEventListener("input", (e) => {
-      state.trip.note = e.target.value;
-      saveState();
+      photos.appendChild(img);
     });
 
-    // Select day
-    $("#days").addEventListener("click", (e) => {
-      const dayEl = e.target.closest(".day");
-      if(!dayEl) return;
-      const id = dayEl.dataset.dayId;
-      state.ui.activeDayId = id;
-      saveState();
-      renderDays();
-      renderActiveDayHeader();
-      renderItems();
-    });
+    cardsEl.appendChild(el);
+  });
+}
 
-    // Add day
-    $("#btnAddDay").addEventListener("click", () => {
-      const n = state.days.length + 1;
-      const d = { id: uid("day"), name: `Day ${n}`, date:"", items:[] };
-      state.days.push(d);
-      state.ui.activeDayId = d.id;
-      saveState();
-      renderDays();
-      renderActiveDayHeader();
-      renderItems();
-    });
+imgPick.onchange=()=>{
+  const f=imgPick.files[0];
+  if(!f)return;
+  const r=new FileReader();
+  r.onload=e=>{
+    imgTarget.photos.push(e.target.result);
+    render();save();
+  }
+  r.readAsDataURL(f);
+}
 
-    // Reset
-    $("#btnReset").addEventListener("click", () => {
-      const ok = confirm("確定要清空全部資料嗎？（此動作無法復原，建議先匯出備份）");
-      if(!ok) return;
-      state = defaultState();
-      saveState();
-      hydrateTripFields();
-      syncChipsUI(true);
-      renderDays();
-      renderActiveDayHeader();
-      renderItems();
-    });
-
-    // Chips filter
-    function syncChipsUI(reset=false){
-      if(reset) state.ui.filter = "all";
-      $$("#chips .chip").forEach(ch => {
-        ch.classList.toggle("active", ch.dataset.filter === state.ui.filter);
-      });
-    }
-
-    $("#chips").addEventListener("click", (e) => {
-      const chip = e.target.closest(".chip");
-      if(!chip) return;
-      state.ui.filter = chip.dataset.filter;
-      saveState();
-      syncChipsUI();
-      renderItems();
-    });
-
-    // Search
-    $("#search").addEventListener("input", (e) => {
-      state.ui.search = e.target.value;
-      saveState();
-      renderItems();
-    });
-
-    /*****************
-     * Item Dialog   *
-     *****************/
-    const dlgItem = $("#dlgItem");
-    const itemForm = $("#itemForm");
-
-    function openItemDialog(mode, item=null){
-      const d = activeDay();
-      if(!d) return;
-
-      $("#dlgTitle").textContent = mode === "edit" ? "編輯行程" : "新增行程";
-      $("#editId").value = item?.id ?? "";
-      $("#itemTime").value = item?.time ?? "";
-      $("#itemCat").value = item?.cat ?? "spot";
-      $("#itemTitle").value = item?.title ?? "";
-      $("#itemPlace").value = item?.place ?? "";
-      $("#itemCost").value = item?.cost ?? "";
-      $("#itemNote").value = item?.note ?? "";
-
-      // show modal
-      dlgItem.showModal();
-      // focus title for quick input (micro delay helps Android)
-      setTimeout(() => $("#itemTitle").focus(), 50);
-    }
-
-    $("#btnAddItem").addEventListener("click", () => openItemDialog("add"));
-
-    // Save item
-    itemForm.addEventListener("submit", (e) => {
-      e.preventDefault(); // we will close manually
-      const d = activeDay();
-      if(!d) return;
-
-      const editId = $("#editId").value.trim();
-      const item = {
-        id: editId || uid("it"),
-        time: $("#itemTime").value.trim(),
-        cat: $("#itemCat").value,
-        title: $("#itemTitle").value.trim(),
-        place: $("#itemPlace").value.trim(),
-        cost: $("#itemCost").value.trim(),
-        note: $("#itemNote").value.trim(),
-        createdAt: Date.now()
-      };
-
-      if(!item.title){
-        alert("標題為必填。");
-        $("#itemTitle").focus();
-        return;
-      }
-
-      const idx = d.items.findIndex(x => x.id === item.id);
-      if(idx >= 0){
-        // keep createdAt if exists
-        item.createdAt = d.items[idx].createdAt || item.createdAt;
-        d.items[idx] = item;
-      }else{
-        d.items.push(item);
-      }
-
-      saveState();
-      dlgItem.close();
-      renderDays();
-      renderItems();
-      renderActiveDayHeader();
-    });
-
-    /*****************
-     * Item Actions  *
-     *****************/
-    $("#list").addEventListener("click", (e) => {
-      const btn = e.target.closest("button");
-      if(!btn) return;
-
-      const act = btn.dataset.act;
-      const itemEl = e.target.closest(".item");
-      if(!itemEl) return;
-
-      const d = activeDay();
-      if(!d) return;
-
-      const id = itemEl.dataset.itemId;
-      const it = d.items.find(x => x.id === id);
-      if(!it) return;
-
-      if(act === "edit"){
-        openItemDialog("edit", it);
-      }else if(act === "del"){
-        const ok = confirm("確定要刪除這個行程嗎？");
-        if(!ok) return;
-        d.items = d.items.filter(x => x.id !== id);
-        saveState();
-        renderDays();
-        renderItems();
-      }else if(act === "map"){
-        if(it.place?.trim()){
-          window.open(buildMapUrl(it.place), "_blank", "noopener,noreferrer");
-        }
-      }
-    });
-
-    /*****************
-     * Drag & Drop   *
-     *****************/
-    let dragId = null;
-
-    $("#list").addEventListener("dragstart", (e) => {
-      const itemEl = e.target.closest(".item");
-      if(!itemEl) return;
-      dragId = itemEl.dataset.itemId;
-      itemEl.classList.add("dragging");
-      e.dataTransfer.effectAllowed = "move";
-      try{ e.dataTransfer.setData("text/plain", dragId); }catch(_){}
-    });
-
-    $("#list").addEventListener("dragend", (e) => {
-      const itemEl = e.target.closest(".item");
-      if(itemEl) itemEl.classList.remove("dragging");
-      dragId = null;
-    });
-
-    $("#list").addEventListener("dragover", (e) => {
-      e.preventDefault();
-      const over = e.target.closest(".item");
-      if(!over || !dragId) return;
-
-      const d = activeDay();
-      if(!d) return;
-
-      const overId = over.dataset.itemId;
-      if(overId === dragId) return;
-
-      // Visual hint: reorder on the fly (stable + simple)
-      const items = d.items;
-      const from = items.findIndex(x => x.id === dragId);
-      const to = items.findIndex(x => x.id === overId);
-      if(from < 0 || to < 0) return;
-
-      // move
-      const [m] = items.splice(from, 1);
-      items.splice(to, 0, m);
-
-      saveState();
-      renderDays();
-      renderItems();
-    });
-
-    /*****************
-     * Export/Import *
-     *****************/
-    $("#btnExport").addEventListener("click", () => {
-      const data = JSON.stringify(state, null, 2);
-      const blob = new Blob([data], {type:"application/json"});
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      const safeName = (state.trip?.name || "trip").replace(/[\\/:*?"<>|]+/g, "_");
-      a.href = url;
-      a.download = `${safeName}_backup.json`;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      setTimeout(()=>URL.revokeObjectURL(url), 500);
-    });
-
-    const dlgImport = $("#dlgImport");
-    $("#btnImport").addEventListener("click", () => {
-      $("#importText").value = "";
-      dlgImport.showModal();
-      setTimeout(()=>$("#importText").focus(), 50);
-    });
-
-    $("#importForm").addEventListener("submit", (e) => {
-      e.preventDefault();
-      const text = $("#importText").value.trim();
-      if(!text){
-        alert("請先貼上 JSON。");
-        return;
-      }
-      try{
-        const parsed = JSON.parse(text);
-        if(!parsed || !Array.isArray(parsed.days)) throw new Error("格式不正確");
-        state = parsed;
-        // ensure ui
-        if(!state.ui) state.ui = { activeDayId: state.days[0]?.id ?? null, filter:"all", search:"" };
-        if(!state.trip) state.trip = { name:"我的旅程", note:"" };
-        if(!state.ui.activeDayId && state.days[0]) state.ui.activeDayId = state.days[0].id;
-
-        saveState();
-        dlgImport.close();
-        hydrateTripFields();
-        syncChipsUI();
-        $("#search").value = state.ui.search || "";
-        renderDays();
-        renderActiveDayHeader();
-        renderItems();
-      }catch(err){
-        alert("匯入失敗：JSON 格式可能不正確。");
-      }
-    });
-
-    /*****************
-     * Inline Day Edit (simple)
-     *****************/
-    // Long-press / double click to edit day name & date quickly
-    $("#days").addEventListener("dblclick", (e) => {
-      const dayEl = e.target.closest(".day");
-      if(!dayEl) return;
-      const id = dayEl.dataset.dayId;
-      const d = state.days.find(x => x.id === id);
-      if(!d) return;
-
-      const newName = prompt("修改天數名稱（例如：Day 2｜迪士尼日）", d.name || "");
-      if(newName === null) return;
-      d.name = newName.trim() || d.name;
-
-      const newDate = prompt("設定日期（例如：2026-05-10，可留空）", d.date || "");
-      if(newDate === null) return;
-      d.date = newDate.trim();
-
-      saveState();
-      renderDays();
-      renderActiveDayHeader();
-    });
-
-    // Delete day (context menu / long press)
-    $("#days").addEventListener("contextmenu", (e) => {
-      e.preventDefault();
-      const dayEl = e.target.closest(".day");
-      if(!dayEl) return;
-
-      const id = dayEl.dataset.dayId;
-      if(state.days.length <= 1){
-        alert("至少要保留一天。");
-        return;
-      }
-      const d = state.days.find(x => x.id === id);
-      const ok = confirm(`要刪除「${d?.name || "這一天"}」嗎？（該天行程會一起刪除）`);
-      if(!ok) return;
-
-      state.days = state.days.filter(x => x.id !== id);
-      if(state.ui.activeDayId === id){
-        state.ui.activeDayId = state.days[0]?.id ?? null;
-      }
-      saveState();
-      renderDays();
-      renderActiveDayHeader();
-      renderItems();
-    });
-
-    // Set search input to state on init
-    $("#search").value = state.ui.search || "";
-
-    init();
-  </script>
+render();
+</script>
 </body>
 </html>
